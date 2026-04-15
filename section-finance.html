@@ -115,7 +115,7 @@ window.__STATUSES__ = window.__STATUSES__ || {
   milestone: ['Not Started','In Progress','Completed']
 };
 window.__TYPES__ = window.__TYPES__ || ['Install','Service','Assessment','Upgrade','Decommission','Maintenance'];
-window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__CONTACTS__ = window.__CONTACTS__ || ['Alex Morgan','Sam Rivera','John Doe','Taylor Brooks','Jennifer Doe'];
 window.__COMMENTS__ = window.__COMMENTS__ || {};
 window.__ATTACHMENTS__ = window.__ATTACHMENTS__ || {};
 
@@ -130,7 +130,7 @@ window.__addAttach = function(et, id) {
   if (!name) return;
   const ext = (name.split('.').pop()||'').toLowerCase();
   const key = et + ':' + id;
-  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Matt Isgur', at: new Date().toISOString() });
+  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Alex Morgan', at: new Date().toISOString() });
   console.log('Make payload (attach):', { entityType: et, entityId: id, name });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
   const widget = document.querySelector('[onclick*="__addAttach"]')?.closest('div').parentElement;
   if (widget) widget.outerHTML = window.attachmentsWidget(et, id);
@@ -211,7 +211,7 @@ window.__postComment = function(entityType, entityId) {
   const inp = document.getElementById('cw-in-'+entityId);
   const txt = inp.value.trim();
   if (!txt) return;
-  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Matt Isgur', txt, at: new Date().toISOString() });
+  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Alex Morgan', txt, at: new Date().toISOString() });
   console.log('Make payload (comment):', { entityType, entityId, txt });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
   inp.value = '';
   const host = inp.closest('div').parentElement;
@@ -219,7 +219,7 @@ window.__postComment = function(entityType, entityId) {
 };
 
 Object.assign(window.__COMMENTS__, {
-  'finance:FIN-02': [{who:'Matt Isgur',txt:'PO approved by client — waiting on signed contract back.',at:'2026-04-07T13:15'}]
+  'finance:FIN-02': [{who:'Alex Morgan',txt:'PO approved by client — waiting on signed contract back.',at:'2026-04-07T13:15'}]
 });
 
 // ═════════════════════════════════════════════════════════════════════════
@@ -252,12 +252,12 @@ function esc(s){ return String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':
 // ═════════ DEMO DATA (used when payload absent) ═════════
 // Shape matches schema 1:1 — numeric fields are numbers, not strings.
 let items = [
-  { id:'FIN-01', category:'Labor',         description:'HQ Site Survey',            budgeted:48000, committed:48000, actual:48000,   vendor:'ADRM',    date:'2026-03-05' },
-  { id:'FIN-02', category:'Equipment',     description:'HID Signo Readers (24)',    budgeted:75000, committed:72500, actual:0,       vendor:'Anixter', date:'2026-03-15' },
-  { id:'FIN-03', category:'Labor',         description:'Installation Techs — wk 1', budgeted:25000, committed:25000, actual:8420,    vendor:'ADRM',    date:'2026-04-01' },
-  { id:'FIN-04', category:'Equipment',     description:'Panels & Controllers',      budgeted:15000, committed:14200, actual:14200,   vendor:'Anixter', date:'2026-03-20' },
+  { id:'FIN-01', category:'Labor',         description:'HQ Site Survey',            budgeted:48000, committed:48000, actual:48000,   vendor:'Northwind',    date:'2026-03-05' },
+  { id:'FIN-02', category:'Equipment',     description:'KeySys Signo Readers (24)',    budgeted:75000, committed:72500, actual:0,       vendor:'Cablecorp', date:'2026-03-15' },
+  { id:'FIN-03', category:'Labor',         description:'Installation Techs — wk 1', budgeted:25000, committed:25000, actual:8420,    vendor:'Northwind',    date:'2026-04-01' },
+  { id:'FIN-04', category:'Equipment',     description:'Panels & Controllers',      budgeted:15000, committed:14200, actual:14200,   vendor:'Cablecorp', date:'2026-03-20' },
   { id:'FIN-05', category:'Subcontractor', description:'Commissioning',             budgeted:20000, committed:0,     actual:0,       vendor:'TBD',     date:'2026-05-15' },
-  { id:'FIN-06', category:'Travel',        description:'On-site trips (3)',         budgeted:4500,  committed:4500,  actual:4820,    vendor:'ADRM',    date:'2026-04-10' }
+  { id:'FIN-06', category:'Travel',        description:'On-site trips (3)',         budgeted:4500,  committed:4500,  actual:4820,    vendor:'Northwind',    date:'2026-04-10' }
 ];
 let editing = null;
 
@@ -572,7 +572,7 @@ function openD(id){
   const st = computeStatus(l);
   document.getElementById('drb').innerHTML = `
     <div class="f"><label class="fl">Category</label><input class="fi" id="d-cat" list="cat-list" value="${esc(l.category)}" placeholder="e.g. Labor, Equipment"/></div>
-    <div class="f"><label class="fl">Description</label><textarea class="ft" id="d-desc" placeholder="e.g. HID Signo Readers (24)">${esc(l.description)}</textarea></div>
+    <div class="f"><label class="fl">Description</label><textarea class="ft" id="d-desc" placeholder="e.g. KeySys Signo Readers (24)">${esc(l.description)}</textarea></div>
     <div class="fr"><div class="f"><label class="fl">Vendor</label><input class="fi" id="d-vendor" value="${esc(l.vendor)}"/></div><div class="f"><label class="fl">Date</label><input type="date" class="fi" id="d-date" value="${esc(l.date)}"/></div></div>
     <div class="fr3">
       <div class="f"><label class="fl">Budgeted ($)</label><input type="number" step="0.01" class="fi" id="d-budg" value="${Number(l.budgeted)||0}"/></div>
@@ -672,7 +672,7 @@ window.__FINANCE_SMOKE__ = function(){
   run('case3_malformed_object',    () => ingestOnce({ finance_line_items: {} }) === null);
   run('case3_malformed_number',    () => ingestOnce({ finance_line_items: 42 }) === null);
   run('case4_valid_schema_shape',  () => {
-    const n = ingestOnce({ finance_line_items: [{ id:'FIN-01', category:'Labor', description:'Install techs wk 1', budgeted:12000, committed:12000, actual:11420, vendor:'ADRM', date:'2026-03-08' }] });
+    const n = ingestOnce({ finance_line_items: [{ id:'FIN-01', category:'Labor', description:'Install techs wk 1', budgeted:12000, committed:12000, actual:11420, vendor:'Northwind', date:'2026-03-08' }] });
     return n && n.length === 1 && n[0].id === 'FIN-01' && n[0].budgeted === 12000 && n[0].actual === 11420;
   });
   run('case5_version_mismatch_warns_not_throws', () => {
@@ -691,7 +691,7 @@ window.__FINANCE_SMOKE__ = function(){
     return n === null;
   });
   run('case7_outbound_shape_matches_schema', () => {
-    const p = buildSavePayload({ id:'FIN-01', category:'Labor', description:'Test', budgeted:12000, committed:12000, actual:11420, vendor:'ADRM', date:'2026-03-08' });
+    const p = buildSavePayload({ id:'FIN-01', category:'Labor', description:'Test', budgeted:12000, committed:12000, actual:11420, vendor:'Northwind', date:'2026-03-08' });
     const keys = Object.keys(p).sort().join(',');
     return keys === 'actual,budgeted,category,committed,date,description,id,vendor';
   });
@@ -820,8 +820,8 @@ window.__FINANCE_SMOKE__ = function(){
   });
   run('pattern7_vendor_preserved_not_collapsed', () => {
     // Common oversight: vendor folded into description. Assert it stays distinct.
-    const n = ingestOnce({ finance_line_items:[{ id:'X', description:'Readers', vendor:'Anixter' }] });
-    return n[0].vendor === 'Anixter' && n[0].description === 'Readers' && !n[0].description.includes('Anixter');
+    const n = ingestOnce({ finance_line_items:[{ id:'X', description:'Readers', vendor:'Cablecorp' }] });
+    return n[0].vendor === 'Cablecorp' && n[0].description === 'Readers' && !n[0].description.includes('Cablecorp');
   });
   run('pattern7_date_preserved', () => {
     const n = ingestOnce({ finance_line_items:[{ id:'X', date:'2026-03-08' }] });
@@ -854,8 +854,8 @@ window.__FINANCE_SMOKE__ = function(){
     return n[0].id.startsWith('tmp-');
   });
   run('ingest_preserves_string_fields_trim', () => {
-    const n = ingestOnce({ finance_line_items:[{ id:'X', category:'  Labor  ', vendor:'  ADRM  ' }] });
-    return n[0].category === 'Labor' && n[0].vendor === 'ADRM';
+    const n = ingestOnce({ finance_line_items:[{ id:'X', category:'  Labor  ', vendor:'  Northwind  ' }] });
+    return n[0].category === 'Labor' && n[0].vendor === 'Northwind';
   });
 
   // ── DOM render invariants (jsdom-safe) ──

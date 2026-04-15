@@ -90,13 +90,13 @@ window.__STATUSES__ = window.__STATUSES__ || {
   milestone: ['Not Started','In Progress','Completed']
 };
 window.__TYPES__ = window.__TYPES__ || ['Install','Service','Assessment','Upgrade','Decommission','Maintenance'];
-window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__CONTACTS__ = window.__CONTACTS__ || ['Alex Morgan','Sam Rivera','John Doe','Taylor Brooks','Jennifer Doe'];
 // Per-entity comments — keyed by `entityType:entityId`
 window.__COMMENTS__ = window.__COMMENTS__ || {};
 window.__COMMENTS__ = {
-  'task:5': [{who:'Louis Feula',txt:'Kicking this off Monday. @John Doe can you confirm the IDF access codes?',at:'2026-04-08T09:15'},{who:'John Doe',txt:'Codes sent. Good to go.',at:'2026-04-08T09:42'}],
-  'risk:1': [{who:'Matt Isgur',txt:'Talked to vendor — they confirmed a 30-day delay. Need to update the mitigation plan.',at:'2026-04-05T14:20'}],
-  'punch:3': [{who:'Louis Feula',txt:'Parts arrived. Will complete tomorrow.',at:'2026-04-11T16:30'}]
+  'task:5': [{who:'Sam Rivera',txt:'Kicking this off Monday. @John Doe can you confirm the IDF access codes?',at:'2026-04-08T09:15'},{who:'John Doe',txt:'Codes sent. Good to go.',at:'2026-04-08T09:42'}],
+  'risk:1': [{who:'Alex Morgan',txt:'Talked to vendor — they confirmed a 30-day delay. Need to update the mitigation plan.',at:'2026-04-05T14:20'}],
+  'punch:3': [{who:'Sam Rivera',txt:'Parts arrived. Will complete tomorrow.',at:'2026-04-11T16:30'}]
 };
 
 // Per-entity attachments — same keying
@@ -115,7 +115,7 @@ window.__addAttach = function(et, id) {
   if (!name) return;
   const ext = (name.split('.').pop()||'').toLowerCase();
   const key = et + ':' + id;
-  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Matt Isgur', at: new Date().toISOString() });
+  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Alex Morgan', at: new Date().toISOString() });
   console.log('Make payload (attach):', { entityType: et, entityId: id, name });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
   // Trigger redraw - re-open the drawer if possible
   const widget = document.querySelector('[onclick*="__addAttach"]')?.closest('div').parentElement;
@@ -131,7 +131,7 @@ window.__removeAttach = function(key, idx) {
 
 
 // ═══ @-mention autocomplete ═══
-window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__CONTACTS__ = window.__CONTACTS__ || ['Alex Morgan','Sam Rivera','John Doe','Taylor Brooks','Jennifer Doe'];
 window.__wireMention = function(inputId, hostId) {
   const inp = document.getElementById(inputId);
   if (!inp || inp.dataset.mwired) return;
@@ -203,7 +203,7 @@ window.__postComment = function(entityType, entityId) {
   const inp = document.getElementById('cw-in-'+entityId);
   const txt = inp.value.trim();
   if (!txt) return;
-  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Matt Isgur', txt, at: new Date().toISOString() });
+  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Alex Morgan', txt, at: new Date().toISOString() });
   console.log('Make payload (comment):', { entityType, entityId, txt });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
   inp.value = '';
   // Re-render just the comments list in place
@@ -213,9 +213,9 @@ window.__postComment = function(entityType, entityId) {
 
 // ═══ DEMO DATA (schema-shape string IDs, owner_email pass-through per Pattern #4) ═══
 let items = [
-  {id:'RFI-001',num:'RFI-001',desc:'Clarify power circuit for rooftop cameras — dedicated or shared?',due:'2026-04-20',urgency:'High',status:'Open',by:'Louis Feula',by_email:'lfeula@adrm-security.com',sent:'2026-04-08',answered_at:null,answer:null,convertedToRisk:null,originFrom:null,originId:null},
-  {id:'RFI-002',num:'RFI-002',desc:'Confirm panel location in IDF-2 — cabinet or rack?',due:'2026-04-15',urgency:'Medium',status:'Answered',by:'Matt Isgur',by_email:'misgur@adrm-security.com',sent:'2026-04-02',answered_at:'2026-04-09',answer:'Rack mount, position 14-15 in cabinet B.',convertedToRisk:null,originFrom:null,originId:null},
-  {id:'RFI-003',num:'RFI-003',desc:'Which conduit spec applies to the exterior runs?',due:'',urgency:'Low',status:'Closed',by:'John Doe',by_email:'jdoe@adrm-security.com',sent:'2026-03-28',answered_at:'2026-04-01',answer:'EMT per spec 26.05.33.',convertedToRisk:null,originFrom:null,originId:null}
+  {id:'RFI-001',num:'RFI-001',desc:'Clarify power circuit for rooftop cameras — dedicated or shared?',due:'2026-04-20',urgency:'High',status:'Open',by:'Sam Rivera',by_email:'srivera@example.com',sent:'2026-04-08',answered_at:null,answer:null,convertedToRisk:null,originFrom:null,originId:null},
+  {id:'RFI-002',num:'RFI-002',desc:'Confirm panel location in IDF-2 — cabinet or rack?',due:'2026-04-15',urgency:'Medium',status:'Answered',by:'Alex Morgan',by_email:'amorgan@example.com',sent:'2026-04-02',answered_at:'2026-04-09',answer:'Rack mount, position 14-15 in cabinet B.',convertedToRisk:null,originFrom:null,originId:null},
+  {id:'RFI-003',num:'RFI-003',desc:'Which conduit spec applies to the exterior runs?',due:'',urgency:'Low',status:'Closed',by:'John Doe',by_email:'jdoe@example.com',sent:'2026-03-28',answered_at:'2026-04-01',answer:'EMT per spec 26.05.33.',convertedToRisk:null,originFrom:null,originId:null}
 ];
 let editing = null;
 
@@ -703,7 +703,7 @@ window.__RFI_SMOKE__ = function(){
 
   // 7. outbound builder shape — exact schema fields, camelCase origin preserved
   run('outbound_builder_shape', () => {
-    const r = { id:'RFI-1', num:'RFI-001', desc:'Q?', status:'Answered', by:'Matt Isgur', by_email:'m@x.com', sent:'2026-04-01', answered_at:'2026-04-03', answer:'Yes.', due:'2026-04-10', urgency:'High', convertedToRisk:null, originFrom:'meeting', originId:'MTG-5' };
+    const r = { id:'RFI-1', num:'RFI-001', desc:'Q?', status:'Answered', by:'Alex Morgan', by_email:'m@x.com', sent:'2026-04-01', answered_at:'2026-04-03', answer:'Yes.', due:'2026-04-10', urgency:'High', convertedToRisk:null, originFrom:'meeting', originId:'MTG-5' };
     const p = buildSavePayload(r, false);
     return p.id==='RFI-1' && p.question==='Q?' && p.asked_by==='m@x.com' && p.asked_at==='2026-04-01'
       && p.answered_at==='2026-04-03' && p.answer==='Yes.' && p.status==='Answered'
@@ -736,7 +736,7 @@ window.__RFI_SMOKE__ = function(){
   // 10. risk_save outbound shape from RFI conversion — per task spec
   //     originFrom:'rfi' camelCase, title from question, owner_email from asked_by, schema defaults.
   run('rfi_to_risk_outbound', () => {
-    const editing = { id:'RFI-04', num:'RFI-04', desc:'Confirm panel location in IDF-2', by_email:'misgur@adrm-security.com' };
+    const editing = { id:'RFI-04', num:'RFI-04', desc:'Confirm panel location in IDF-2', by_email:'amorgan@example.com' };
     const titleBase = (editing.desc||'').trim();
     const title = 'Unanswered RFI: ' + (titleBase.length > 60 ? titleBase.substring(0,60)+'…' : titleBase);
     const riskSave = {
@@ -749,7 +749,7 @@ window.__RFI_SMOKE__ = function(){
       && riskSave.originId==='RFI-04'
       && riskSave.title.startsWith('Unanswered RFI: ')
       && riskSave.title.includes('Confirm panel location')  // title derived from question
-      && riskSave.owner_email==='misgur@adrm-security.com'   // owner_email from asked_by
+      && riskSave.owner_email==='amorgan@example.com'   // owner_email from asked_by
       && riskSave.likelihood==='Medium' && riskSave.impact==='Medium'
       && riskSave.status==='Identified';                     // schema vocab default
   });

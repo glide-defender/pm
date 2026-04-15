@@ -55,8 +55,8 @@ const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;
 // use their workstream name as identity directly).
 
 let items=[
-  {task:'Create initial bill of materials', R:['Genetec'],       A:['ABC Sample Company'], C:['Securitas'], I:['Securitas']},
-  {task:'Final commissioning sign-off',     R:['ADRM Security'], A:['ABC Sample Company'], C:['Genetec'],   I:['Securitas','John Doe']}
+  {task:'Create initial bill of materials', R:['Cloudgate'],       A:['ABC Sample Company'], C:['Guardian Services'], I:['Guardian Services']},
+  {task:'Final commissioning sign-off',     R:['Northwind Security'], A:['ABC Sample Company'], C:['Cloudgate'],   I:['Guardian Services','John Doe']}
 ];
 let editing=null;
 
@@ -327,10 +327,10 @@ window.__RACI_SMOKE__ = function(){
   });
 
   // ── INGESTION: Pattern #9 bridge (defensive coercion) ─────────
-  run('bridge_array_stays_array', () => Array.isArray(toArr(['ADRM','Genetec'])) && toArr(['ADRM','Genetec']).length === 2);
+  run('bridge_array_stays_array', () => Array.isArray(toArr(['Northwind','Cloudgate'])) && toArr(['Northwind','Cloudgate']).length === 2);
   run('bridge_string_to_array', () => {
-    const out = toArr('ADRM Security, Acme IT , , Genetec');
-    return out.length === 3 && out[0] === 'ADRM Security' && out[1] === 'Acme IT' && out[2] === 'Genetec';
+    const out = toArr('Northwind Security, Acme IT , , Cloudgate');
+    return out.length === 3 && out[0] === 'Northwind Security' && out[1] === 'Acme IT' && out[2] === 'Cloudgate';
   });
   run('bridge_undefined_to_empty', () => Array.isArray(toArr(undefined)) && toArr(undefined).length === 0);
   run('bridge_null_to_empty', () => Array.isArray(toArr(null)) && toArr(null).length === 0);
@@ -388,7 +388,7 @@ window.__RACI_SMOKE__ = function(){
 
   // ── ROUND-TRIP: schema → internal → schema ────────────────────
   run('roundtrip_single_row_preserves_all_fields', () => {
-    const schemaIn = { workstream:'Commissioning', R:['ADRM Security','Genetec'], A:['ABC Sample Company'], C:['Securitas'], I:['Securitas','John Doe'] };
+    const schemaIn = { workstream:'Commissioning', R:['Northwind Security','Cloudgate'], A:['ABC Sample Company'], C:['Guardian Services'], I:['Guardian Services','John Doe'] };
     const ingested = ingestOnce({ raci:[schemaIn] });
     const out = buildSavePayload(ingested[0]);
     return out.workstream === schemaIn.workstream
@@ -409,9 +409,9 @@ window.__RACI_SMOKE__ = function(){
   });
   run('roundtrip_string_coerced_RACI_emits_arrays', () => {
     // Payload sends R as comma-string → normalize → outbound emits array
-    const ingested = ingestOnce({ raci:[{ workstream:'X', R:'ADRM, Genetec', A:[], C:[], I:[] }] });
+    const ingested = ingestOnce({ raci:[{ workstream:'X', R:'Northwind, Cloudgate', A:[], C:[], I:[] }] });
     const out = buildSavePayload(ingested[0]);
-    return Array.isArray(out.R) && out.R.length === 2 && out.R[0] === 'ADRM' && out.R[1] === 'Genetec';
+    return Array.isArray(out.R) && out.R.length === 2 && out.R[0] === 'Northwind' && out.R[1] === 'Cloudgate';
   });
 
   // ── PATTERN #2: String ID safety ──────────────────────────────
@@ -539,11 +539,11 @@ window.__RACI_SMOKE__ = function(){
     return ok;
   });
   run('openD_existing_populates_editing', () => {
-    restore([{task:'Design',R:['ADRM'],A:['ADRM'],C:['IT'],I:['Sec']}]);
+    restore([{task:'Design',R:['Northwind'],A:['Northwind'],C:['IT'],I:['Sec']}]);
     renderAll();
     openD('Design');
     const ok = editing && editing.task === 'Design' && editing.__origKey === 'Design'
-           && editing.R[0] === 'ADRM' && editing.I[0] === 'Sec';
+           && editing.R[0] === 'Northwind' && editing.I[0] === 'Sec';
     closeD();
     return ok;
   });
@@ -626,13 +626,13 @@ window.__RACI_SMOKE__ = function(){
     renderAll();
     openD(null);
     document.getElementById('d-task').value = 'New Workstream';
-    document.getElementById('d-r').value = 'ADRM, Genetec';
+    document.getElementById('d-r').value = 'Northwind, Cloudgate';
     document.getElementById('d-a').value = 'ABC';
     document.getElementById('d-c').value = '';
     document.getElementById('d-i').value = 'Sec1, Sec2';
     saveX();
     const added = items.find(i => i.task === 'New Workstream');
-    return added && added.R.length === 2 && added.R[0] === 'ADRM'
+    return added && added.R.length === 2 && added.R[0] === 'Northwind'
         && added.A.length === 1 && added.A[0] === 'ABC'
         && added.C.length === 0
         && added.I.length === 2;

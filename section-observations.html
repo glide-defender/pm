@@ -149,12 +149,12 @@ window.__STATUSES__ = window.__STATUSES__ || {
   milestone: ['Not Started','In Progress','Completed']
 };
 window.__TYPES__ = window.__TYPES__ || ['Install','Service','Assessment','Upgrade','Decommission','Maintenance'];
-window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__CONTACTS__ = window.__CONTACTS__ || ['Alex Morgan','Sam Rivera','John Doe','Taylor Brooks','Jennifer Doe'];
 window.__COMMENTS__ = window.__COMMENTS__ || {};
 window.__COMMENTS__ = {
-  'task:5': [{who:'Louis Feula',txt:'Kicking this off Monday. @John Doe can you confirm the IDF access codes?',at:'2026-04-08T09:15'},{who:'John Doe',txt:'Codes sent. Good to go.',at:'2026-04-08T09:42'}],
-  'risk:1': [{who:'Matt Isgur',txt:'Talked to vendor — they confirmed a 30-day delay. Need to update the mitigation plan.',at:'2026-04-05T14:20'}],
-  'punch:3': [{who:'Louis Feula',txt:'Parts arrived. Will complete tomorrow.',at:'2026-04-11T16:30'}]
+  'task:5': [{who:'Sam Rivera',txt:'Kicking this off Monday. @John Doe can you confirm the IDF access codes?',at:'2026-04-08T09:15'},{who:'John Doe',txt:'Codes sent. Good to go.',at:'2026-04-08T09:42'}],
+  'risk:1': [{who:'Alex Morgan',txt:'Talked to vendor — they confirmed a 30-day delay. Need to update the mitigation plan.',at:'2026-04-05T14:20'}],
+  'punch:3': [{who:'Sam Rivera',txt:'Parts arrived. Will complete tomorrow.',at:'2026-04-11T16:30'}]
 };
 window.__ATTACHMENTS__ = window.__ATTACHMENTS__ || {};
 
@@ -169,7 +169,7 @@ window.__addAttach = function(et, id) {
   if (!name) return;
   const ext = (name.split('.').pop()||'').toLowerCase();
   const key = et + ':' + id;
-  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Matt Isgur', at: new Date().toISOString() });
+  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Alex Morgan', at: new Date().toISOString() });
   console.log('Make payload (attach):', { entityType: et, entityId: id, name });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
   const widget = document.querySelector('[onclick*="__addAttach"]')?.closest('div').parentElement;
   if (widget) widget.outerHTML = window.attachmentsWidget(et, id);
@@ -183,7 +183,7 @@ window.__removeAttach = function(key, idx) {
 };
 
 // ═══ @-mention autocomplete ═══
-window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__CONTACTS__ = window.__CONTACTS__ || ['Alex Morgan','Sam Rivera','John Doe','Taylor Brooks','Jennifer Doe'];
 window.__wireMention = function(inputId, hostId) {
   const inp = document.getElementById(inputId);
   if (!inp || inp.dataset.mwired) return;
@@ -253,7 +253,7 @@ window.__postComment = function(entityType, entityId) {
   const inp = document.getElementById('cw-in-'+entityId);
   const txt = inp.value.trim();
   if (!txt) return;
-  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Matt Isgur', txt, at: new Date().toISOString() });
+  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Alex Morgan', txt, at: new Date().toISOString() });
   console.log('Make payload (comment):', { entityType, entityId, txt });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
   inp.value = '';
   const host = inp.closest('div').parentElement;
@@ -262,10 +262,10 @@ window.__postComment = function(entityType, entityId) {
 
 // ═══ DEMO DATA (used when payload absent or empty) ═══
 let obs=[
-{id:1,name:'Door contact installed >6" from frame on strike side',desc:'Observed during floor 2 walkthrough. Contact installed too far from frame, creating gap that may not trigger alarm correctly.',status:'In Progress',action:'Reinstall within spec (per mfr spec ≤ 3/8"). Coordinate with installer.',rootCause:'Installer training gap',location:'Floor 2 - Door 204',severity:'Medium',author:'Matt Isgur',owner_email:'misgur@adrm-security.com',observed_at:'2026-04-05',photo_attachment_ids:[],convertedToRisk:null,originFrom:null,originId:null},
-{id:2,name:'Conduit not routed to correct cable tray pathway',desc:'Conduit run bypasses the primary tray and is surface-mounted along corridor.',status:'Open',action:'Reroute per approved pathway drawing',rootCause:'Design change not communicated',location:'Floor 3 Corridor',severity:'High',author:'Louis Feula',owner_email:'lfeula@adrm-security.com',observed_at:'2026-04-02',photo_attachment_ids:[],convertedToRisk:4,originFrom:null,originId:null},
-{id:3,name:'Camera field of view obstructed by structural beam',desc:'Lobby cam 2 has 30% FoV obstruction from exposed ceiling beam',status:'In Progress',action:'Relocate camera 18" south or add second unit',rootCause:'Site survey miss',location:'Main Lobby',severity:'Medium',author:'Matt Isgur',owner_email:'misgur@adrm-security.com',observed_at:'2026-04-08',photo_attachment_ids:[],convertedToRisk:null,originFrom:null,originId:null},
-{id:4,name:'Card reader missing screws',desc:'Reader at IDF room installed but face plate secured with only 2 of 4 screws',status:'Closed',action:'Installed remaining screws during same visit',rootCause:'Installer oversight',location:'IDF Room',severity:'Low',author:'John Doe',owner_email:'jdoe@adrm-security.com',observed_at:'2026-04-09',photo_attachment_ids:[],convertedToRisk:null,originFrom:null,originId:null}
+{id:1,name:'Door contact installed >6" from frame on strike side',desc:'Observed during floor 2 walkthrough. Contact installed too far from frame, creating gap that may not trigger alarm correctly.',status:'In Progress',action:'Reinstall within spec (per mfr spec ≤ 3/8"). Coordinate with installer.',rootCause:'Installer training gap',location:'Floor 2 - Door 204',severity:'Medium',author:'Alex Morgan',owner_email:'amorgan@example.com',observed_at:'2026-04-05',photo_attachment_ids:[],convertedToRisk:null,originFrom:null,originId:null},
+{id:2,name:'Conduit not routed to correct cable tray pathway',desc:'Conduit run bypasses the primary tray and is surface-mounted along corridor.',status:'Open',action:'Reroute per approved pathway drawing',rootCause:'Design change not communicated',location:'Floor 3 Corridor',severity:'High',author:'Sam Rivera',owner_email:'srivera@example.com',observed_at:'2026-04-02',photo_attachment_ids:[],convertedToRisk:4,originFrom:null,originId:null},
+{id:3,name:'Camera field of view obstructed by structural beam',desc:'Lobby cam 2 has 30% FoV obstruction from exposed ceiling beam',status:'In Progress',action:'Relocate camera 18" south or add second unit',rootCause:'Site survey miss',location:'Main Lobby',severity:'Medium',author:'Alex Morgan',owner_email:'amorgan@example.com',observed_at:'2026-04-08',photo_attachment_ids:[],convertedToRisk:null,originFrom:null,originId:null},
+{id:4,name:'Card reader missing screws',desc:'Reader at IDF room installed but face plate secured with only 2 of 4 screws',status:'Closed',action:'Installed remaining screws during same visit',rootCause:'Installer oversight',location:'IDF Room',severity:'Low',author:'John Doe',owner_email:'jdoe@example.com',observed_at:'2026-04-09',photo_attachment_ids:[],convertedToRisk:null,originFrom:null,originId:null}
 ];
 let editing=null;
 

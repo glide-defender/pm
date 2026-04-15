@@ -87,7 +87,7 @@ window.__STATUSES__ = window.__STATUSES__ || {
   material: ['Ordered','Partial','Received','Installed']
 };
 window.__TYPES__ = window.__TYPES__ || ['Install','Service','Assessment','Upgrade','Decommission','Maintenance'];
-window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__CONTACTS__ = window.__CONTACTS__ || ['Alex Morgan','Sam Rivera','John Doe','Taylor Brooks','Jennifer Doe'];
 window.__COMMENTS__ = window.__COMMENTS__ || {};
 window.__ATTACHMENTS__ = window.__ATTACHMENTS__ || {};
 
@@ -102,7 +102,7 @@ window.__addAttach = function(et, id) {
   if (!name) return;
   const ext = (name.split('.').pop()||'').toLowerCase();
   const key = et + ':' + id;
-  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Matt Isgur', at: new Date().toISOString() });
+  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Alex Morgan', at: new Date().toISOString() });
   console.log('Make payload (attach):', { entityType: et, entityId: id, name });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
   const widget = document.querySelector('[onclick*="__addAttach"]')?.closest('div').parentElement;
   if (widget) widget.outerHTML = window.attachmentsWidget(et, id);
@@ -184,7 +184,7 @@ window.__postComment = function(entityType, entityId) {
   const inp = document.getElementById('cw-in-'+entityId);
   const txt = inp.value.trim();
   if (!txt) return;
-  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Matt Isgur', txt, at: new Date().toISOString() });
+  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Alex Morgan', txt, at: new Date().toISOString() });
   console.log('Make payload (comment):', { entityType, entityId, txt });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
   inp.value = '';
   const host = inp.closest('div').parentElement;
@@ -192,10 +192,10 @@ window.__postComment = function(entityType, entityId) {
 };
 
 Object.assign(window.__COMMENTS__, {
-  'material:MT-2': [{who:'Matt Isgur',txt:'Vendor confirmed 10 more units shipping Friday.',at:'2026-04-10T11:20'}],
-  'milestone:3': [{who:'Louis Feula',txt:'Running behind — procurement delays. @Matt Isgur see your email from today.',at:'2026-04-09T16:00'}],
-  'meeting:3': [{who:'Gerritt Bakker',txt:'Can we lock acceptance criteria for cameras specifically? Need in writing.',at:'2026-04-06T09:30'}],
-  'finance:2': [{who:'Matt Isgur',txt:'PO approved by client — waiting on signed contract back.',at:'2026-04-07T13:15'}]
+  'material:MT-2': [{who:'Alex Morgan',txt:'Vendor confirmed 10 more units shipping Friday.',at:'2026-04-10T11:20'}],
+  'milestone:3': [{who:'Sam Rivera',txt:'Running behind — procurement delays. @Alex Morgan see your email from today.',at:'2026-04-09T16:00'}],
+  'meeting:3': [{who:'Taylor Brooks',txt:'Can we lock acceptance criteria for cameras specifically? Need in writing.',at:'2026-04-06T09:30'}],
+  'finance:2': [{who:'Alex Morgan',txt:'PO approved by client — waiting on signed contract back.',at:'2026-04-07T13:15'}]
 });
 
 // ═══ Internal demo data ═══
@@ -210,13 +210,13 @@ Object.assign(window.__COMMENTS__, {
 // NOTE(schema-TODO): Materials have no owner_email in schema. If My Work integration
 //   needs a material owner, extend schema rather than inventing a field here.
 let items=[
-{id:'MT-1',part:'AXIS-P3245-LV',desc:'AXIS Fixed Dome Network Camera, 1080p',qty:1,del:1,ord:true,vendor:'Anixter',po:'PO-8810',eta:'2026-03-15',statusFromSchema:'Received',__statusDirty:false},
-{id:'MT-2',part:'HANWHA-XNV8080R',desc:'Hanwha IR Vandal Dome, 5MP, Outdoor',qty:20,del:10,ord:true,vendor:'Anixter',po:'PO-8821',eta:'2026-04-18',statusFromSchema:'Partial',__statusDirty:false},
-{id:'MT-3',part:'HID-920PTNNEK000',desc:'HID iCLASS SE Smart Card, Pack of 100',qty:100,del:8,ord:true,vendor:'ADI',po:'PO-8830',eta:'2026-04-22',statusFromSchema:'Partial',__statusDirty:false},
-{id:'MT-4',part:'GENETEC-SVR2000',desc:'Genetec Streamvault Server',qty:2,del:0,ord:true,vendor:'Convergint',po:'PO-8834',eta:'2026-05-01',statusFromSchema:'Ordered',__statusDirty:false},
+{id:'MT-1',part:'VISTA-P3245-LV',desc:'VISTA Fixed Dome Network Camera, 1080p',qty:1,del:1,ord:true,vendor:'Cablecorp',po:'PO-8810',eta:'2026-03-15',statusFromSchema:'Received',__statusDirty:false},
+{id:'MT-2',part:'LUMEN-XNV8080R',desc:'Lumen IR Vandal Dome, 5MP, Outdoor',qty:20,del:10,ord:true,vendor:'Cablecorp',po:'PO-8821',eta:'2026-04-18',statusFromSchema:'Partial',__statusDirty:false},
+{id:'MT-3',part:'KeySys-920PTNNEK000',desc:'KeySys iCLASS SE Smart Card, Pack of 100',qty:100,del:8,ord:true,vendor:'ADI',po:'PO-8830',eta:'2026-04-22',statusFromSchema:'Partial',__statusDirty:false},
+{id:'MT-4',part:'CLOUDGATE-SVR2000',desc:'Cloudgate Streamvault Server',qty:2,del:0,ord:true,vendor:'Convergint',po:'PO-8834',eta:'2026-05-01',statusFromSchema:'Ordered',__statusDirty:false},
 {id:'MT-5',part:'ASSA-ABLOY-SARGENT',desc:'SARGENT Electric Strike, Heavy Duty',qty:6,del:0,ord:false,vendor:'',po:'',eta:null,statusFromSchema:'Ordered',__statusDirty:false},
 {id:'MT-6',part:'GENERIC-CONDUIT',desc:'EMT Conduit 3/4", 10ft Length',qty:15,del:0,ord:true,vendor:'Home Depot Pro',po:'PO-8840',eta:'2026-04-20',statusFromSchema:'Ordered',__statusDirty:false},
-{id:'MT-7',part:'HONEYWELL-IPCAM',desc:'Honeywell IP Camera, Indoor, 4MP',qty:15,del:0,ord:false,vendor:'',po:'',eta:null,statusFromSchema:'Ordered',__statusDirty:false},
+{id:'MT-7',part:'BEACON-IPCAM',desc:'Beacon IP Camera, Indoor, 4MP',qty:15,del:0,ord:false,vendor:'',po:'',eta:null,statusFromSchema:'Ordered',__statusDirty:false},
 {id:'MT-8',part:'SIEMON-PATCH24',desc:'24-Port Patch Panel, Cat6A Shielded',qty:60,del:60,ord:true,vendor:'Graybar',po:'PO-8808',eta:'2026-03-10',statusFromSchema:'Installed',__statusDirty:false}];
 
 // ═══ esc() — Pattern #3 ═══
@@ -472,11 +472,11 @@ function openD(id){
   const statusOptions = SCHEMA_STATUSES.map(s => `<option ${s===(m.statusFromSchema||'Ordered')?'selected':''}>${esc(s)}</option>`).join('');
 
   document.getElementById('drb').innerHTML =
-    `<div class="f"><label class="fl">Part Number / Item</label><input class="fi" id="d-part" value="${esc(m.part)}" placeholder="e.g. AXIS-P3245-LV"/></div>` +
+    `<div class="f"><label class="fl">Part Number / Item</label><input class="fi" id="d-part" value="${esc(m.part)}" placeholder="e.g. VISTA-P3245-LV"/></div>` +
     `<div class="f"><label class="fl">Description <span style="color:#6a6a6a;font-weight:400;text-transform:none;letter-spacing:0">(UI-only — not saved to schema yet)</span></label><textarea class="ft" id="d-desc">${esc(m.desc)}</textarea></div>` +
     `<div class="fr"><div class="f"><label class="fl">Qty Ordered</label><input type="number" min="0" class="fi" id="d-qty" value="${m.qty}"/></div>` +
     `<div class="f"><label class="fl">Qty Received</label><input type="number" min="0" class="fi" id="d-del" value="${m.del}"/></div></div>` +
-    `<div class="fr"><div class="f"><label class="fl">Vendor</label><input class="fi" id="d-vendor" value="${esc(m.vendor||'')}" placeholder="e.g. Anixter"/></div>` +
+    `<div class="fr"><div class="f"><label class="fl">Vendor</label><input class="fi" id="d-vendor" value="${esc(m.vendor||'')}" placeholder="e.g. Cablecorp"/></div>` +
     `<div class="f"><label class="fl">PO #</label><input class="fi" id="d-po" value="${esc(m.po||'')}" placeholder="e.g. PO-8821"/></div></div>` +
     `<div class="fr"><div class="f"><label class="fl">ETA</label><input type="date" class="fi" id="d-eta" value="${esc(m.eta||'')}"/></div>` +
     `<div class="f"><label class="fl">Status</label><select class="fs" id="d-status">${statusOptions}</select></div></div>` +
@@ -609,10 +609,10 @@ window.__MATERIALS_SMOKE__ = function(){
 
   // 7. outbound builder shape — schema fields present, no bogus ones emitted
   run('outbound_builder_shape', () => {
-    const m = { id:'MT-1', part:'AXIS', desc:'UI-only', qty:10, del:3, ord:true, vendor:'V', po:'PO-1', eta:'2026-05-01', statusFromSchema:'Partial', __statusDirty:false };
+    const m = { id:'MT-1', part:'VISTA', desc:'UI-only', qty:10, del:3, ord:true, vendor:'V', po:'PO-1', eta:'2026-05-01', statusFromSchema:'Partial', __statusDirty:false };
     const p = buildSavePayload(m, false);
     const keys = Object.keys(p).sort().join(',');
-    return p.id==='MT-1' && p.item==='AXIS' && p.qty_ordered===10 && p.qty_received===3
+    return p.id==='MT-1' && p.item==='VISTA' && p.qty_ordered===10 && p.qty_received===3
       && p.vendor==='V' && p.po==='PO-1' && p.eta==='2026-05-01' && p.status==='Partial'
       && !('desc' in p) && !('ord' in p) && !('pct_delivered' in p)
       && keys === 'eta,id,item,po,qty_ordered,qty_received,status,vendor';

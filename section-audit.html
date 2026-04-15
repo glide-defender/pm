@@ -99,20 +99,20 @@ const expandedMeta = new Set(); // ids of rows with ip/ua metadata expanded
 // Pattern #1: kept internally as-is for UI continuity. Schema-shape entries
 // from the payload are normalized INTO a superset shape at ingest boundary. ───
 const events = [
-  {id:'AUD-1', ts:'2026-04-12T14:32:18', action:'U', entity:'Action Item',  entity_id:'AI-003',    actor_email:'lfeula@adrm-security.com', actor_name:'Louis Feula', field:'percent',       old:'65',                                     new:'71'},
-  {id:'AUD-2', ts:'2026-04-12T14:30:02', action:'C', entity:'Time Entry',   entity_id:'TE-042',    actor_email:'lfeula@adrm-security.com', actor_name:'Louis Feula', field:'created',       old:null,                                     new:'Camera programming · 2h'},
-  {id:'AUD-3', ts:'2026-04-11T09:45:10', action:'U', entity:'Risk',         entity_id:'RSK-001',   actor_email:'misgur@adrm-security.com', actor_name:'Matt Isgur',  field:'probability',   old:'High',                                   new:'Medium'},
-  {id:'AUD-4', ts:'2026-04-11T09:44:55', action:'U', entity:'Risk',         entity_id:'RSK-001',   actor_email:'misgur@adrm-security.com', actor_name:'Matt Isgur',  field:'status',        old:'Open',                                   new:'In Progress'},
-  {id:'AUD-5', ts:'2026-04-10T16:22:40', action:'C', entity:'Punch Item',   entity_id:'PN-005',    actor_email:'lfeula@adrm-security.com', actor_name:'Louis Feula', field:'created',       old:null,                                     new:'Secure cable tray on west wall'},
-  {id:'AUD-6', ts:'2026-04-10T11:08:12', action:'U', entity:'Deployment',   entity_id:'DA-012',    actor_email:'lfeula@adrm-security.com', actor_name:'Louis Feula', field:'step_complete', old:'false',                                  new:'true'},
-  {id:'AUD-7', ts:'2026-04-09T17:50:00', action:'D', entity:'Observation',  entity_id:'OB-002',    actor_email:'misgur@adrm-security.com', actor_name:'Matt Isgur',  field:'deleted',       old:'Conduit not routed to correct tray',     new:null},
-  {id:'AUD-8', ts:'2026-04-09T14:15:33', action:'U', entity:'Finance',      entity_id:'FI-002',    actor_email:'misgur@adrm-security.com', actor_name:'Matt Isgur',  field:'status',        old:'Draft',                                  new:'Proposal Sent'},
-  {id:'AUD-9', ts:'2026-04-08T10:22:11', action:'C', entity:'Observation',  entity_id:'OB-004',    actor_email:'lfeula@adrm-security.com', actor_name:'Louis Feula', field:'created',       old:null,                                     new:'Camera angle obstructed by tree'},
-  {id:'AUD-10',ts:'2026-04-07T08:14:20', action:'U', entity:'Material',     entity_id:'MT-002',    actor_email:'misgur@adrm-security.com', actor_name:'Matt Isgur',  field:'delivered',     old:'8',                                      new:'10'},
-  {id:'AUD-11',ts:'2026-04-05T16:03:55', action:'C', entity:'RFI',          entity_id:'RFI-001',   actor_email:'lfeula@adrm-security.com', actor_name:'Louis Feula', field:'created',       old:null,                                     new:'Clarify power circuit for rooftop cameras'},
-  {id:'AUD-12',ts:'2026-04-02T11:30:00', action:'U', entity:'Action Item',  entity_id:'AI-006',    actor_email:'misgur@adrm-security.com', actor_name:'Matt Isgur',  field:'percent',       old:'40',                                     new:'55'},
-  {id:'AUD-13',ts:'2026-03-28T14:18:42', action:'U', entity:'Project',      entity_id:'CORP-2025', actor_email:'misgur@adrm-security.com', actor_name:'Matt Isgur',  field:'status',        old:'Planning',                               new:'In Progress'},
-  {id:'AUD-14',ts:'2026-03-15T14:22:08', action:'U', entity:'Punch Item',   entity_id:'PN-004',    actor_email:'lfeula@adrm-security.com', actor_name:'Louis Feula', field:'status',        old:'Open',                                   new:'Closed'}
+  {id:'AUD-1', ts:'2026-04-12T14:32:18', action:'U', entity:'Action Item',  entity_id:'AI-003',    actor_email:'srivera@example.com', actor_name:'Sam Rivera', field:'percent',       old:'65',                                     new:'71'},
+  {id:'AUD-2', ts:'2026-04-12T14:30:02', action:'C', entity:'Time Entry',   entity_id:'TE-042',    actor_email:'srivera@example.com', actor_name:'Sam Rivera', field:'created',       old:null,                                     new:'Camera programming · 2h'},
+  {id:'AUD-3', ts:'2026-04-11T09:45:10', action:'U', entity:'Risk',         entity_id:'RSK-001',   actor_email:'amorgan@example.com', actor_name:'Alex Morgan',  field:'probability',   old:'High',                                   new:'Medium'},
+  {id:'AUD-4', ts:'2026-04-11T09:44:55', action:'U', entity:'Risk',         entity_id:'RSK-001',   actor_email:'amorgan@example.com', actor_name:'Alex Morgan',  field:'status',        old:'Open',                                   new:'In Progress'},
+  {id:'AUD-5', ts:'2026-04-10T16:22:40', action:'C', entity:'Punch Item',   entity_id:'PN-005',    actor_email:'srivera@example.com', actor_name:'Sam Rivera', field:'created',       old:null,                                     new:'Secure cable tray on west wall'},
+  {id:'AUD-6', ts:'2026-04-10T11:08:12', action:'U', entity:'Deployment',   entity_id:'DA-012',    actor_email:'srivera@example.com', actor_name:'Sam Rivera', field:'step_complete', old:'false',                                  new:'true'},
+  {id:'AUD-7', ts:'2026-04-09T17:50:00', action:'D', entity:'Observation',  entity_id:'OB-002',    actor_email:'amorgan@example.com', actor_name:'Alex Morgan',  field:'deleted',       old:'Conduit not routed to correct tray',     new:null},
+  {id:'AUD-8', ts:'2026-04-09T14:15:33', action:'U', entity:'Finance',      entity_id:'FI-002',    actor_email:'amorgan@example.com', actor_name:'Alex Morgan',  field:'status',        old:'Draft',                                  new:'Proposal Sent'},
+  {id:'AUD-9', ts:'2026-04-08T10:22:11', action:'C', entity:'Observation',  entity_id:'OB-004',    actor_email:'srivera@example.com', actor_name:'Sam Rivera', field:'created',       old:null,                                     new:'Camera angle obstructed by tree'},
+  {id:'AUD-10',ts:'2026-04-07T08:14:20', action:'U', entity:'Material',     entity_id:'MT-002',    actor_email:'amorgan@example.com', actor_name:'Alex Morgan',  field:'delivered',     old:'8',                                      new:'10'},
+  {id:'AUD-11',ts:'2026-04-05T16:03:55', action:'C', entity:'RFI',          entity_id:'RFI-001',   actor_email:'srivera@example.com', actor_name:'Sam Rivera', field:'created',       old:null,                                     new:'Clarify power circuit for rooftop cameras'},
+  {id:'AUD-12',ts:'2026-04-02T11:30:00', action:'U', entity:'Action Item',  entity_id:'AI-006',    actor_email:'amorgan@example.com', actor_name:'Alex Morgan',  field:'percent',       old:'40',                                     new:'55'},
+  {id:'AUD-13',ts:'2026-03-28T14:18:42', action:'U', entity:'Project',      entity_id:'CORP-2025', actor_email:'amorgan@example.com', actor_name:'Alex Morgan',  field:'status',        old:'Planning',                               new:'In Progress'},
+  {id:'AUD-14',ts:'2026-03-15T14:22:08', action:'U', entity:'Punch Item',   entity_id:'PN-004',    actor_email:'srivera@example.com', actor_name:'Sam Rivera', field:'status',        old:'Open',                                   new:'Closed'}
 ];
 
 // ─── Ingest normalizer: turns schema-shape entries into internal superset.
@@ -534,9 +534,9 @@ window.__AUDIT_SMOKE__ = function(){
 
   // ── Pattern #4: actor resolution (NEVER collapses to "System") ──
   run('actor_resolves_via_contactByEmail', () => {
-    window.__contactByEmail = { 'jane@adrm-security.com': { name:'Jane Carter', id:'CON-1' } };
-    const a = resolveActor({ actor_email:'jane@adrm-security.com' });
-    return a.name === 'Jane Carter' && a.resolved === true;
+    window.__contactByEmail = { 'jane@example.com': { name:'Jordan Chen', id:'CON-1' } };
+    const a = resolveActor({ actor_email:'jane@example.com' });
+    return a.name === 'Jordan Chen' && a.resolved === true;
   });
   run('actor_case_insensitive_email_lookup', () => {
     window.__contactByEmail = { 'mixed@case.com': { name:'Mixed', id:'CON-2' } };

@@ -66,7 +66,7 @@ window.__STATUSES__ = window.__STATUSES__ || {
 };
 window.__TYPES__ = window.__TYPES__ || ['Install','Service','Assessment','Upgrade','Decommission','Maintenance'];
 // Seeded default \u2014 rebuilt from `contacts` below after ingestion.
-window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__CONTACTS__ = window.__CONTACTS__ || ['Alex Morgan','Sam Rivera','John Doe','Taylor Brooks','Jennifer Doe'];
 window.__COMMENTS__ = window.__COMMENTS__ || {};
 window.__ATTACHMENTS__ = window.__ATTACHMENTS__ || {};
 
@@ -140,7 +140,7 @@ window.__postComment = function(entityType, entityId) {
   const inp = document.getElementById('cw-in-'+entityId);
   const txt = inp.value.trim();
   if (!txt) return;
-  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Matt Isgur', txt, at: new Date().toISOString() });
+  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Alex Morgan', txt, at: new Date().toISOString() });
   console.log('Make payload (comment):', { entityType, entityId, txt });
   try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
   inp.value = '';
@@ -154,7 +154,7 @@ window.attachmentsWidget = function(entityType, entityId) {
   const rows = list.length ? list.map((a,i) => `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#181818;border:1px solid #262626;border-radius:6px;margin-bottom:4px"><span style="font-size:14px">${a.ext==='pdf'?'\ud83d\udcc4':a.ext==='jpg'||a.ext==='png'?'\ud83d\uddbc\ufe0f':'\ud83d\udcce'}</span><span style="flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(a.name)}</span><span style="font-size:10.5px;color:#6a6a6a">${esc(a.size||'')}</span><button class="btn" style="padding:3px 8px;font-size:11px" onclick="window.__removeAttach('${esc(key)}',${i})">\u00d7</button></div>`).join('') : '<div style="padding:8px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No attachments</div>';
   return `<div style="margin-top:14px;padding-top:12px;border-top:1px solid #2a2a2a"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF">Attachments (${list.length})</div><button class="btn" style="padding:5px 10px;font-size:11px" onclick="window.__addAttach('${esc(entityType)}',${JSON.stringify(String(entityId))})">+ Attach file</button></div>${rows}</div>`;
 };
-window.__addAttach = function(et, id) { const name=prompt('File name:','photo.jpg');if(!name)return;const ext=(name.split('.').pop()||'').toLowerCase();const key=et+':'+id;(window.__ATTACHMENTS__[key]=window.__ATTACHMENTS__[key]||[]).push({name,ext,size:'0.8 MB',by:'Matt Isgur',at:new Date().toISOString()});console.log('Make payload (attach):',{et,id,name});try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}const w=document.querySelector('[onclick*="__addAttach"]')?.closest('div').parentElement;if(w)w.outerHTML=window.attachmentsWidget(et,id);};
+window.__addAttach = function(et, id) { const name=prompt('File name:','photo.jpg');if(!name)return;const ext=(name.split('.').pop()||'').toLowerCase();const key=et+':'+id;(window.__ATTACHMENTS__[key]=window.__ATTACHMENTS__[key]||[]).push({name,ext,size:'0.8 MB',by:'Alex Morgan',at:new Date().toISOString()});console.log('Make payload (attach):',{et,id,name});try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}const w=document.querySelector('[onclick*="__addAttach"]')?.closest('div').parentElement;if(w)w.outerHTML=window.attachmentsWidget(et,id);};
 window.__removeAttach = function(key, idx) { if(!confirm('Remove?'))return;window.__ATTACHMENTS__[key].splice(idx,1);const[et,id]=key.split(':');location.reload();};
 
 window.showRowMenu = function(btn, actions) {
@@ -181,7 +181,7 @@ window.showRowMenu = function(btn, actions) {
 //     only `role` (project role). Keeping title internal preserves richer demo
 //     data and tolerates payload extensions, while outbound stays strictly
 //     schema-compliant.
-//   \u2022 `is_internal` distinguishes ADRM Security employees from external
+//   \u2022 `is_internal` distinguishes Northwind Security employees from external
 //     contacts (client/vendor/consultant). Drives the Internal pill on the
 //     card, the sort order in @-mention autocomplete globally, and is emitted
 //     verbatim per schema.
@@ -190,8 +190,8 @@ const COLORS=['#4286f4','#22C55E','#F59E0B','#8B5CF6','#06B6D4','#EF4444','#EC48
 let contacts=[
   {id:'CON-01',name:'Jennifer Doe',   title:'Manager, Physical Security', email:'jen.doe@email.com',         phone:'',               role:'Client Sponsor', company:'ABC Sample Company', is_internal:false},
   {id:'CON-02',name:'John Doe',       title:'Program Director',           email:'jdoe@sampleemail.com',      phone:'(512) 555-0100', role:'Project Owner',  company:'ABC Sample Company', is_internal:false},
-  {id:'CON-03',name:'Gerritt Bakker', title:'Director, Design Services',  email:'gbakker@adrm-security.com', phone:'',               role:'Design Lead',    company:'ADRM Security',      is_internal:true},
-  {id:'CON-04',name:'Matt Isgur',     title:'Project Manager',            email:'misgur@adrm-security.com',  phone:'',               role:'Project Manager',company:'ADRM Security',      is_internal:true}
+  {id:'CON-03',name:'Taylor Brooks', title:'Director, Design Services',  email:'tbrooks@example.com', phone:'',               role:'Design Lead',    company:'Northwind Security',      is_internal:true},
+  {id:'CON-04',name:'Alex Morgan',     title:'Project Manager',            email:'amorgan@example.com',  phone:'',               role:'Project Manager',company:'Northwind Security',      is_internal:true}
 ];
 let editing=null;
 let __filter='all'; // all | int | ext
@@ -257,7 +257,7 @@ let __filter='all'; // all | int | ext
 // The shell's __wireMention() reads window.__CONTACTS__ (string array of names)
 // for autocomplete. Other sections also need email\u2192contact and name\u2192contact
 // lookup maps so ownership/assignment renders correctly. We expose all three.
-// Internal contacts (ADRM employees) sort first, so they surface at the top of
+// Internal contacts (Northwind employees) sort first, so they surface at the top of
 // @-mention dropdowns across the entire app.
 function __rebuildContactLookups(){
   const byName = (a,b) => a.name.localeCompare(b.name);
@@ -373,7 +373,7 @@ function openD(id){
     <div class="f"><label class="fl">Contact Type</label>
       <select class="fs" id="d-int">
         <option value="ext"${!c.is_internal?' selected':''}>External \u2014 client, vendor, or consultant</option>
-        <option value="int"${c.is_internal?' selected':''}>Internal \u2014 ADRM Security employee</option>
+        <option value="int"${c.is_internal?' selected':''}>Internal \u2014 Northwind Security employee</option>
       </select>
     </div>
     ${editing.id?window.commentsWidget('contact',editing.id):''}
@@ -626,8 +626,8 @@ window.__CONTACTS_SMOKE__ = function(){
     return p.email === 'n@x.com';
   });
   run('pattern4_lookup_by_email_works', () => {
-    restore([{id:'CON-01',name:'A',email:'a@adrm-security.com',is_internal:true,title:'',phone:'',role:'',company:''}]);
-    return window.__contactByEmail['a@adrm-security.com']?.name === 'A';
+    restore([{id:'CON-01',name:'A',email:'a@example.com',is_internal:true,title:'',phone:'',role:'',company:''}]);
+    return window.__contactByEmail['a@example.com']?.name === 'A';
   });
   run('pattern4_lookup_email_is_lowercased_key', () => {
     restore([{id:'CON-01',name:'Mixed',email:'Mixed@Case.Com',is_internal:false,title:'',phone:'',role:'',company:''}]);
@@ -651,7 +651,7 @@ window.__CONTACTS_SMOKE__ = function(){
     return pT.is_internal === true && pF.is_internal === false;
   });
   run('pattern7_is_internal_visible_on_card', () => {
-    restore([{id:'CON-01',name:'Int Person',email:'i@adrm-security.com',is_internal:true,title:'',phone:'',role:'',company:''}]);
+    restore([{id:'CON-01',name:'Int Person',email:'i@example.com',is_internal:true,title:'',phone:'',role:'',company:''}]);
     renderAll();
     return document.querySelector('.pill-int') && document.querySelector('.pill-int').textContent === 'Internal';
   });
@@ -689,7 +689,7 @@ window.__CONTACTS_SMOKE__ = function(){
 
   // \u2500\u2500 ROUND-TRIP: ingest \u2192 save \u2192 re-ingest produces identical shape \u2500\u2500
   run('roundtrip_single_row_identical', () => {
-    const schemaIn = {id:'CON-42',name:'Round Tripper',email:'rt@adrm-security.com',company:'ADRM Security',role:'Engineer',phone:'555',is_internal:true};
+    const schemaIn = {id:'CON-42',name:'Round Tripper',email:'rt@example.com',company:'Northwind Security',role:'Engineer',phone:'555',is_internal:true};
     const ingested = ingestOnce({ contacts:[schemaIn] });
     const out = buildSavePayload(ingested[0]);
     return JSON.stringify(out) === JSON.stringify(schemaIn);
@@ -733,7 +733,7 @@ window.__CONTACTS_SMOKE__ = function(){
     restore([
       {id:'CON-1',name:'Zed External',email:'z@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
       {id:'CON-2',name:'Alice External',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
-      {id:'CON-3',name:'Bob Internal',email:'b@adrm-security.com',is_internal:true,title:'',phone:'',role:'',company:''}
+      {id:'CON-3',name:'Bob Internal',email:'b@example.com',is_internal:true,title:'',phone:'',role:'',company:''}
     ]);
     return window.__CONTACTS__[0] === 'Bob Internal';
   });
@@ -745,12 +745,12 @@ window.__CONTACTS_SMOKE__ = function(){
     return window.__CONTACTS__.indexOf('Alice External') < window.__CONTACTS__.indexOf('Zed External');
   });
   run('lookups_byEmail_populated', () => {
-    restore([{id:'CON-1',name:'Matt',email:'misgur@adrm-security.com',is_internal:true,title:'',phone:'',role:'',company:''}]);
-    return window.__contactByEmail['misgur@adrm-security.com']?.id === 'CON-1';
+    restore([{id:'CON-1',name:'Matt',email:'amorgan@example.com',is_internal:true,title:'',phone:'',role:'',company:''}]);
+    return window.__contactByEmail['amorgan@example.com']?.id === 'CON-1';
   });
   run('lookups_byName_populated', () => {
-    restore([{id:'CON-1',name:'Matt Isgur',email:'m@x.com',is_internal:true,title:'',phone:'',role:'',company:''}]);
-    return window.__contactByName['Matt Isgur']?.id === 'CON-1';
+    restore([{id:'CON-1',name:'Alex Morgan',email:'m@x.com',is_internal:true,title:'',phone:'',role:'',company:''}]);
+    return window.__contactByName['Alex Morgan']?.id === 'CON-1';
   });
   run('lookups_missing_email_excluded_from_byEmail', () => {
     restore([
@@ -819,7 +819,7 @@ window.__CONTACTS_SMOKE__ = function(){
   // \u2500\u2500 FILTER pills \u2500\u2500
   run('filter_int_shows_only_internal', () => {
     restore([
-      {id:'CON-1',name:'Int',email:'i@adrm-security.com',is_internal:true, title:'',phone:'',role:'',company:''},
+      {id:'CON-1',name:'Int',email:'i@example.com',is_internal:true, title:'',phone:'',role:'',company:''},
       {id:'CON-2',name:'Ext',email:'e@ext.com',          is_internal:false,title:'',phone:'',role:'',company:''}
     ]);
     setFilter('int'); renderAll();
@@ -830,7 +830,7 @@ window.__CONTACTS_SMOKE__ = function(){
   });
   run('filter_ext_shows_only_external', () => {
     restore([
-      {id:'CON-1',name:'Int',email:'i@adrm-security.com',is_internal:true, title:'',phone:'',role:'',company:''},
+      {id:'CON-1',name:'Int',email:'i@example.com',is_internal:true, title:'',phone:'',role:'',company:''},
       {id:'CON-2',name:'Ext',email:'e@ext.com',          is_internal:false,title:'',phone:'',role:'',company:''}
     ]);
     setFilter('ext'); renderAll();
@@ -1167,7 +1167,7 @@ window.__CONTACTS_SMOKE__ = function(){
   run('selectall_respects_filter', () => {
     // Only visible (filtered) rows should be affected.
     restore([
-      {id:'CON-1',name:'Int', email:'i@adrm-security.com',is_internal:true, title:'',phone:'',role:'',company:''},
+      {id:'CON-1',name:'Int', email:'i@example.com',is_internal:true, title:'',phone:'',role:'',company:''},
       {id:'CON-2',name:'Ext1',email:'e1@x.com',           is_internal:false,title:'',phone:'',role:'',company:''},
       {id:'CON-3',name:'Ext2',email:'e2@x.com',           is_internal:false,title:'',phone:'',role:'',company:''}
     ]);

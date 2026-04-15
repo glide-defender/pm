@@ -1327,10 +1327,10 @@ let FILES=FILES_RAW.map(f=>({
 
 // Links — internal shape preserved for rendering; schema escrow in _schema.
 let __LINKS__=[
-  {id:'LNK-01',title:'Axis P3245-LV product page',url:'https://www.axis.com/products/axis-p3245-lv',category:'Product',description:'',added_by_email:'misgur@adrm-security.com',added_by_name:'Matt Isgur',added_at:new Date().toISOString(),entity:null,entity_id:null,_schema:null},
-  {id:'LNK-02',title:'Genetec Security Center Configuration Guide',url:'https://docs.genetec.com/security-center',category:'Documentation',description:'Official Genetec config reference — bookmark for field techs.',added_by_email:'lfeula@adrm-security.com',added_by_name:'Louis Feula',added_at:new Date().toISOString(),entity:null,entity_id:null,_schema:null},
-  {id:'LNK-03',title:'Site survey photos (Google Drive)',url:'https://drive.google.com/folders/xyz',category:'Internal',description:'',added_by_email:'misgur@adrm-security.com',added_by_name:'Matt Isgur',added_at:new Date().toISOString(),entity:'observation',entity_id:'OB-03',_schema:null},
-  {id:'LNK-04',title:'HID iCLASS SE specification sheet',url:'https://www.hidglobal.com/iclass-se',category:'Product',description:'',added_by_email:'gbakker@adrm-security.com',added_by_name:'Gerritt Bakker',added_at:new Date().toISOString(),entity:null,entity_id:null,_schema:null}
+  {id:'LNK-01',title:'Vista P3245-LV product page',url:'https://www.vista.com/products/vista-p3245-lv',category:'Product',description:'',added_by_email:'amorgan@example.com',added_by_name:'Alex Morgan',added_at:new Date().toISOString(),entity:null,entity_id:null,_schema:null},
+  {id:'LNK-02',title:'Cloudgate Security Center Configuration Guide',url:'https://docs.cloudgate.com/security-center',category:'Documentation',description:'Official Cloudgate config reference — bookmark for field techs.',added_by_email:'srivera@example.com',added_by_name:'Sam Rivera',added_at:new Date().toISOString(),entity:null,entity_id:null,_schema:null},
+  {id:'LNK-03',title:'Site survey photos (Google Drive)',url:'https://drive.google.com/folders/xyz',category:'Internal',description:'',added_by_email:'amorgan@example.com',added_by_name:'Alex Morgan',added_at:new Date().toISOString(),entity:'observation',entity_id:'OB-03',_schema:null},
+  {id:'LNK-04',title:'KeySys iCLASS SE specification sheet',url:'https://www.hidglobal.com/iclass-se',category:'Product',description:'',added_by_email:'tbrooks@example.com',added_by_name:'Taylor Brooks',added_at:new Date().toISOString(),entity:null,entity_id:null,_schema:null}
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2808,8 +2808,8 @@ function saveLinkFromDrawer(){
   if(bad)return;
 
   const isUpdate=!!state.editingLinkId;
-  const user=(window.__USER__&&window.__USER__.email)||'misgur@adrm-security.com';
-  const userName=(window.__USER__&&window.__USER__.name)||'Matt Isgur';
+  const user=(window.__USER__&&window.__USER__.email)||'amorgan@example.com';
+  const userName=(window.__USER__&&window.__USER__.name)||'Alex Morgan';
 
   if(isUpdate){
     const l=__LINKS__.find(x=>String(x.id)===String(state.editingLinkId));

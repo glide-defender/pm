@@ -227,11 +227,11 @@ function buildDemoItem(id,tag,loc,tplId,completeCount,by){
 }
 
 let assets=[
-buildDemoItem('DI-001','Lobby Cam 1','Lobby North','DT-01',4,'lfeula@adrm-security.com'),
-buildDemoItem('DI-002','Lobby Cam 2','Lobby South','DT-01',7,'lfeula@adrm-security.com'),
-buildDemoItem('DI-003','Floor 2 Cam','Floor 2','DT-01',2,'lfeula@adrm-security.com'),
+buildDemoItem('DI-001','Lobby Cam 1','Lobby North','DT-01',4,'srivera@example.com'),
+buildDemoItem('DI-002','Lobby Cam 2','Lobby South','DT-01',7,'srivera@example.com'),
+buildDemoItem('DI-003','Floor 2 Cam','Floor 2','DT-01',2,'srivera@example.com'),
 buildDemoItem('DI-004','uc_SBN100-YZN-C0683 ELEC RM 2.1 EXT GNYD','Elec Rm 2.1','DT-02',0,''),
-buildDemoItem('DI-005','Main Door Reader','Main Entrance','DT-03',5,'jcarter@adrm-security.com'),
+buildDemoItem('DI-005','Main Door Reader','Main Entrance','DT-03',5,'jchen@example.com'),
 buildDemoItem('DI-006','Server Room Intercom','Server Rm','DT-04',0,'')
 ];
 // Flag one demo item as having template updates to showcase Sync UX
@@ -510,7 +510,7 @@ function toggleStep(aid,idx){
     r.complete=false;r.status='Not Started';r.by='';r.at='';
   }else{
     r.complete=true;r.status='Complete';
-    r.by=(window.__USER__&&window.__USER__.email)||'misgur@adrm-security.com';
+    r.by=(window.__USER__&&window.__USER__.email)||'amorgan@example.com';
     r.at=new Date().toISOString();
   }
   a.__dirty=true;
@@ -1006,10 +1006,10 @@ window.__COMMISSIONING_SMOKE__=function(){
   });
   t('29 buildItemSavePayload includes by/at when present',()=>{
     const a=JSON.parse(JSON.stringify(assets[0]));a.__dirty=true;
-    a.responses[0].status='Complete';a.responses[0].by='misgur@adrm-security.com';a.responses[0].at='2026-04-12';
+    a.responses[0].status='Complete';a.responses[0].by='amorgan@example.com';a.responses[0].at='2026-04-12';
     const p=buildItemSavePayload(a);
     const r=p.responsesJson.find(x=>x.step_id===a.responses[0].step_id);
-    assert(r.by==='misgur@adrm-security.com');
+    assert(r.by==='amorgan@example.com');
     assert(r.at==='2026-04-12');
   });
 
@@ -1297,11 +1297,11 @@ window.__COMMISSIONING_SMOKE__=function(){
   t('71 Pattern #4: owner_email (response.by) preserved in payload',()=>{
     const a=JSON.parse(JSON.stringify(assets[0]));
     a.__dirty=true;
-    a.responses[0].by='pm@adrm-security.com';
+    a.responses[0].by='pm@example.com';
     a.responses[0].status='Complete';
     const p=buildItemSavePayload(a);
     const r=p.responsesJson.find(x=>x.step_id===a.responses[0].step_id);
-    assert(r.by==='pm@adrm-security.com');
+    assert(r.by==='pm@example.com');
   });
   t('72 Pattern #7: template_version_at_snapshot surfaced internally',()=>{
     assert(assets.every(a=>typeof a.template_version_at_snapshot==='number'));

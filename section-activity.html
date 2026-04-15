@@ -123,18 +123,18 @@ body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-s
 
   // ─── Demo data (internal shape, mirrors schema fields) ───
   let events = [
-    {id:'ACT-001',type:'comment',actor_email:'misgur@adrm-security.com',actor_name:'Matt Isgur',text:'Comment about final report',at:'2026-03-18T10:30',entity:null,entity_id:null,read:false},
-    {id:'ACT-002',type:'status_change',actor_email:'lfeula@adrm-security.com',actor_name:'Louis Feula',text:'closed punch item Label patch panel ports',at:'2026-03-15T14:22',entity:'punch',entity_id:'PL-04',read:false},
-    {id:'ACT-003',type:'comment',actor_email:'misgur@adrm-security.com',actor_name:'Matt Isgur',text:'Stakeholders have been updated',at:'2026-03-08T21:51',entity:null,entity_id:null,read:false},
-    {id:'ACT-004',type:'convert',actor_email:'misgur@adrm-security.com',actor_name:'Matt Isgur',text:'converted observation to risk: Conduit not routed to correct tray',at:'2026-03-01T09:12',entity:'risk',entity_id:'RK-03',read:false},
-    {id:'ACT-005',type:'comment',actor_email:'misgur@adrm-security.com',actor_name:'Matt Isgur',text:'Parts have been shipped, waiting on tracking info.',at:'2026-02-19T19:38',entity:null,entity_id:null,read:false},
-    {id:'ACT-006',type:'comment',actor_email:'misgur@adrm-security.com',actor_name:'Matt Isgur',text:"Running behind on this action item because the parts are delayed. They won't be delivered to site for at least another 30 days.",at:'2026-02-19T15:58',entity:'task',entity_id:'TSK-104',read:false},
-    {id:'ACT-007',type:'status_change',actor_email:'jdoe@adrm-security.com',actor_name:'John Doe',text:'marked action item complete: Test Action Item',at:'2026-02-11T08:15',entity:'task',entity_id:'TSK-088',read:false},
-    {id:'ACT-008',type:'comment',actor_email:'jdoe@adrm-security.com',actor_name:'John Doe',text:'I have completed the commissioning for this install',at:'2026-01-30T14:10',entity:null,entity_id:null,read:false},
-    {id:'ACT-009',type:'create',actor_email:'lfeula@adrm-security.com',actor_name:'Louis Feula',text:'created risk: Network delayed going live',at:'2026-01-28T16:40',entity:'risk',entity_id:'RK-02',read:false},
-    {id:'ACT-010',type:'comment',actor_email:'lfeula@adrm-security.com',actor_name:'Louis Feula',text:'Integrator had to come out multiple times for testing.',at:'2026-01-02T09:27',entity:null,entity_id:null,read:false},
-    {id:'ACT-011',type:'comment',actor_email:'lfeula@adrm-security.com',actor_name:'Louis Feula',text:'Project is going to close under budget',at:'2026-01-02T09:26',entity:null,entity_id:null,read:false},
-    {id:'ACT-012',type:'create',actor_email:'misgur@adrm-security.com',actor_name:'Matt Isgur',text:'created project: Corporate HQ Security Upgrade',at:'2025-12-01T10:00',entity:'project',entity_id:'PRJ-0042',read:false}
+    {id:'ACT-001',type:'comment',actor_email:'amorgan@example.com',actor_name:'Alex Morgan',text:'Comment about final report',at:'2026-03-18T10:30',entity:null,entity_id:null,read:false},
+    {id:'ACT-002',type:'status_change',actor_email:'srivera@example.com',actor_name:'Sam Rivera',text:'closed punch item Label patch panel ports',at:'2026-03-15T14:22',entity:'punch',entity_id:'PL-04',read:false},
+    {id:'ACT-003',type:'comment',actor_email:'amorgan@example.com',actor_name:'Alex Morgan',text:'Stakeholders have been updated',at:'2026-03-08T21:51',entity:null,entity_id:null,read:false},
+    {id:'ACT-004',type:'convert',actor_email:'amorgan@example.com',actor_name:'Alex Morgan',text:'converted observation to risk: Conduit not routed to correct tray',at:'2026-03-01T09:12',entity:'risk',entity_id:'RK-03',read:false},
+    {id:'ACT-005',type:'comment',actor_email:'amorgan@example.com',actor_name:'Alex Morgan',text:'Parts have been shipped, waiting on tracking info.',at:'2026-02-19T19:38',entity:null,entity_id:null,read:false},
+    {id:'ACT-006',type:'comment',actor_email:'amorgan@example.com',actor_name:'Alex Morgan',text:"Running behind on this action item because the parts are delayed. They won't be delivered to site for at least another 30 days.",at:'2026-02-19T15:58',entity:'task',entity_id:'TSK-104',read:false},
+    {id:'ACT-007',type:'status_change',actor_email:'jdoe@example.com',actor_name:'John Doe',text:'marked action item complete: Test Action Item',at:'2026-02-11T08:15',entity:'task',entity_id:'TSK-088',read:false},
+    {id:'ACT-008',type:'comment',actor_email:'jdoe@example.com',actor_name:'John Doe',text:'I have completed the commissioning for this install',at:'2026-01-30T14:10',entity:null,entity_id:null,read:false},
+    {id:'ACT-009',type:'create',actor_email:'srivera@example.com',actor_name:'Sam Rivera',text:'created risk: Network delayed going live',at:'2026-01-28T16:40',entity:'risk',entity_id:'RK-02',read:false},
+    {id:'ACT-010',type:'comment',actor_email:'srivera@example.com',actor_name:'Sam Rivera',text:'Integrator had to come out multiple times for testing.',at:'2026-01-02T09:27',entity:null,entity_id:null,read:false},
+    {id:'ACT-011',type:'comment',actor_email:'srivera@example.com',actor_name:'Sam Rivera',text:'Project is going to close under budget',at:'2026-01-02T09:26',entity:null,entity_id:null,read:false},
+    {id:'ACT-012',type:'create',actor_email:'amorgan@example.com',actor_name:'Alex Morgan',text:'created project: Corporate HQ Security Upgrade',at:'2025-12-01T10:00',entity:'project',entity_id:'PRJ-0042',read:false}
   ];
 
   let filter = 'all';        // all | comments | system
@@ -332,7 +332,7 @@ body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-s
     return {
       id: `tmp-${Date.now()}`,
       type: 'comment',
-      actor_email: user.email || 'misgur@adrm-security.com',
+      actor_email: user.email || 'amorgan@example.com',
       at: new Date().toISOString(),
       entity: null,
       entity_id: null,
@@ -364,7 +364,7 @@ body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-s
   (function wireComposerAvatar(){
     try {
       const u = window.__USER__ || {};
-      const name = u.name || 'Matt Isgur';
+      const name = u.name || 'Alex Morgan';
       const av = document.getElementById('cp-av');
       if (av) { av.textContent = initials(name); av.style.background = whoColor(name); av.style.color = '#111'; }
     } catch(_) {}

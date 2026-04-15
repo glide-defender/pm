@@ -199,34 +199,6 @@ main{display:flex;flex-direction:column;overflow:hidden}
 
 <script>
 
-// ═══════ PAYLOAD HYDRATION (reads ?p= URL param, populates window.__PAYLOAD__) ═══════
-// Must run before __SECDOCS__ injection and before any section iframe instantiation,
-// since sections read window.__PAYLOAD__ at their own ingest time.
-(function hydratePayload(){
-  try {
-    const params = new URLSearchParams(window.location.search);
-    const raw = params.get('p');
-    if (!raw) {
-      console.log('[hydration] No ?p= param present, sections will use demo data');
-      return;
-    }
-    const decoded = decodeURIComponent(atob(raw));
-    const parsed = JSON.parse(decoded);
-    window.__PAYLOAD__ = parsed;
-    const keys = Object.keys(parsed || {});
-    const sizeKB = (decoded.length / 1024).toFixed(1);
-    console.log('[hydration] Payload loaded, keys: ' + keys.join(', ') + ', size: ' + sizeKB + ' KB');
-  } catch (err) {
-    console.warn('[hydration] Failed to parse payload, falling through to demo mode:', err);
-  }
-})();
-
-// Console helper: encode a JS object into a URL-ready ?p= string.
-// Usage in devtools: window.__encodePayload(myTestPayload)
-window.__encodePayload = function(obj) {
-  return btoa(encodeURIComponent(JSON.stringify(obj)));
-};
-
 // ═══════ PROGRESS ENGINE (industry-standard, duration-weighted) ═══════
 window.computeProgress = function(P) {
   // P = { phases:[{id,name,milestones:[{id,name,durationDays,actionItems:[{id,name,percent,durationDays}], userPercent}]}], trackers:{deployment:{pct}, materials:{pct}, punch:{pct}, observations:{pct}, risks:{pct}, rfi:{pct}} }
@@ -313,14 +285,14 @@ function overview(){return`<div class="card" style="margin-bottom:14px;padding:1
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
 ${[['Completion',(window.__PROGRESS__?.overall||0)+'%','Schedule '+(window.__PROGRESS__?.scheduleWork||0)+'% · 6 trackers','#F59E0B'],['Budget','$183K','$48K invoiced','#22C55E'],['Risks','4 Open','5 total · 1 high','#EF4444'],['Materials','12 Outstanding','68% delivered','#06B6D4']].map(k=>`<div class="kpi" style="border-left:3px solid ${k[3]}"><div class="kpil">${k[0]}</div><div class="kpin" style="color:${k[3]}">${k[1]}</div><div class="kpic">${k[2]}</div></div>`).join('')}
 </div>
-<div class="ai" style="margin-bottom:14px"><div class="ait">◐ AI PROJECT ANALYSIS</div><div class="aib">Project at <strong>63% completion</strong> with strong budget control. Critical path running through <strong>Commissioning</strong> — Matt Isgur owns, 75% complete. Network delays driving 2 open risks; recommend weekly sync until resolved.</div></div>
+<div class="ai" style="margin-bottom:14px"><div class="ait">◐ AI PROJECT ANALYSIS</div><div class="aib">Project at <strong>63% completion</strong> with strong budget control. Critical path running through <strong>Commissioning</strong> — Alex Morgan owns, 75% complete. Network delays driving 2 open risks; recommend weekly sync until resolved.</div></div>
 <div class="card" style="margin-bottom:14px;padding:16px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px"><div><div style="font-size:13px;font-weight:700;margin-bottom:4px">Project Vitals</div><div style="font-size:11.5px;color:#9CA3AF;margin-bottom:12px">Concentric rings — center score is weighted composite</div><div id="vitals-chart" style="height:260px"></div></div><div><div style="font-size:13px;font-weight:700;margin-bottom:4px">Issue Landscape</div><div style="font-size:11.5px;color:#9CA3AF;margin-bottom:12px">Open items by category — area = count</div><div id="issues-chart" style="height:260px"></div></div></div></div><div class="card" style="margin-bottom:14px;padding:16px"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px"><div><div style="font-size:13px;font-weight:700;margin-bottom:4px">Owner → Milestone → Status Flow</div><div style="font-size:11.5px;color:#9CA3AF">How work flows from assignees through milestones to current status</div></div></div><div id="sankey-chart" style="height:320px"></div></div><div class="card" style="margin-bottom:14px"><div style="font-size:13px;font-weight:700;margin-bottom:4px">Completion Breakdown</div><div style="font-size:11.5px;color:#9CA3AF;margin-bottom:14px">Weighted composite — schedule work dominates, trackers fill in the rest</div>
 ${(()=>{const pr=window.__PROGRESS__;if(!pr)return'';return pr.components.filter(c=>c.pct!=null).map(c=>{const w=Math.round(c.adjWeight);const p=Math.round(c.pct);const contrib=Math.round(c.pct*c.adjWeight/100);return`<div style="display:flex;align-items:center;gap:12px;padding:6px 0"><div style="width:120px;font-size:12.5px;font-weight:500">${c.label}</div><div style="width:60px;font-size:10px;color:#6a6a6a;text-align:right">weight ${w}%</div><div style="flex:1;height:6px;background:#2e2e2e;border-radius:3px;overflow:hidden"><div style="width:${p}%;height:100%;background:#F59E0B;border-radius:3px"></div></div><div style="width:46px;text-align:right;font-size:11px;color:#9CA3AF;font-weight:600">${p}%</div><div style="width:60px;text-align:right;font-size:11px;color:#E5E7EB;font-weight:700">+${contrib}pt</div></div>`;}).join('');})()}
 </div>
 <div class="card" style="margin-bottom:14px"><div style="font-size:13px;font-weight:700;margin-bottom:12px">Milestone Progress</div>
 ${[['HQ Site Survey',100,'#22C55E'],['Equipment Procurement',90,'#F59E0B'],['Installation',100,'#22C55E'],['Calibration & Testing',60,'#F59E0B'],['Commissioning',75,'#F59E0B'],['Invoice for Material',100,'#22C55E'],['Final Inspection',0,'#6a6a6a']].map(m=>`<div class="mr"><div class="mn">${m[0]}</div><div class="mpb"><div class="mpf" style="width:${m[1]}%;background:${m[2]}"></div></div><div class="mpt">${m[1]}%</div></div>`).join('')}
 </div>
-<div class="alt"><div class="altt">⚠ Needs Attention</div>${[['Network delayed going live — High risk','2d ago'],['GC delayed installing 3rd floor cameras','4d ago'],['2 materials undelivered (Genetec SVR, Conduit)','1d ago']].map(a=>`<div class="ari"><span>${a[0]}</span><span class="arm">${a[1]}</span></div>`).join('')}</div>`;}
+<div class="alt"><div class="altt">⚠ Needs Attention</div>${[['Network delayed going live — High risk','2d ago'],['GC delayed installing 3rd floor cameras','4d ago'],['2 materials undelivered (Cloudgate SVR, Conduit)','1d ago']].map(a=>`<div class="ari"><span>${a[0]}</span><span class="arm">${a[1]}</span></div>`).join('')}</div>`;}
 
 function show(k,l){document.getElementById('crumb').textContent=l;document.querySelectorAll('.nb').forEach(b=>b.classList.toggle('active',b.dataset.k===k));
 const mc=document.getElementById('mc');
@@ -431,10 +403,10 @@ window.renderDashboard = function() {
         left: 20, right: 100, top: 10, bottom: 10,
         nodeAlign: 'justify',
         data: [
-          { name: 'Matt Isgur', itemStyle:{color:'#F59E0B'} },
+          { name: 'Alex Morgan', itemStyle:{color:'#F59E0B'} },
           { name: 'John Doe', itemStyle:{color:'#4286f4'} },
-          { name: 'Louis Feula', itemStyle:{color:'#22C55E'} },
-          { name: 'Gerritt Bakker', itemStyle:{color:'#8B5CF6'} },
+          { name: 'Sam Rivera', itemStyle:{color:'#22C55E'} },
+          { name: 'Taylor Brooks', itemStyle:{color:'#8B5CF6'} },
           { name: 'HQ Site Survey' },{ name: 'Equipment Procurement' },
           { name: 'Installation' },{ name: 'Calibration & Testing' },
           { name: 'Commissioning' },{ name: 'Final Inspection' },
@@ -444,11 +416,11 @@ window.renderDashboard = function() {
         ],
         links: [
           { source: 'John Doe', target: 'HQ Site Survey', value: 1 },
-          { source: 'Matt Isgur', target: 'Equipment Procurement', value: 1 },
+          { source: 'Alex Morgan', target: 'Equipment Procurement', value: 1 },
           { source: 'John Doe', target: 'Installation', value: 1 },
-          { source: 'Matt Isgur', target: 'Calibration & Testing', value: 1 },
-          { source: 'Matt Isgur', target: 'Commissioning', value: 3 },
-          { source: 'Gerritt Bakker', target: 'Final Inspection', value: 1 },
+          { source: 'Alex Morgan', target: 'Calibration & Testing', value: 1 },
+          { source: 'Alex Morgan', target: 'Commissioning', value: 3 },
+          { source: 'Taylor Brooks', target: 'Final Inspection', value: 1 },
           { source: 'HQ Site Survey', target: '→ In Progress', value: 1 },
           { source: 'Equipment Procurement', target: '→ In Progress', value: 1 },
           { source: 'Installation', target: '→ In Progress', value: 1 },
@@ -544,11 +516,11 @@ document.addEventListener('keydown', e => {
 
 // ═══ SMART INBOX ═══
 window.__NOTIFICATIONS__ = [
-  {id:1,type:'mention',actor:'Louis Feula',text:'mentioned you in Task #3',entity:'task:3',at:Date.now()-3600000*2,read:false},
+  {id:1,type:'mention',actor:'Sam Rivera',text:'mentioned you in Task #3',entity:'task:3',at:Date.now()-3600000*2,read:false},
   {id:2,type:'assigned',actor:'John Doe',text:'assigned you Risk: Network delayed going live',entity:'risk:2',at:Date.now()-3600000*6,read:false},
   {id:3,type:'due',actor:null,text:'Task "Invoice for closeout" is due in 2 days',entity:'task:10',at:Date.now()-3600000*8,read:false},
-  {id:4,type:'comment',actor:'Gerritt Bakker',text:'commented on Meeting: Commissioning Kickoff',entity:'meeting:3',at:Date.now()-3600000*22,read:true},
-  {id:5,type:'status',actor:'Louis Feula',text:'closed Punch Item: Label patch panel ports',entity:'punch:4',at:Date.now()-86400000,read:true},
+  {id:4,type:'comment',actor:'Taylor Brooks',text:'commented on Meeting: Commissioning Kickoff',entity:'meeting:3',at:Date.now()-3600000*22,read:true},
+  {id:5,type:'status',actor:'Sam Rivera',text:'closed Punch Item: Label patch panel ports',entity:'punch:4',at:Date.now()-86400000,read:true},
   {id:6,type:'overdue',actor:null,text:'RFI-001 is overdue — no response yet',entity:'rfi:1',at:Date.now()-86400000*2,read:true}
 ];
 window.__openInbox = function() {
@@ -679,7 +651,7 @@ document.getElementById('wback').style.display=S.s>1?'inline-block':'none';
 document.getElementById('wnext').textContent=S.s===4?'Create Project ✓':'Continue →';
 const b=document.getElementById('wb');
 if(S.s===1){b.innerHTML='<div class="tg">'+TPLS.map(t=>`<div class="tp${S.tpl===t.id?' sel':''}" data-t="${t.id}">${S.tpl===t.id?'<div class="tpc">✓</div>':''}<div class="tpi" style="background:${t.c}22;color:${t.c}">${t.n[0]}</div><div class="tpn">${t.n}</div><div class="tpd">${t.d}</div><div class="tpm">${t.ms} milestones · ~${t.days} days</div></div>`).join('')+'</div>';document.querySelectorAll('.tp').forEach(c=>c.onclick=()=>{S.tpl=c.dataset.t;render();});}
-else if(S.s===2){b.innerHTML=`<div class="f"><label class="fl">Project Name</label><input class="fi" id="fn" value="${S.name}" placeholder="e.g. Austin HQ Security Upgrade"/></div><div class="f"><label class="fl">Description</label><textarea class="ft" id="fd" placeholder="Brief summary">${S.desc}</textarea></div><div class="fr"><div class="f"><label class="fl">Owner</label><select class="fs" id="fo"><option>John Doe</option><option>Matt Isgur</option><option>Louis Feula</option><option>Gerritt Bakker</option></select></div><div class="f"><label class="fl">Target Date</label><input type="date" class="fi" id="fdu" value="${S.due}"/></div></div>`;document.getElementById('fo').value=S.own;}
+else if(S.s===2){b.innerHTML=`<div class="f"><label class="fl">Project Name</label><input class="fi" id="fn" value="${S.name}" placeholder="e.g. Austin HQ Security Upgrade"/></div><div class="f"><label class="fl">Description</label><textarea class="ft" id="fd" placeholder="Brief summary">${S.desc}</textarea></div><div class="fr"><div class="f"><label class="fl">Owner</label><select class="fs" id="fo"><option>John Doe</option><option>Alex Morgan</option><option>Sam Rivera</option><option>Taylor Brooks</option></select></div><div class="f"><label class="fl">Target Date</label><input type="date" class="fi" id="fdu" value="${S.due}"/></div></div>`;document.getElementById('fo').value=S.own;}
 else if(S.s===3){if(!S.ms.length){const t=TPLS.find(x=>x.id===S.tpl),td=new Date();S.ms=(t?t.mil:[]).map((n,i)=>{const s=new Date(td);s.setDate(s.getDate()+i*10);const e=new Date(s);e.setDate(e.getDate()+8);return{name:n,start:s.toISOString().split('T')[0],end:e.toISOString().split('T')[0]};});}
 b.innerHTML='<div class="fh">Pre-populated from template. Edit inline, or add your own.</div>'+S.ms.map((m,i)=>`<div class="msr"><div class="msn">${i+1}</div><input class="mii" value="${m.name}" data-i="${i}" data-k="name"/><input type="date" class="mid" value="${m.start}" data-i="${i}" data-k="start"/><input type="date" class="mid" value="${m.end}" data-i="${i}" data-k="end"/><button class="mdel" data-d="${i}">×</button></div>`).join('')+'<button class="madd" id="madd">+ Add Milestone</button>';
 document.querySelectorAll('.mii,.mid').forEach(i=>i.oninput=e=>S.ms[+e.target.dataset.i][e.target.dataset.k]=e.target.value);
@@ -884,7 +856,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeWiz();});
     if (lower.includes('create') && lower.includes('task') || lower.includes('add a task') || lower.includes('make a task')) {
       const title = text.replace(/create\s+(a\s+)?task\s*(to\s+)?/i, '').replace(/add\s+(a\s+)?task\s*(to\s+)?/i, '').trim() || 'New task from agent';
       const ctx = getCtx();
-      const assignee = ctx.team && ctx.team[0] ? ctx.team[0].email : 'unassigned@adrm-security.com';
+      const assignee = ctx.team && ctx.team[0] ? ctx.team[0].email : 'unassigned@example.com';
       return {
         kind: 'pending_action',
         preamble: "I'll create this task — confirm to proceed.",
@@ -946,8 +918,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeWiz();});
     const ctx = getCtx();
     const history = getHistory();
     const body = {
-      user_email: window.__USER__?.email || 'misgur@adrm-security.com',
-      user_name: window.__USER__?.name || 'Matt Isgur',
+      user_email: window.__USER__?.email || 'amorgan@example.com',
+      user_name: window.__USER__?.name || 'Alex Morgan',
       project_id: ctx.project_id,
       agent_context: ctx,
       message_history: history.slice(-MAX_HISTORY)
@@ -991,7 +963,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeWiz();});
   async function callAgentExecute(action_id, action){
     const ctx = getCtx();
     const body = {
-      user_email: window.__USER__?.email || 'misgur@adrm-security.com',
+      user_email: window.__USER__?.email || 'amorgan@example.com',
       project_id: ctx.project_id,
       action_id: action_id,
       action: action

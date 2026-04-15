@@ -98,8 +98,8 @@ body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-s
   // This matches the behavior of the original hardcoded-demo version.
   (function seedDemo(){
     if (window.__PAYLOAD__) return;
-    const ME = 'misgur@adrm-security.com';
-    const OTHER = 'lfeula@adrm-security.com';
+    const ME = 'amorgan@example.com';
+    const OTHER = 'srivera@example.com';
     // Dates anchored relative to "now" so demo always looks current.
     const today = new Date();
     const iso = (d) => new Date(d).toISOString().slice(0,10);
@@ -109,7 +109,7 @@ body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-s
 
     window.__PAYLOAD__ = {
       loggedin_user_email: ME,
-      loggedin_user_name:  'Matt Isgur',
+      loggedin_user_name:  'Alex Morgan',
       loggedin_user_role:  'PM',
       tasks: [
         { id:'TSK-101', title:'Commission access control at Door 3', assignee_email:ME, status:'In Progress', priority:'High',   end: iso(addDays(11)) },
@@ -163,10 +163,10 @@ body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-s
           ] }
       ],
       activity: [
-        { id:'A-01', entity:'task', entity_id:'TSK-101', type:'comment', actor_email:OTHER, actor_name:'Louis Feula', at: isoFull(addHours(-2)), text:'@Matt see your email from today' },
-        { id:'A-02', entity:'task', entity_id:'TSK-102', type:'comment', actor_email:'jcarter@adrm-security.com', actor_name:'Jane Carter', at: isoFull(addDays(-1)), text:'@Matt Isgur codes sent' },
-        { id:'A-03', entity:'risk', entity_id:'RK-01', type:'status_change', actor_email:OTHER, actor_name:'Louis Feula', at: isoFull(addDays(-1)) },
-        { id:'A-04', entity:'punch', entity_id:'PL-01', type:'update', actor_email:OTHER, actor_name:'Louis Feula', at: isoFull(addDays(-2)) }
+        { id:'A-01', entity:'task', entity_id:'TSK-101', type:'comment', actor_email:OTHER, actor_name:'Sam Rivera', at: isoFull(addHours(-2)), text:'@Matt see your email from today' },
+        { id:'A-02', entity:'task', entity_id:'TSK-102', type:'comment', actor_email:'jchen@example.com', actor_name:'Jordan Chen', at: isoFull(addDays(-1)), text:'@Alex Morgan codes sent' },
+        { id:'A-03', entity:'risk', entity_id:'RK-01', type:'status_change', actor_email:OTHER, actor_name:'Sam Rivera', at: isoFull(addDays(-1)) },
+        { id:'A-04', entity:'punch', entity_id:'PL-01', type:'update', actor_email:OTHER, actor_name:'Sam Rivera', at: isoFull(addDays(-2)) }
       ],
       attachments: {
         'observation:OB-01': [
@@ -180,9 +180,9 @@ body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-s
         ]
       },
       contacts: [
-        { id:'CON-01', name:'Matt Isgur',    email:ME,    company:'ADRM Security', role:'PM',        is_internal:true },
-        { id:'CON-02', name:'Louis Feula',   email:OTHER, company:'ADRM Security', role:'Sr Tech',   is_internal:true },
-        { id:'CON-03', name:'Jane Carter',   email:'jcarter@adrm-security.com', company:'ADRM Security', role:'Lead Tech', is_internal:true }
+        { id:'CON-01', name:'Alex Morgan',    email:ME,    company:'Northwind Security', role:'PM',        is_internal:true },
+        { id:'CON-02', name:'Sam Rivera',   email:OTHER, company:'Northwind Security', role:'Sr Tech',   is_internal:true },
+        { id:'CON-03', name:'Jordan Chen',   email:'jchen@example.com', company:'Northwind Security', role:'Lead Tech', is_internal:true }
       ]
     };
     console.warn('[' + SECTION_NAME + '] using demo payload seed (no live payload detected)');
@@ -194,7 +194,7 @@ body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-s
       window.__USER__?.email
       || window.__PAYLOAD__?.loggedin_user_email
       || window.__PAYLOAD__?.project?.pm_email
-      || 'misgur@adrm-security.com'
+      || 'amorgan@example.com'
     );
   }
   function currentUserName() {
@@ -769,8 +769,8 @@ body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-s
     const eq  = (a, b, msg) => { if (String(a) !== String(b)) throw new Error(`${msg||''} expected ${JSON.stringify(b)} got ${JSON.stringify(a)}`); };
     const neq = (a, b, msg) => { if (String(a) === String(b)) throw new Error(`${msg||''} expected ≠ ${JSON.stringify(b)}`); };
 
-    const ME = 'misgur@adrm-security.com';
-    const OTHER = 'jcarter@adrm-security.com';
+    const ME = 'amorgan@example.com';
+    const OTHER = 'jchen@example.com';
 
     // Save + restore globals around each block
     const savedPayload = window.__PAYLOAD__;
@@ -795,8 +795,8 @@ body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-s
 
     // ─── Email comparator (Pattern #4) ──────────────────────────────
     test('emailEq: exact match', () => ok(emailEq(ME, ME)));
-    test('emailEq: case-insensitive', () => ok(emailEq('MISGUR@ADRM-Security.com', ME)));
-    test('emailEq: trims whitespace', () => ok(emailEq('  misgur@adrm-security.com  ', ME)));
+    test('emailEq: case-insensitive', () => ok(emailEq('amorgan@example.com', ME)));
+    test('emailEq: trims whitespace', () => ok(emailEq('  amorgan@example.com  ', ME)));
     test('emailEq: null → false', () => ok(!emailEq(null, ME)));
     test('emailEq: undefined → false', () => ok(!emailEq(undefined, ME)));
     test('emailEq: empty string → false', () => ok(!emailEq('', '')));
@@ -818,7 +818,7 @@ body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-s
     });
     test('currentUserEmail: final fallback to demo', () => {
       reset(); delete window.__USER__;
-      eq(currentUserEmail(), 'misgur@adrm-security.com');
+      eq(currentUserEmail(), 'amorgan@example.com');
     });
     test('currentUserName: prefers payload name', () => {
       reset(); window.__USER__ = { name: 'Alice' };
@@ -914,7 +914,7 @@ body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-s
       eq(myTasks(ME).length, 1);
     });
     test('myTasks: case-insensitive email match', () => {
-      reset(); window.__PAYLOAD__ = { tasks:[{id:'T1',assignee_email:'MISGUR@ADRM-security.com',status:'Open'}]};
+      reset(); window.__PAYLOAD__ = { tasks:[{id:'T1',assignee_email:'amorgan@example.com',status:'Open'}]};
       eq(myTasks(ME).length, 1);
     });
     test('myTasks: includeClosed opt returns all', () => {
@@ -1021,7 +1021,7 @@ body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-s
     test('myMeetings: case-insensitive attendee match', () => {
       reset();
       const future = new Date(Date.now() + 86400000).toISOString();
-      window.__PAYLOAD__ = { meetings:[{id:'A',datetime:future,attendees:['MISGUR@ADRM-Security.com']}]};
+      window.__PAYLOAD__ = { meetings:[{id:'A',datetime:future,attendees:['amorgan@example.com']}]};
       eq(myMeetings(ME).length, 1);
     });
     test('myMeetings: skips invalid datetime', () => {
@@ -1040,7 +1040,7 @@ body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-s
     });
     test('myDeploymentItems: case-insensitive by-match', () => {
       reset(); window.__PAYLOAD__ = { deployment_items:[
-        {id:'DI1',responsesJson:[{by:'MISGUR@ADRM-security.com'}]}
+        {id:'DI1',responsesJson:[{by:'amorgan@example.com'}]}
       ]};
       eq(myDeploymentItems(ME).length, 1);
     });

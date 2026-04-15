@@ -115,7 +115,7 @@ window.__STATUSES__ = window.__STATUSES__ || {
   task: ['Not Started','In Progress','Blocked','Done'],
   milestone: ['Not Started','In Progress','Complete','At Risk']
 };
-window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__CONTACTS__ = window.__CONTACTS__ || ['Alex Morgan','Sam Rivera','John Doe','Taylor Brooks','Jennifer Doe'];
 window.__COMMENTS__ = window.__COMMENTS__ || {};
 window.__ATTACHMENTS__ = window.__ATTACHMENTS__ || {};
 
@@ -178,7 +178,7 @@ window.__postComment = function(entityType, entityId) {
   const inp = document.getElementById('cw-in-'+entityId);
   const txt = inp.value.trim();
   if (!txt) return;
-  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: (window.__USER__?.name||'Matt Isgur'), txt, at: new Date().toISOString() });
+  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: (window.__USER__?.name||'Alex Morgan'), txt, at: new Date().toISOString() });
   console.log('Make payload (comment):', { entityType, entityId, txt });
   try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
   inp.value = '';
@@ -233,23 +233,23 @@ let phases = ['Phase 1 — Discovery','Phase 2 — Procurement & Install','Phase
 //     start, finish (= UI-only actual dates; schema gap),
 //     dur (= duration_days), percent_manual (nullable), __percentManualDirty }
 let milestones = [
-  {id:'MS-01',name:'HQ Site Survey',phase:phases[0],owner:'John Doe',owner_email:'jdoe@adrm-security.com',status:'In Progress',dur:7,pStart:'2026-01-05',pFinish:'2026-01-12',start:'2026-01-05',finish:'2026-01-20',percent_manual:null,__percentManualDirty:false},
-  {id:'MS-02',name:'Equipment Procurement',phase:phases[1],owner:'Matt Isgur',owner_email:'misgur@adrm-security.com',status:'In Progress',dur:14,pStart:'2026-01-15',pFinish:'2026-01-29',start:'2026-01-15',finish:'2026-02-28',percent_manual:null,__percentManualDirty:false},
-  {id:'MS-03',name:'Installation',phase:phases[1],owner:'John Doe',owner_email:'jdoe@adrm-security.com',status:'In Progress',dur:30,pStart:'2026-02-20',pFinish:'2026-03-22',start:'2026-02-20',finish:'2026-04-10',percent_manual:null,__percentManualDirty:false},
-  {id:'MS-04',name:'Calibration & Testing',phase:phases[2],owner:'Matt Isgur',owner_email:'misgur@adrm-security.com',status:'In Progress',dur:14,pStart:'2026-04-05',pFinish:'2026-04-19',start:'2026-04-05',finish:'2026-04-25',percent_manual:null,__percentManualDirty:false},
-  {id:'MS-05',name:'Commissioning',phase:phases[2],owner:'Matt Isgur',owner_email:'misgur@adrm-security.com',status:'In Progress',dur:40,pStart:'2026-04-20',pFinish:'2026-05-30',start:'2026-04-20',finish:'2026-06-10',percent_manual:null,__percentManualDirty:false},
-  {id:'MS-06',name:'Final Inspection',phase:phases[3],owner:'Gerritt Bakker',owner_email:'gbakker@adrm-security.com',status:'Not Started',dur:3,pStart:'2026-05-31',pFinish:'2026-06-03',start:'',finish:'',percent_manual:0,__percentManualDirty:false}
+  {id:'MS-01',name:'HQ Site Survey',phase:phases[0],owner:'John Doe',owner_email:'jdoe@example.com',status:'In Progress',dur:7,pStart:'2026-01-05',pFinish:'2026-01-12',start:'2026-01-05',finish:'2026-01-20',percent_manual:null,__percentManualDirty:false},
+  {id:'MS-02',name:'Equipment Procurement',phase:phases[1],owner:'Alex Morgan',owner_email:'amorgan@example.com',status:'In Progress',dur:14,pStart:'2026-01-15',pFinish:'2026-01-29',start:'2026-01-15',finish:'2026-02-28',percent_manual:null,__percentManualDirty:false},
+  {id:'MS-03',name:'Installation',phase:phases[1],owner:'John Doe',owner_email:'jdoe@example.com',status:'In Progress',dur:30,pStart:'2026-02-20',pFinish:'2026-03-22',start:'2026-02-20',finish:'2026-04-10',percent_manual:null,__percentManualDirty:false},
+  {id:'MS-04',name:'Calibration & Testing',phase:phases[2],owner:'Alex Morgan',owner_email:'amorgan@example.com',status:'In Progress',dur:14,pStart:'2026-04-05',pFinish:'2026-04-19',start:'2026-04-05',finish:'2026-04-25',percent_manual:null,__percentManualDirty:false},
+  {id:'MS-05',name:'Commissioning',phase:phases[2],owner:'Alex Morgan',owner_email:'amorgan@example.com',status:'In Progress',dur:40,pStart:'2026-04-20',pFinish:'2026-05-30',start:'2026-04-20',finish:'2026-06-10',percent_manual:null,__percentManualDirty:false},
+  {id:'MS-06',name:'Final Inspection',phase:phases[3],owner:'Taylor Brooks',owner_email:'tbrooks@example.com',status:'Not Started',dur:3,pStart:'2026-05-31',pFinish:'2026-06-03',start:'',finish:'',percent_manual:0,__percentManualDirty:false}
 ];
 
 // ─── Demo tasks (schema-aligned; feeds Pattern #9 rollup) ───
 // Schema shape: { id, title, milestone_id, assignee_email, duration_days, percent_complete, status, ... }
 // Internal keeps schema keys directly — no bridge needed for task shape.
 let tasks = [
-  {id:'TSK-101',title:'Speak to client',milestone_id:'MS-01',assignee_email:'lfeula@adrm-security.com',assignee_name:'Louis Feula',status:'In Progress',percent_complete:82,duration_days:3},
-  {id:'TSK-102',title:'Replace door contacts',milestone_id:'MS-02',assignee_email:'lfeula@adrm-security.com',assignee_name:'Louis Feula',status:'Done',percent_complete:100,duration_days:4},
-  {id:'TSK-103',title:'Fujitec test',milestone_id:'MS-03',assignee_email:'lfeula@adrm-security.com',assignee_name:'Louis Feula',status:'Not Started',percent_complete:71,duration_days:10},
-  {id:'TSK-104',title:'VLAN segmentation',milestone_id:'MS-04',assignee_email:'misgur@adrm-security.com',assignee_name:'Matt Isgur',status:'In Progress',percent_complete:55,duration_days:5},
-  {id:'TSK-105',title:'Commission Project',milestone_id:'MS-05',assignee_email:'jdoe@adrm-security.com',assignee_name:'John Doe',status:'In Progress',percent_complete:37,duration_days:20}
+  {id:'TSK-101',title:'Speak to client',milestone_id:'MS-01',assignee_email:'srivera@example.com',assignee_name:'Sam Rivera',status:'In Progress',percent_complete:82,duration_days:3},
+  {id:'TSK-102',title:'Replace door contacts',milestone_id:'MS-02',assignee_email:'srivera@example.com',assignee_name:'Sam Rivera',status:'Done',percent_complete:100,duration_days:4},
+  {id:'TSK-103',title:'Fujitec test',milestone_id:'MS-03',assignee_email:'srivera@example.com',assignee_name:'Sam Rivera',status:'Not Started',percent_complete:71,duration_days:10},
+  {id:'TSK-104',title:'VLAN segmentation',milestone_id:'MS-04',assignee_email:'amorgan@example.com',assignee_name:'Alex Morgan',status:'In Progress',percent_complete:55,duration_days:5},
+  {id:'TSK-105',title:'Commission Project',milestone_id:'MS-05',assignee_email:'jdoe@example.com',assignee_name:'John Doe',status:'In Progress',percent_complete:37,duration_days:20}
 ];
 
 // Flag: whether tasks came from payload (drives rollup vs percent_manual fallback warning)

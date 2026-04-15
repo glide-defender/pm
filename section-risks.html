@@ -157,12 +157,12 @@ window.__STATUSES__ = window.__STATUSES__ || {
   milestone: ['Not Started','In Progress','Completed']
 };
 window.__TYPES__ = window.__TYPES__ || ['Install','Service','Assessment','Upgrade','Decommission','Maintenance'];
-window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__CONTACTS__ = window.__CONTACTS__ || ['Alex Morgan','Sam Rivera','John Doe','Taylor Brooks','Jennifer Doe'];
 window.__COMMENTS__ = window.__COMMENTS__ || {};
 window.__COMMENTS__ = {
-  'task:5': [{who:'Louis Feula',txt:'Kicking this off Monday. @John Doe can you confirm the IDF access codes?',at:'2026-04-08T09:15'},{who:'John Doe',txt:'Codes sent. Good to go.',at:'2026-04-08T09:42'}],
-  'risk:1': [{who:'Matt Isgur',txt:'Talked to vendor — they confirmed a 30-day delay. Need to update the mitigation plan.',at:'2026-04-05T14:20'}],
-  'punch:3': [{who:'Louis Feula',txt:'Parts arrived. Will complete tomorrow.',at:'2026-04-11T16:30'}]
+  'task:5': [{who:'Sam Rivera',txt:'Kicking this off Monday. @John Doe can you confirm the IDF access codes?',at:'2026-04-08T09:15'},{who:'John Doe',txt:'Codes sent. Good to go.',at:'2026-04-08T09:42'}],
+  'risk:1': [{who:'Alex Morgan',txt:'Talked to vendor — they confirmed a 30-day delay. Need to update the mitigation plan.',at:'2026-04-05T14:20'}],
+  'punch:3': [{who:'Sam Rivera',txt:'Parts arrived. Will complete tomorrow.',at:'2026-04-11T16:30'}]
 };
 
 window.__ATTACHMENTS__ = window.__ATTACHMENTS__ || {};
@@ -178,7 +178,7 @@ window.__addAttach = function(et, id) {
   if (!name) return;
   const ext = (name.split('.').pop()||'').toLowerCase();
   const key = et + ':' + id;
-  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Matt Isgur', at: new Date().toISOString() });
+  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Alex Morgan', at: new Date().toISOString() });
   console.log('Make payload (attach):', { entityType: et, entityId: id, name });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
   const widget = document.querySelector('[onclick*="__addAttach"]')?.closest('div').parentElement;
   if (widget) widget.outerHTML = window.attachmentsWidget(et, id);
@@ -264,7 +264,7 @@ window.__postComment = function(entityType, entityId) {
   const inp = document.getElementById('cw-in-'+entityId);
   const txt = inp.value.trim();
   if (!txt) return;
-  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Matt Isgur', txt, at: new Date().toISOString() });
+  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Alex Morgan', txt, at: new Date().toISOString() });
   console.log('Make payload (comment):', { entityType, entityId, txt });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
   inp.value = '';
   const host = inp.closest('div').parentElement;
@@ -284,10 +284,10 @@ const SCHEMA_TO_SCALE = { 'Low':'Low', 'Medium':'Medium', 'High':'High', 'Very L
 const SCALE_TO_SCHEMA = { 'Very Low':'Low', 'Low':'Low', 'Medium':'Medium', 'High':'High', 'Very High':'High' };
 
 let risks=[
-{id:'RK-01',name:'Corp network delayed going live',desc:'Network delivery from corporate IT is slipping past original commit',status:'Closed',prob:'Low',impact:'Medium',sched:'Low',cost:'Very Low',mit:'Escalated to corp IT director; interim VLAN stood up',con:'Fall back to cellular bridge for 2 weeks',owner:'Matt Isgur',owner_email:'misgur@adrm-security.com',originFrom:null,originId:null,schemaScore:null},
-{id:'RK-02',name:'GC delayed installing 3rd floor cameras',desc:'General contractor slipping on pre-wire on floor 3',status:'In Progress',prob:'Medium',impact:'Low',sched:'Very Low',cost:'Very Low',mit:'Daily standup added with GC foreman',con:'Self-perform cable if GC misses next milestone',owner:'Louis Feula',owner_email:'lfeula@adrm-security.com',originFrom:null,originId:null,schemaScore:null},
-{id:'RK-03',name:'Network delayed again',desc:'Second network delay — 5 day slip to commissioning',status:'In Progress',prob:'Very High',impact:'Very Low',sched:'Medium',cost:'Very Low',mit:'Pre-stage cameras on isolated network',con:'',owner:'Matt Isgur',owner_email:'misgur@adrm-security.com',originFrom:null,originId:null,schemaScore:null},
-{id:'RK-04',name:'Pathways (primary)',desc:'Cable pathway conflicts with HVAC',status:'In Progress',prob:'Very Low',impact:'Medium',sched:'Low',cost:'Medium',mit:'Site walk scheduled with mechanical',con:'',owner:'Louis Feula',owner_email:'lfeula@adrm-security.com',originFrom:null,originId:null,schemaScore:null},
+{id:'RK-01',name:'Corp network delayed going live',desc:'Network delivery from corporate IT is slipping past original commit',status:'Closed',prob:'Low',impact:'Medium',sched:'Low',cost:'Very Low',mit:'Escalated to corp IT director; interim VLAN stood up',con:'Fall back to cellular bridge for 2 weeks',owner:'Alex Morgan',owner_email:'amorgan@example.com',originFrom:null,originId:null,schemaScore:null},
+{id:'RK-02',name:'GC delayed installing 3rd floor cameras',desc:'General contractor slipping on pre-wire on floor 3',status:'In Progress',prob:'Medium',impact:'Low',sched:'Very Low',cost:'Very Low',mit:'Daily standup added with GC foreman',con:'Self-perform cable if GC misses next milestone',owner:'Sam Rivera',owner_email:'srivera@example.com',originFrom:null,originId:null,schemaScore:null},
+{id:'RK-03',name:'Network delayed again',desc:'Second network delay — 5 day slip to commissioning',status:'In Progress',prob:'Very High',impact:'Very Low',sched:'Medium',cost:'Very Low',mit:'Pre-stage cameras on isolated network',con:'',owner:'Alex Morgan',owner_email:'amorgan@example.com',originFrom:null,originId:null,schemaScore:null},
+{id:'RK-04',name:'Pathways (primary)',desc:'Cable pathway conflicts with HVAC',status:'In Progress',prob:'Very Low',impact:'Medium',sched:'Low',cost:'Medium',mit:'Site walk scheduled with mechanical',con:'',owner:'Sam Rivera',owner_email:'srivera@example.com',originFrom:null,originId:null,schemaScore:null},
 {id:'RK-05',name:'Pathways (secondary)',desc:'Additional pathway issues on floor 2',status:'Open',prob:'High',impact:'Low',sched:'High',cost:'Very Low',mit:'',con:'',owner:'',owner_email:null,originFrom:null,originId:null,schemaScore:null}
 ];
 let editing=null;
