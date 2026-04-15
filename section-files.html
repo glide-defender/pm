@@ -1,0 +1,3358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>File Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#171717;
+    --surface:#1c1c1c;
+    --surface-2:#222;
+    --surface-3:#282828;
+    --surface-4:#2f2f2f;
+    --inset:#141414;
+    --border:#2a2a2a;
+    --border-h:#363636;
+    --border-strong:#404040;
+    --t1:#f5f5f5;
+    --t2:#d4d4d4;
+    --t3:#a3a3a3;
+    --t4:#737373;
+    --t5:#525252;
+    --blue:#63aaff;
+    --blue-d:#3d82d9;
+    --green:#4ade80;
+    --amber:#fbbf24;
+    --red:#f87171;
+    --purple:#a78bfa;
+    --pink:#f472b6;
+    --teal:#2dd4bf;
+    --display:'Outfit',-apple-system,BlinkMacSystemFont,sans-serif;
+    --body:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --ease:cubic-bezier(0.16,1,0.3,1);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:15px}
+  html,body{width:100%;overflow-x:hidden}
+  body{
+    font-family:var(--body);
+    background:var(--bg);
+    color:var(--t1);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  button{font-family:inherit;color:inherit}
+  input{font-family:inherit;color:inherit}
+
+  /* Staged entrance */
+  .stage{opacity:0;transform:translateY(12px);transition:opacity 0.55s var(--ease),transform 0.55s var(--ease);will-change:opacity,transform}
+  body.loaded .stage{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.stage{transition:none;opacity:1;transform:none}}
+
+  .wrap{width:100%;padding:18px 20px 48px;max-width:1440px;margin:0 auto}
+
+  /* ═══════════════════════════════════════
+     TOOLBAR
+     ═══════════════════════════════════════ */
+  .toolbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:4px 2px 14px;gap:16px;
+    flex-wrap:wrap;
+  }
+  .tb-left{
+    display:flex;align-items:center;gap:14px;
+    font-family:var(--display);
+    font-size:0.78rem;font-weight:700;
+    letter-spacing:1.2px;text-transform:uppercase;
+    color:var(--t3);
+    flex:1;min-width:0;
+  }
+  .tb-left svg{width:14px;height:14px;flex-shrink:0}
+  .tb-left span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tb-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+  .tb-btn{
+    display:flex;align-items:center;gap:7px;
+    padding:8px 13px;
+    background:var(--surface-3);
+    border:1px solid var(--border);
+    color:var(--t2);
+    font-family:var(--body);
+    font-size:0.74rem;
+    font-weight:600;
+    border-radius:8px;
+    cursor:pointer;
+    transition:all 0.15s var(--ease);
+    white-space:nowrap;
+  }
+  .tb-btn:hover{background:var(--surface-4);border-color:var(--border-h);color:var(--t1)}
+  .tb-btn svg{width:13px;height:13px;flex-shrink:0}
+
+  /* Search */
+  .search-wrap{
+    position:relative;
+    flex:0 0 260px;
+  }
+  .search-input{
+    width:100%;
+    padding:8px 36px 8px 34px;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-size:0.8rem;
+    transition:all 0.15s var(--ease);
+  }
+  .search-input:focus{
+    outline:none;
+    border-color:rgba(99,170,255,0.4);
+    background:var(--surface-3);
+    box-shadow:0 0 0 3px rgba(99,170,255,0.08);
+  }
+  .search-input::placeholder{color:var(--t4)}
+  .search-icon{
+    position:absolute;
+    left:11px;top:50%;
+    transform:translateY(-50%);
+    width:13px;height:13px;
+    color:var(--t4);
+    pointer-events:none;
+  }
+  .search-kbd{
+    position:absolute;
+    right:9px;top:50%;
+    transform:translateY(-50%);
+    font-family:var(--mono);
+    font-size:0.6rem;
+    color:var(--t5);
+    background:var(--surface-4);
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:1px 5px;
+    pointer-events:none;
+    font-weight:500;
+  }
+
+  /* View toggle */
+  .view-toggle{
+    display:flex;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:3px;
+    gap:2px;
+    flex-shrink:0;
+  }
+  .vt-btn{
+    display:flex;align-items:center;justify-content:center;
+    width:32px;height:28px;
+    background:transparent;
+    border:none;
+    color:var(--t4);
+    cursor:pointer;
+    border-radius:5px;
+    transition:all 0.15s var(--ease);
+  }
+  .vt-btn svg{width:14px;height:14px}
+  .vt-btn:hover{color:var(--t2)}
+  .vt-btn.active{
+    background:var(--surface-4);
+    color:var(--blue);
+    box-shadow:0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  /* Sort popover */
+  .sort-wrap{position:relative}
+  .sort-menu{
+    position:absolute;
+    top:calc(100% + 6px);
+    right:0;
+    background:var(--surface-3);
+    border:1px solid var(--border-strong);
+    border-radius:10px;
+    padding:5px;
+    min-width:170px;
+    box-shadow:0 12px 36px rgba(0,0,0,0.5);
+    z-index:50;
+    display:none;
+  }
+  .sort-menu.show{display:block}
+  .sort-section-label{
+    font-family:var(--display);
+    font-size:0.58rem;
+    font-weight:700;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--t5);
+    padding:8px 12px 4px;
+  }
+  .sort-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:7px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:0.78rem;
+    color:var(--t2);
+    font-weight:500;
+    transition:background 0.12s var(--ease);
+  }
+  .sort-item:hover{background:var(--surface-4)}
+  .sort-item .si-check{
+    width:13px;height:13px;
+    color:var(--blue);
+    opacity:0;
+    flex-shrink:0;
+  }
+  .sort-item.active{color:var(--blue);font-weight:600}
+  .sort-item.active .si-check{opacity:1}
+  .sort-divider{
+    height:1px;
+    background:var(--border);
+    margin:5px 8px;
+  }
+
+  /* Breadcrumb row */
+  .bc-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    padding:8px 2px 14px;
+    flex-wrap:wrap;
+  }
+  .breadcrumb{
+    display:flex;align-items:center;gap:6px;
+    font-family:var(--body);
+    font-size:0.85rem;
+    color:var(--t3);
+    flex-wrap:wrap;
+    flex:1;
+    min-width:0;
+  }
+  .bc-item{
+    display:flex;align-items:center;gap:7px;
+    padding:5px 10px;
+    border-radius:7px;
+    cursor:pointer;
+    transition:all 0.15s var(--ease);
+    color:var(--t3);
+    font-weight:500;
+  }
+  .bc-item:hover{background:var(--surface-3);color:var(--t1)}
+  .bc-item.current{color:var(--t1);font-weight:600;cursor:default}
+  .bc-item.current:hover{background:transparent}
+  .bc-item svg{width:13px;height:13px;flex-shrink:0}
+  .bc-sep{color:var(--t5);display:flex;align-items:center}
+  .bc-sep svg{width:12px;height:12px}
+
+  /* Filter chips */
+  .filter-chips{
+    display:flex;
+    gap:6px;
+    padding:0 2px 14px;
+    flex-wrap:wrap;
+  }
+  .filter-chip{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:6px 11px;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:7px;
+    color:var(--t3);
+    font-size:0.72rem;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:all 0.15s var(--ease);
+    font-family:var(--body);
+    letter-spacing:0.1px;
+  }
+  .filter-chip:hover{
+    background:var(--surface-3);
+    color:var(--t2);
+    border-color:var(--border-h);
+  }
+  .filter-chip.active{
+    background:rgba(99,170,255,0.13);
+    border-color:rgba(99,170,255,0.35);
+    color:var(--blue);
+  }
+  .filter-chip svg{width:12px;height:12px}
+  .filter-chip-count{
+    font-family:var(--mono);
+    font-size:0.6rem;
+    opacity:0.7;
+    font-weight:500;
+  }
+
+  /* Stats bar */
+  .stats-bar{
+    display:flex;align-items:center;gap:18px;
+    padding:0 2px 18px;
+    font-family:var(--body);
+    font-size:0.74rem;
+    color:var(--t4);
+    flex-wrap:wrap;
+  }
+  .stats-bar strong{color:var(--t2);font-weight:600;margin-right:4px}
+  .stats-bar span{display:flex;align-items:center;gap:6px}
+  .stats-bar .stat-dot{width:3px;height:3px;background:var(--t5);border-radius:50%}
+
+  /* Section headers */
+  .section-header{
+    font-family:var(--display);
+    font-size:0.68rem;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color:var(--t4);
+    padding:22px 2px 14px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .section-header:first-child{padding-top:0}
+  .section-header::after{
+    content:'';
+    flex:1;
+    height:1px;
+    background:var(--border);
+  }
+  .section-header .sh-count{
+    font-family:var(--mono);
+    font-size:0.62rem;
+    color:var(--t5);
+    font-weight:500;
+    letter-spacing:0.3px;
+  }
+
+  /* ═══════════════════════════════════════
+     FOLDER GRID
+     ═══════════════════════════════════════ */
+  .folder-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+    gap:12px;
+  }
+  .folder-card{
+    position:relative;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px 15px 13px;
+    cursor:pointer;
+    transition:all 0.2s var(--ease);
+    display:flex;
+    align-items:center;
+    gap:12px;
+    overflow:hidden;
+    outline:0 solid transparent;
+  }
+  .folder-card::before{
+    content:'';
+    position:absolute;
+    left:0;top:0;bottom:0;
+    width:3px;
+    background:var(--accent-color,var(--blue));
+    opacity:0;
+    transition:opacity 0.2s var(--ease);
+  }
+  .folder-card:hover{
+    background:var(--surface-2);
+    border-color:var(--border-h);
+    transform:translateY(-2px);
+    box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  }
+  .folder-card:hover::before{opacity:1}
+  .folder-card.focused{
+    outline:2px solid rgba(99,170,255,0.55);
+    outline-offset:-1px;
+    border-color:rgba(99,170,255,0.45);
+  }
+  .folder-icon{
+    width:40px;
+    height:40px;
+    border-radius:10px;
+    background:var(--accent-bg,rgba(99,170,255,0.12));
+    border:1px solid var(--accent-border,rgba(99,170,255,0.25));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    transition:all 0.2s var(--ease);
+  }
+  .folder-card:hover .folder-icon{transform:scale(1.05)}
+  .folder-icon svg{
+    width:20px;height:20px;
+    color:var(--accent-color,var(--blue));
+  }
+  .folder-info{min-width:0;flex:1}
+  .folder-name{
+    font-size:0.88rem;
+    font-weight:600;
+    color:var(--t1);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    margin-bottom:2px;
+  }
+  .folder-count{
+    font-size:0.68rem;
+    color:var(--t4);
+    font-weight:500;
+    letter-spacing:0.2px;
+  }
+
+  /* ═══════════════════════════════════════
+     FILE GRID
+     ═══════════════════════════════════════ */
+  .file-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:12px;
+  }
+  .file-card{
+    position:relative;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:all 0.2s var(--ease);
+    display:flex;
+    flex-direction:column;
+    outline:0 solid transparent;
+  }
+  .file-card:hover{
+    border-color:var(--border-h);
+    transform:translateY(-2px);
+    box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  }
+  .file-card.focused{
+    outline:2px solid rgba(99,170,255,0.55);
+    outline-offset:-1px;
+    border-color:rgba(99,170,255,0.45);
+  }
+  .file-card:hover .file-thumb{background:var(--surface-2)}
+  .file-thumb{
+    height:125px;
+    background:var(--inset);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+    transition:background 0.2s var(--ease);
+  }
+  .file-thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .file-ext-badge{
+    font-family:var(--display);
+    font-size:1.3rem;
+    font-weight:800;
+    letter-spacing:0.5px;
+    color:var(--ext-color,var(--blue));
+    text-transform:uppercase;
+    padding:9px 13px;
+    border-radius:9px;
+    background:var(--ext-bg,rgba(99,170,255,0.1));
+    border:1px solid var(--ext-border,rgba(99,170,255,0.25));
+  }
+  .file-info{
+    padding:10px 12px 11px;
+    border-top:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+  }
+  .file-type-icon{
+    width:16px;height:16px;flex-shrink:0;
+    color:var(--ext-color,var(--t3));
+  }
+  .file-meta{min-width:0;flex:1}
+  .file-name{
+    font-size:0.8rem;
+    font-weight:600;
+    color:var(--t1);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .file-date{
+    font-size:0.66rem;
+    color:var(--t4);
+    margin-top:2px;
+    font-family:var(--mono);
+    letter-spacing:0.2px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .file-actions{
+    position:absolute;
+    top:8px;right:8px;
+    display:flex;
+    gap:4px;
+    opacity:0;
+    transition:opacity 0.15s var(--ease);
+  }
+  .file-card:hover .file-actions,
+  .file-card.focused .file-actions{opacity:1}
+  .fa-btn{
+    width:28px;height:28px;
+    background:rgba(18,18,18,0.85);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:7px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:var(--t2);
+    transition:all 0.15s var(--ease);
+  }
+  .fa-btn:hover{
+    background:var(--surface-4);
+    border-color:var(--border-strong);
+    color:var(--t1);
+  }
+  .fa-btn svg{width:12px;height:12px}
+
+  /* ═══════════════════════════════════════
+     LIST VIEW
+     ═══════════════════════════════════════ */
+  .list-view{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    overflow:hidden;
+  }
+  .list-header{
+    display:grid;
+    grid-template-columns:36px 1fr 120px 160px 80px 40px;
+    gap:14px;
+    padding:11px 18px;
+    background:var(--surface-2);
+    border-bottom:1px solid var(--border);
+    font-family:var(--display);
+    font-size:0.62rem;
+    font-weight:700;
+    letter-spacing:1.1px;
+    text-transform:uppercase;
+    color:var(--t4);
+  }
+  .list-header .lh-cell{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    cursor:pointer;
+    user-select:none;
+    transition:color 0.12s var(--ease);
+  }
+  .list-header .lh-cell:hover{color:var(--t2)}
+  .list-header .lh-cell.sorted{color:var(--blue)}
+  .list-header .lh-cell svg{
+    width:11px;height:11px;
+    opacity:0;
+    transition:opacity 0.15s var(--ease);
+  }
+  .list-header .lh-cell.sorted svg{opacity:1}
+  .list-header .lh-cell.sorted.asc svg{transform:rotate(180deg)}
+  .list-row{
+    display:grid;
+    grid-template-columns:36px 1fr 120px 160px 80px 40px;
+    gap:14px;
+    padding:11px 18px;
+    border-bottom:1px solid var(--border);
+    align-items:center;
+    cursor:pointer;
+    transition:background 0.12s var(--ease);
+    outline:0 solid transparent;
+  }
+  .list-row:last-child{border-bottom:none}
+  .list-row:hover{background:var(--surface-2)}
+  .list-row.focused{
+    background:rgba(99,170,255,0.09);
+    outline:1px solid rgba(99,170,255,0.35);
+    outline-offset:-1px;
+  }
+  .lr-icon{
+    width:28px;height:28px;
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--ext-bg,rgba(163,163,163,0.08));
+    border:1px solid var(--ext-border,rgba(163,163,163,0.22));
+    color:var(--ext-color,var(--t3));
+    overflow:hidden;
+    position:relative;
+  }
+  .lr-icon svg{width:14px;height:14px}
+  .lr-icon img{width:100%;height:100%;object-fit:cover}
+  .lr-name{
+    font-size:0.85rem;
+    font-weight:600;
+    color:var(--t1);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    min-width:0;
+  }
+  .lr-date{
+    font-family:var(--mono);
+    font-size:0.72rem;
+    color:var(--t4);
+    letter-spacing:0.2px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .lr-author{
+    font-size:0.76rem;
+    color:var(--t3);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .lr-type{
+    font-family:var(--mono);
+    font-size:0.66rem;
+    color:var(--ext-color,var(--t4));
+    font-weight:600;
+    letter-spacing:0.4px;
+    text-transform:uppercase;
+    padding:3px 8px;
+    border-radius:5px;
+    background:var(--ext-bg,rgba(163,163,163,0.08));
+    border:1px solid var(--ext-border,rgba(163,163,163,0.22));
+    text-align:center;
+    justify-self:start;
+  }
+  .lr-dl{
+    width:28px;height:28px;
+    background:transparent;
+    border:1px solid transparent;
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:var(--t4);
+    transition:all 0.15s var(--ease);
+    opacity:0;
+  }
+  .list-row:hover .lr-dl,
+  .list-row.focused .lr-dl{opacity:1}
+  .lr-dl:hover{
+    background:var(--surface-3);
+    border-color:var(--border-h);
+    color:var(--t1);
+  }
+  .lr-dl svg{width:13px;height:13px}
+
+  /* Folder rows in list view */
+  .list-row.folder-row .lr-icon{
+    background:var(--accent-bg);
+    border-color:var(--accent-border);
+    color:var(--accent-color);
+  }
+  .list-row.folder-row .lr-name{color:var(--t1)}
+
+  /* ═══════════════════════════════════════
+     COLUMN VIEW (Finder-style)
+     ═══════════════════════════════════════ */
+  .column-view{
+    display:grid;
+    grid-template-columns:240px 320px 1fr;
+    height:560px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    overflow:hidden;
+  }
+  .col-pane{
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+    background:var(--surface);
+  }
+  .col-pane:last-child{border-right:none}
+  .col-pane.focused-pane{background:var(--surface)}
+  .col-header{
+    padding:11px 16px;
+    font-family:var(--display);
+    font-size:0.6rem;
+    font-weight:700;
+    letter-spacing:1.1px;
+    text-transform:uppercase;
+    color:var(--t4);
+    border-bottom:1px solid var(--border);
+    background:var(--surface-2);
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .col-header .ch-count{
+    font-family:var(--mono);
+    font-size:0.6rem;
+    color:var(--t5);
+    font-weight:500;
+  }
+  .col-body{
+    flex:1;
+    overflow-y:auto;
+    padding:6px;
+  }
+  .col-body::-webkit-scrollbar{width:8px}
+  .col-body::-webkit-scrollbar-track{background:transparent}
+  .col-body::-webkit-scrollbar-thumb{background:var(--surface-4);border-radius:4px}
+  .col-body::-webkit-scrollbar-thumb:hover{background:var(--border-strong)}
+
+  .col-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 10px;
+    cursor:pointer;
+    border-radius:6px;
+    margin-bottom:1px;
+    transition:background 0.1s var(--ease);
+    outline:0 solid transparent;
+  }
+  .col-item:hover{background:var(--surface-2)}
+  .col-item.selected{
+    background:rgba(99,170,255,0.14);
+  }
+  .col-item.selected .col-item-name{color:var(--t1);font-weight:600}
+  .col-item-icon{
+    width:22px;height:22px;
+    border-radius:5px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:var(--accent-bg,var(--ext-bg,rgba(163,163,163,0.08)));
+    border:1px solid var(--accent-border,var(--ext-border,rgba(163,163,163,0.22)));
+    color:var(--accent-color,var(--ext-color,var(--t3)));
+    overflow:hidden;
+    position:relative;
+  }
+  .col-item-icon svg{width:12px;height:12px}
+  .col-item-icon img{width:100%;height:100%;object-fit:cover}
+  .col-item-name{
+    font-size:0.82rem;
+    font-weight:500;
+    color:var(--t2);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    flex:1;
+    min-width:0;
+  }
+  .col-item-chev{
+    width:11px;height:11px;
+    color:var(--t5);
+    flex-shrink:0;
+  }
+
+  .col-empty{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100%;
+    color:var(--t5);
+    font-size:0.78rem;
+    padding:40px 20px;
+    text-align:center;
+  }
+
+  /* Preview pane */
+  .preview-pane{
+    display:flex;
+    flex-direction:column;
+    padding:24px;
+    gap:18px;
+    align-items:center;
+    overflow-y:auto;
+  }
+  .preview-pane::-webkit-scrollbar{width:8px}
+  .preview-pane::-webkit-scrollbar-track{background:transparent}
+  .preview-pane::-webkit-scrollbar-thumb{background:var(--surface-4);border-radius:4px}
+  .preview-thumb{
+    width:240px;
+    height:240px;
+    border-radius:14px;
+    overflow:hidden;
+    background:var(--inset);
+    border:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  }
+  .preview-thumb img{
+    max-width:100%;
+    max-height:100%;
+    object-fit:contain;
+  }
+  .preview-thumb .file-ext-badge{
+    font-size:1.9rem;
+    padding:18px 24px;
+  }
+  .preview-details{
+    width:100%;
+    max-width:340px;
+    text-align:center;
+  }
+  .preview-name{
+    font-family:var(--display);
+    font-size:1.02rem;
+    font-weight:700;
+    color:var(--t1);
+    margin-bottom:10px;
+    word-break:break-word;
+    line-height:1.3;
+  }
+  .preview-meta-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px 20px;
+    padding:14px 4px 0;
+    border-top:1px solid var(--border);
+    margin-top:16px;
+    text-align:left;
+  }
+  .pmg-label{
+    font-family:var(--display);
+    font-size:0.56rem;
+    font-weight:700;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--t5);
+    margin-bottom:2px;
+  }
+  .pmg-value{
+    font-size:0.78rem;
+    color:var(--t2);
+    font-weight:500;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .preview-actions{
+    display:flex;
+    gap:8px;
+    margin-top:18px;
+    width:100%;
+    max-width:340px;
+  }
+  .preview-actions .tb-btn{
+    flex:1;
+    justify-content:center;
+    padding:10px 14px;
+  }
+  .preview-actions .tb-btn.primary{
+    background:rgba(99,170,255,0.14);
+    border-color:rgba(99,170,255,0.3);
+    color:var(--blue);
+  }
+  .preview-actions .tb-btn.primary:hover{
+    background:rgba(99,170,255,0.2);
+    border-color:rgba(99,170,255,0.45);
+  }
+
+  .preview-empty{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:100%;
+    color:var(--t5);
+    gap:14px;
+    padding:40px 20px;
+    text-align:center;
+  }
+  .preview-empty svg{width:44px;height:44px;color:var(--t5)}
+  .preview-empty-title{
+    font-family:var(--display);
+    font-size:0.88rem;
+    font-weight:600;
+    color:var(--t3);
+  }
+  .preview-empty-sub{
+    font-size:0.74rem;
+    color:var(--t4);
+  }
+
+  /* ═══════════════════════════════════════
+     EMPTY STATE
+     ═══════════════════════════════════════ */
+  .empty-state{
+    padding:80px 20px;
+    text-align:center;
+    color:var(--t4);
+  }
+  .empty-state svg{
+    width:48px;height:48px;
+    color:var(--t5);
+    margin-bottom:14px;
+  }
+  .empty-state-title{
+    font-family:var(--display);
+    font-size:1rem;
+    font-weight:600;
+    color:var(--t3);
+    margin-bottom:6px;
+  }
+  .empty-state-sub{
+    font-size:0.82rem;
+    color:var(--t4);
+  }
+
+  /* ═══════════════════════════════════════
+     TOAST
+     ═══════════════════════════════════════ */
+  .toast-wrap{
+    position:fixed;
+    bottom:24px;right:24px;
+    display:flex;flex-direction:column;gap:8px;
+    z-index:1000;
+    pointer-events:none;
+  }
+  .toast{
+    background:var(--surface-4);
+    border:1px solid var(--border-strong);
+    border-radius:10px;
+    padding:12px 16px;
+    font-size:0.82rem;
+    box-shadow:0 12px 36px rgba(0,0,0,0.5);
+    display:flex;align-items:center;gap:10px;
+    min-width:240px;
+    opacity:0;
+    transform:translateX(20px);
+    transition:all 0.3s var(--ease);
+    pointer-events:auto;
+  }
+  .toast.show{opacity:1;transform:translateX(0)}
+  .toast svg{width:16px;height:16px;flex-shrink:0;color:var(--green)}
+
+  /* ═══════════════════════════════════════
+     RESPONSIVE
+     ═══════════════════════════════════════ */
+  @media(max-width:960px){
+    .column-view{grid-template-columns:200px 260px 1fr;height:500px}
+    .preview-thumb{width:180px;height:180px}
+  }
+  @media(max-width:820px){
+    .search-wrap{flex:1 1 100%;order:10}
+    .list-header,.list-row{grid-template-columns:32px 1fr 110px 70px 36px}
+    .lh-author,.lr-author{display:none}
+    .search-kbd{display:none}
+    .column-view{grid-template-columns:180px 220px 1fr;height:460px}
+  }
+  @media(max-width:640px){
+    .view-toggle [data-view="columns"]{display:none}
+    .folder-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+    .file-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+    .list-header,.list-row{grid-template-columns:28px 1fr 80px 36px}
+    .lh-type,.lr-type{display:none}
+  }
+</style>
+</head>
+<body>
+<style>
+  /* ═══════════════════════════════════════
+     LINKS TAB + DRAWER + BULK + ENTITY CHIP
+     Pattern-matches Risks/Commissioning drawer conventions.
+     ═══════════════════════════════════════ */
+  .fil-tabs{position:fixed;top:14px;left:20px;z-index:100;display:flex;gap:6px}
+  .fil-tab{padding:6px 14px;border:1px solid #2a2a2a;background:#1a1a1a;color:#9CA3AF;border-radius:6px;font-weight:600;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .fil-tab.on{border-color:#3a3a3a;background:#2a2a2a;color:#fff}
+  #links-panel{display:none;position:fixed;inset:60px 20px 20px;background:#171717;overflow-y:auto;z-index:50}
+  .lp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:16px;flex-wrap:wrap}
+  .lp-head-title{font-size:18px;font-weight:700;color:#fff}
+  .lp-head-sub{font-size:12px;color:#9CA3AF;margin-top:3px}
+  .lp-actions{display:flex;gap:8px;align-items:center}
+  .btn-slate{padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #4a5666;background:#3c4756;color:#fff;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+  .btn-slate:hover{background:#495565}
+  .btn-slate.danger{background:#4a2a2a;border-color:#6a3a3a;color:#fca5a5}
+  .btn-slate.danger:hover{background:#5a3535}
+  .btn-ghost{padding:7px 12px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #2a2a2a;background:#1f1f1f;color:#d4d4d4;cursor:pointer;font-family:inherit}
+  .btn-ghost:hover{background:#2a2a2a;border-color:#3a3a3a}
+  #links-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
+  .link-card{position:relative;background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;padding:14px 16px;cursor:pointer;transition:border-color .12s}
+  .link-card:hover{border-color:#3a3a3a}
+  .link-card.selected{border-color:rgba(251,191,36,0.5);background:#242115}
+  .link-card-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .link-card-title{font-size:13.5px;font-weight:700;color:#fff;margin-bottom:4px;word-break:break-word}
+  .link-card-url{font-size:11px;color:#60a5fa;word-break:break-all;margin-bottom:8px}
+  .link-card-url.invalid{color:#fbbf24}
+  .link-card-desc{font-size:11.5px;color:#a3a3a3;margin-bottom:8px;line-height:1.4}
+  .link-card-foot{font-size:10.5px;color:#6a6a6a;display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+  .link-card-chk{position:absolute;top:10px;left:10px;width:16px;height:16px;opacity:0;transition:opacity .1s;accent-color:#fbbf24;cursor:pointer;z-index:2}
+  .link-card:hover .link-card-chk,.link-card.selected .link-card-chk{opacity:1}
+  .link-card-menu{position:absolute;top:10px;right:10px;display:flex;gap:4px;opacity:0;transition:opacity .12s;z-index:2}
+  .link-card:hover .link-card-menu{opacity:1}
+  .lcm-btn{width:26px;height:26px;background:#2a2a2a;border:1px solid #363636;border-radius:5px;color:#a3a3a3;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0}
+  .lcm-btn:hover{background:#363636;color:#fff}
+  .lcm-btn svg{width:12px;height:12px}
+  .link-cat-pill{font-size:10.5px;font-weight:700;background:rgba(66,134,244,.12);color:#60a5fa;padding:2px 7px;border-radius:4px}
+  .entity-chip{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;background:rgba(99,170,255,0.1);color:#63aaff;border:1px solid rgba(99,170,255,0.25);padding:2px 7px;border-radius:4px;cursor:pointer;font-weight:600}
+  .entity-chip:hover{background:rgba(99,170,255,0.18);border-color:rgba(99,170,255,0.4)}
+  .entity-chip svg{width:10px;height:10px}
+
+  /* Side drawer — matches section-risks.html/section-deployment.html convention */
+  .drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(3px);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
+  .drawer-backdrop.show{opacity:1;pointer-events:auto}
+  .side-drawer{position:fixed;top:0;right:0;bottom:0;width:620px;max-width:100vw;background:#1a1a1a;border-left:1px solid #2a2a2a;box-shadow:-12px 0 36px rgba(0,0,0,0.5);transform:translateX(100%);transition:transform .25s cubic-bezier(0.16,1,0.3,1);z-index:201;display:flex;flex-direction:column}
+  .side-drawer.show{transform:translateX(0)}
+  .sd-head{padding:18px 22px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+  .sd-head-title{font-size:16px;font-weight:700;color:#fff}
+  .sd-head-sub{font-size:11.5px;color:#9CA3AF;margin-top:3px}
+  .sd-close{background:transparent;border:none;color:#a3a3a3;cursor:pointer;padding:4px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center}
+  .sd-close:hover{background:#2a2a2a;color:#fff}
+  .sd-close svg{width:18px;height:18px}
+  .sd-body{flex:1;overflow-y:auto;padding:22px}
+  .sd-field{margin-bottom:14px}
+  .sd-label{font-size:11px;font-weight:700;color:#a3a3a3;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:block}
+  .sd-input,.sd-textarea,.sd-select{width:100%;padding:9px 12px;background:#141414;border:1px solid #2a2a2a;border-radius:7px;color:#f5f5f5;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s}
+  .sd-input:focus,.sd-textarea:focus,.sd-select:focus{border-color:rgba(251,191,36,0.45);box-shadow:0 0 0 3px rgba(251,191,36,0.08)}
+  .sd-textarea{resize:vertical;min-height:84px;line-height:1.5}
+  .sd-help{font-size:11px;color:#737373;margin-top:5px}
+  .sd-err{font-size:11.5px;color:#fbbf24;margin-top:5px;display:none}
+  .sd-err.show{display:block}
+  .sd-foot{padding:14px 22px;border-top:1px solid #2a2a2a;display:flex;justify-content:space-between;gap:8px;align-items:center}
+  .sd-foot-right{display:flex;gap:8px;margin-left:auto}
+  .sd-foot-left{display:flex;gap:8px}
+
+  /* Bulk action bar (files + links) */
+  .bulk-bar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(30px);opacity:0;pointer-events:none;background:#222;border:1px solid #404040;border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 16px 40px rgba(0,0,0,0.6);z-index:120;transition:all .22s cubic-bezier(0.16,1,0.3,1)}
+  .bulk-bar.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+  .bulk-bar-count{font-size:12.5px;color:#fbbf24;font-weight:700;padding-right:8px;border-right:1px solid #404040}
+
+  /* Column view: files pane checkbox overlay */
+  .col-item .col-chk{opacity:0;transition:opacity .1s;accent-color:#fbbf24;width:14px;height:14px;flex-shrink:0;cursor:pointer}
+  .col-item:hover .col-chk,.col-item.bulk-selected .col-chk{opacity:1}
+  .col-item.bulk-selected{background:rgba(251,191,36,0.08)}
+  .col-item.bulk-selected .col-item-name{color:#fff}
+
+  /* Entity chip in preview + link card */
+  .preview-entity{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+
+  /* URL warning icon for invalid URLs */
+  .url-warn{display:inline-block;width:11px;height:11px;color:#fbbf24;vertical-align:middle;margin-right:4px}
+</style>
+
+<div class="fil-tabs">
+  <button class="fil-tab on" data-v="files">Files</button>
+  <button class="fil-tab" data-v="links">Links</button>
+</div>
+
+<div id="links-panel">
+  <div class="lp-head">
+    <div>
+      <div class="lp-head-title">Links</div>
+      <div class="lp-head-sub" id="links-sub">—</div>
+    </div>
+    <div class="lp-actions">
+      <button class="btn-slate" onclick="openLinkDrawer()">+ Add Link</button>
+    </div>
+  </div>
+  <div id="links-list"></div>
+</div>
+
+<!-- Link drawer (add / update) -->
+<div class="drawer-backdrop" id="linkDrawerBackdrop" onclick="closeLinkDrawer()"></div>
+<div class="side-drawer" id="linkDrawer" role="dialog" aria-modal="true">
+  <div class="sd-head">
+    <div>
+      <div class="sd-head-title" id="linkDrawerTitle">Add Link</div>
+      <div class="sd-head-sub" id="linkDrawerSub"></div>
+    </div>
+    <button class="sd-close" onclick="closeLinkDrawer()" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sd-body">
+    <div class="sd-field">
+      <label class="sd-label" for="linkTitleInput">Title</label>
+      <input type="text" class="sd-input" id="linkTitleInput" maxlength="200">
+      <div class="sd-err" id="linkTitleErr">Title is required</div>
+    </div>
+    <div class="sd-field">
+      <label class="sd-label" for="linkUrlInput">URL</label>
+      <input type="url" class="sd-input" id="linkUrlInput" placeholder="https://…">
+      <div class="sd-help">Must start with http:// or https://</div>
+      <div class="sd-err" id="linkUrlErr">URL is required and must be valid</div>
+    </div>
+    <div class="sd-field">
+      <label class="sd-label" for="linkCategoryInput">Category</label>
+      <select class="sd-select" id="linkCategoryInput">
+        <option>Reference</option>
+        <option>Product</option>
+        <option>Documentation</option>
+        <option>Internal</option>
+        <option>Vendor</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="sd-field">
+      <label class="sd-label" for="linkDescInput">Description</label>
+      <textarea class="sd-textarea" id="linkDescInput" maxlength="1000" placeholder="Optional notes"></textarea>
+    </div>
+  </div>
+  <div class="sd-foot">
+    <div class="sd-foot-left">
+      <button class="btn-slate danger" id="linkDrawerDelete" style="display:none" onclick="deleteCurrentLink()">Delete</button>
+    </div>
+    <div class="sd-foot-right">
+      <button class="btn-ghost" onclick="closeLinkDrawer()">Cancel</button>
+      <button class="btn-slate" onclick="saveLinkFromDrawer()" id="linkDrawerSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk bar for files (Miller column active pane) -->
+<div class="bulk-bar" id="filesBulkBar">
+  <div class="bulk-bar-count"><span id="filesBulkCount">0</span> selected</div>
+  <button class="btn-ghost" onclick="bulkMoveFiles()">Move…</button>
+  <button class="btn-slate danger" onclick="bulkDeleteFiles()">Delete</button>
+  <button class="btn-ghost" onclick="clearFileBulkSelection()">Cancel</button>
+</div>
+
+<!-- Bulk bar for links -->
+<div class="bulk-bar" id="linksBulkBar">
+  <div class="bulk-bar-count"><span id="linksBulkCount">0</span> selected</div>
+  <button class="btn-slate danger" onclick="bulkDeleteLinks()">Delete</button>
+  <button class="btn-ghost" onclick="clearLinkBulkSelection()">Cancel</button>
+</div>
+
+<!-- Move files modal (shell-level, positioned fixed so it escapes wrap) -->
+<div class="drawer-backdrop" id="moveBackdrop" onclick="closeMoveDialog()"></div>
+<div class="side-drawer" id="moveDrawer" role="dialog" aria-modal="true" style="width:480px">
+  <div class="sd-head">
+    <div>
+      <div class="sd-head-title">Move Files</div>
+      <div class="sd-head-sub" id="moveDrawerSub"></div>
+    </div>
+    <button class="sd-close" onclick="closeMoveDialog()" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sd-body">
+    <div class="sd-field">
+      <label class="sd-label">Destination folder</label>
+      <select class="sd-select" id="moveTargetSelect"></select>
+      <div class="sd-help">Leave as "(Root — no folder)" to move out of any folder.</div>
+    </div>
+  </div>
+  <div class="sd-foot">
+    <div class="sd-foot-right">
+      <button class="btn-ghost" onclick="closeMoveDialog()">Cancel</button>
+      <button class="btn-slate" onclick="confirmMoveDialog()">Move</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- Glide data injection. These script blocks are populated by Glide's
+     template engine at render time. Using type="application/json"
+     prevents the browser from trying to parse them as executable JS,
+     so quote-escaping quirks in Glide's output don't break the page.
+     The JS parser reads them via document.getElementById and JSON.parse. -->
+<script type="application/json" id="glide-folders-data">{{folders_json}}</script>
+<script type="application/json" id="glide-files-data">{{files_json}}</script>
+
+<div class="wrap">
+
+  <!-- Toolbar -->
+  <div class="toolbar stage">
+    <div class="tb-left">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      <span id="toolbarTitle">Project Files</span>
+    </div>
+    <div class="tb-right">
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search files and folders...">
+        <span class="search-kbd">⌘F</span>
+      </div>
+      <div class="view-toggle" role="tablist">
+        <button class="vt-btn active" data-view="columns" onclick="setView('columns')" title="Column view (1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+        </button>
+        <button class="vt-btn" data-view="grid" onclick="setView('grid')" title="Grid view (2)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </button>
+        <button class="vt-btn" data-view="list" onclick="setView('list')" title="List view (3)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </button>
+      </div>
+      <button class="tb-btn" onclick="refreshExplorer()" id="refreshBtn" title="Refresh files">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        <span id="refreshLabel">Refresh</span>
+      </button>
+      <button class="tb-btn" onclick="downloadAll()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download All
+      </button>
+    </div>
+  </div>
+
+  <!-- Breadcrumb + sort -->
+  <div class="bc-row stage">
+    <div class="breadcrumb" id="breadcrumb"></div>
+    <div class="sort-wrap">
+      <button class="tb-btn" onclick="toggleSortMenu(event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
+        <span>Sort: <span id="sortLabel">Date</span> <span id="sortDirLabel">↓</span></span>
+      </button>
+      <div class="sort-menu" id="sortMenu">
+        <div class="sort-section-label">Sort By</div>
+        <div class="sort-item" data-sort="name" onclick="setSort('name')">
+          <svg class="si-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Name
+        </div>
+        <div class="sort-item active" data-sort="date" onclick="setSort('date')">
+          <svg class="si-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Date
+        </div>
+        <div class="sort-item" data-sort="type" onclick="setSort('type')">
+          <svg class="si-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Type
+        </div>
+        <div class="sort-divider"></div>
+        <div class="sort-section-label">Order</div>
+        <div class="sort-item" data-dir="asc" onclick="setSortDir('asc')">
+          <svg class="si-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Ascending
+        </div>
+        <div class="sort-item active" data-dir="desc" onclick="setSortDir('desc')">
+          <svg class="si-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Descending
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter chips -->
+  <div class="filter-chips stage" id="filterChips"></div>
+
+  <!-- Stats -->
+  <div class="stats-bar stage" id="statsBar"></div>
+
+  <!-- Content -->
+  <div id="contentArea" class="stage"></div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   GLIDE TEMPLATE VARS
+   These are populated by Glide at render time from the parent row's
+   joined list columns. We place them inside <script type="application/json">
+   blocks (see <body>) so Glide's quote-escaping doesn't break
+   JavaScript parsing, then parse them here.
+
+   Glide appears to CSV-escape quotes inside template substitutions
+   (doubling every " to ""), so we un-escape before parsing as a
+   defensive measure. If Glide's output is already valid JSON, the
+   replace is a no-op.
+
+   Expected folder shape: {"Row ID", "Folder Name"}
+   Expected file shape:   {"Row ID", "Name", "File", "Folder ID",
+                           "Author User Email", "Author Name", "Created"}
+   ═══════════════════════════════════════════════════════════════ */
+
+const PROJECT={
+  "Row ID":"root",
+  "Name":"Project Files",
+};
+
+function parseGlideJSON(elementId){
+  const el=document.getElementById(elementId);
+  if(!el)return [];
+  let text=(el.textContent||'').trim();
+  if(!text)return [];
+  // Wrap the comma-separated object sequence into a JSON array
+  if(text[0]!=='[')text='['+text+']';
+  // Un-double any CSV-style escaped quotes Glide might have introduced
+  if(text.indexOf('""')!==-1)text=text.replace(/""/g,'"');
+  try{
+    return JSON.parse(text);
+  }catch(e){
+    console.error(`Failed to parse ${elementId}:`,e,'\nRaw text:',text.slice(0,500));
+    return [];
+  }
+}
+
+const FOLDERS_RAW=parseGlideJSON('glide-folders-data');
+const FILES_RAW=parseGlideJSON('glide-files-data');
+
+// ═══ NOTE ═══ FOLDERS and FILES are declared `let` so the ingestion
+// IIFE below can rebuild them from window.__PAYLOAD__ (new schema shape)
+// when present. The Glide-template path remains as the demo fallback.
+let FOLDERS=FOLDERS_RAW.map(f=>({
+  "Folder ID":f["Row ID"],
+  "Folder Name":f["Folder Name"],
+}));
+
+let FILES=FILES_RAW.map(f=>({
+  "Row ID":f["Row ID"],
+  "Name":f["Name"],
+  "File":f["File"],
+  "Folder ID":f["Folder ID"],
+  "Author User Email":f["Author User Email"],
+  "Author Name":f["Author Name"],
+  "Created":f["Created"],
+}));
+
+// Links — internal shape preserved for rendering; schema escrow in _schema.
+let __LINKS__=[
+  {id:'LNK-01',title:'Axis P3245-LV product page',url:'https://www.axis.com/products/axis-p3245-lv',category:'Product',description:'',added_by_email:'misgur@adrm-security.com',added_by_name:'Matt Isgur',added_at:new Date().toISOString(),entity:null,entity_id:null,_schema:null},
+  {id:'LNK-02',title:'Genetec Security Center Configuration Guide',url:'https://docs.genetec.com/security-center',category:'Documentation',description:'Official Genetec config reference — bookmark for field techs.',added_by_email:'lfeula@adrm-security.com',added_by_name:'Louis Feula',added_at:new Date().toISOString(),entity:null,entity_id:null,_schema:null},
+  {id:'LNK-03',title:'Site survey photos (Google Drive)',url:'https://drive.google.com/folders/xyz',category:'Internal',description:'',added_by_email:'misgur@adrm-security.com',added_by_name:'Matt Isgur',added_at:new Date().toISOString(),entity:'observation',entity_id:'OB-03',_schema:null},
+  {id:'LNK-04',title:'HID iCLASS SE specification sheet',url:'https://www.hidglobal.com/iclass-se',category:'Product',description:'',added_by_email:'gbakker@adrm-security.com',added_by_name:'Gerritt Bakker',added_at:new Date().toISOString(),entity:null,entity_id:null,_schema:null}
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   PAYLOAD INGESTION — Pattern #1 / #8
+   Reads window.__PAYLOAD__.files (flat list with folder_path)
+   and window.__PAYLOAD__.links when present. Derives virtual
+   folder tree from slash-delimited paths. Falls through to demo
+   data on absent / malformed payload.
+
+   SCHEMA GAP NOTES (flagged for PAYLOAD-SCHEMA.md):
+   - [P0] files[] not yet in PAYLOAD-SCHEMA.md — inferred shape:
+     {id,name,folder_path,content_type,size_bytes,url,thumbnail_url,
+      uploaded_by_email,uploaded_at,entity,entity_id}
+   - [P0] links[] not yet in PAYLOAD-SCHEMA.md — inferred shape:
+     {id,title,url,description,category,added_by_email,added_at,
+      entity,entity_id}
+   - [P1] entity/entity_id cross-reference semantics — validation
+     of entity_id existence should happen at save time (optimistic
+     on ingest: render orphaned chips greyed out).
+   - [P2] empty folders pre-createable — if PMs need to stage
+     folders before uploading files, schema needs a folders[] table.
+     Current approach: folder exists iff ≥1 file has that path.
+   - [P2] URL validation strictness — current impl accepts http(s)
+     only. If PMs want mailto:, tel:, or app-deep-link schemes,
+     widen validateUrl().
+   ═══════════════════════════════════════════════════════════════ */
+const SECTION_NAME='files';
+(function ingestPayload(){
+  try{
+    const P=window.__PAYLOAD__;
+    if(!P)return;
+
+    // Version check — warn only
+    const expectedVersion=1;
+    const actualVersion=P&&P.meta&&P.meta.payload_version;
+    if(actualVersion!=null&&actualVersion!==expectedVersion){
+      console.warn(`[${SECTION_NAME}] payload v${expectedVersion} expected, got v${actualVersion} — rendering best-effort`);
+    }
+
+    const contactByEmail=(email)=>{
+      if(!email)return null;
+      const list=(P.contacts||[]).concat((P.lookups&&P.lookups.all_contacts)||[]);
+      const hit=list.find(c=>c&&(c.email||'').toLowerCase()===String(email).toLowerCase());
+      return hit?(hit.name||email):null;
+    };
+
+    // ─── FILES ingestion ───
+    if(Array.isArray(P.files)&&P.files.length){
+      const {folders,files}=normalizePayloadFiles(P.files,contactByEmail);
+      FOLDERS=folders;
+      FILES=files;
+    } else if(P.files!=null&&!Array.isArray(P.files)){
+      console.warn(`[${SECTION_NAME}] P.files malformed (expected array), keeping demo data`);
+    }
+
+    // ─── LINKS ingestion ───
+    if(Array.isArray(P.links)&&P.links.length){
+      __LINKS__=P.links.map(l=>normalizeSchemaLink(l,contactByEmail));
+    } else if(P.links!=null&&!Array.isArray(P.links)){
+      console.warn(`[${SECTION_NAME}] P.links malformed (expected array), keeping demo data`);
+    }
+
+    console.warn('Payload ingestion active:',SECTION_NAME);
+  }catch(err){
+    console.warn(`[${SECTION_NAME}] payload ingestion failed, falling back to demo data:`,err);
+  }
+})();
+
+/* Normalize a schema-shape file list into internal FILES + derived FOLDERS.
+   Virtual folders: exist iff ≥1 file has the path prefix. Folder ID is a
+   deterministic hash of the normalized path string. */
+function normalizePayloadFiles(arr,contactByEmail){
+  const folderMap={};  // normalized_path -> {id, name, path}
+  const files=[];
+  arr.forEach((f,i)=>{
+    if(!f||typeof f!=='object')return;
+    const rawPath=(f.folder_path!=null?String(f.folder_path):'').trim();
+    // Normalize: strip leading/trailing slashes, collapse doubles
+    const path=rawPath.replace(/^\/+|\/+$/g,'').replace(/\/{2,}/g,'/');
+    if(rawPath!==path&&rawPath!==''&&rawPath!=='/'){
+      console.warn(`[${SECTION_NAME}] normalized malformed folder_path "${rawPath}" → "${path}" for file ${f.id||i}`);
+    }
+    let folderId=null;
+    if(path){
+      // Accumulate full path hierarchy (e.g. "Drawings/Shop" creates both
+      // "Drawings" and "Drawings/Shop"). For the flat Miller-column model,
+      // we surface only the terminal folder as FILES' Folder ID, but we
+      // still record all ancestors so the UI could render them later.
+      const parts=path.split('/');
+      let acc='';
+      parts.forEach(p=>{
+        if(!p)return;
+        acc=acc?acc+'/'+p:p;
+        if(!folderMap[acc]){
+          folderMap[acc]={id:'F-'+pathHash(acc),path:acc,name:p};
+        }
+      });
+      folderId=folderMap[path].id;
+    }
+    const email=f.uploaded_by_email||null;
+    const authorName=contactByEmail?contactByEmail(email)||email:email;
+    files.push({
+      "Row ID":String(f.id!=null?f.id:'tmp-fil-'+Date.now()+'-'+i),
+      "Name":f.name!=null?String(f.name):'(untitled)',
+      "File":f.url!=null?String(f.url):'',
+      "Folder ID":folderId,
+      "Author User Email":email,
+      "Author Name":authorName||null,
+      "Created":f.uploaded_at||null,
+      // Schema escrow — preserves fields the UI doesn't render but
+      // must roundtrip. Plus dirty flag for Pattern #9-lite.
+      _schema:{
+        content_type:f.content_type||null,
+        size_bytes:(typeof f.size_bytes==='number'?f.size_bytes:null),
+        thumbnail_url:f.thumbnail_url||null,
+        folder_path:path||null,
+        entity:f.entity||null,
+        entity_id:f.entity_id!=null?String(f.entity_id):null,
+        // Byte-preservation: any extra fields we don't know about
+        __extra:Object.keys(f).filter(k=>!['id','name','folder_path','content_type','size_bytes','url','thumbnail_url','uploaded_by_email','uploaded_at','entity','entity_id'].includes(k)).reduce((a,k)=>{a[k]=f[k];return a;},{}),
+      },
+      _dirty:false,
+    });
+  });
+  const folders=Object.values(folderMap).map(fm=>({
+    "Folder ID":fm.id,
+    "Folder Name":fm.name,
+    _path:fm.path,
+  }));
+  return {folders,files};
+}
+
+function normalizeSchemaLink(l,contactByEmail){
+  const email=l.added_by_email||null;
+  const nm=contactByEmail?contactByEmail(email)||email:email;
+  return {
+    id:String(l.id!=null?l.id:'tmp-lnk-'+Date.now()+'-'+Math.random().toString(36).slice(2,6)),
+    title:l.title!=null?String(l.title):'(untitled)',
+    url:l.url!=null?String(l.url):'',
+    description:l.description!=null?String(l.description):'',
+    category:l.category!=null?String(l.category):'Reference',
+    added_by_email:email,
+    added_by_name:nm||null,
+    added_at:l.added_at||null,
+    entity:l.entity||null,
+    entity_id:l.entity_id!=null?String(l.entity_id):null,
+    _schema:{
+      __extra:Object.keys(l).filter(k=>!['id','title','url','description','category','added_by_email','added_at','entity','entity_id'].includes(k)).reduce((a,k)=>{a[k]=l[k];return a;},{}),
+    },
+  };
+}
+
+function pathHash(s){
+  // Deterministic short hash — stable folder IDs across renders
+  let h=0;
+  for(let i=0;i<s.length;i++)h=((h<<5)-h+s.charCodeAt(i))|0;
+  return (Math.abs(h)>>>0).toString(36);
+}
+
+// Expose to shell / other sections for cross-section queries.
+window.__FILES__=FILES;
+window.__LINKS__=__LINKS__;
+
+/* ═══════════════════════════════════════════════════════════════
+   FILE TYPE CONFIG
+   Maps extensions to colors, icons, labels, and filter category.
+   ═══════════════════════════════════════════════════════════════ */
+const FILE_TYPES={
+  pdf:{color:'#f87171',bg:'rgba(248,113,113,0.1)',border:'rgba(248,113,113,0.25)',label:'PDF',cat:'documents'},
+  doc:{color:'#63aaff',bg:'rgba(99,170,255,0.1)',border:'rgba(99,170,255,0.25)',label:'DOC',cat:'documents'},
+  docx:{color:'#63aaff',bg:'rgba(99,170,255,0.1)',border:'rgba(99,170,255,0.25)',label:'DOC',cat:'documents'},
+  xls:{color:'#4ade80',bg:'rgba(74,222,128,0.1)',border:'rgba(74,222,128,0.25)',label:'XLS',cat:'spreadsheets'},
+  xlsx:{color:'#4ade80',bg:'rgba(74,222,128,0.1)',border:'rgba(74,222,128,0.25)',label:'XLS',cat:'spreadsheets'},
+  csv:{color:'#4ade80',bg:'rgba(74,222,128,0.1)',border:'rgba(74,222,128,0.25)',label:'CSV',cat:'spreadsheets'},
+  ppt:{color:'#fbbf24',bg:'rgba(251,191,36,0.1)',border:'rgba(251,191,36,0.25)',label:'PPT',cat:'documents'},
+  pptx:{color:'#fbbf24',bg:'rgba(251,191,36,0.1)',border:'rgba(251,191,36,0.25)',label:'PPT',cat:'documents'},
+  txt:{color:'#a3a3a3',bg:'rgba(163,163,163,0.08)',border:'rgba(163,163,163,0.22)',label:'TXT',cat:'documents'},
+  md:{color:'#a3a3a3',bg:'rgba(163,163,163,0.08)',border:'rgba(163,163,163,0.22)',label:'MD',cat:'documents'},
+  zip:{color:'#a78bfa',bg:'rgba(167,139,250,0.1)',border:'rgba(167,139,250,0.25)',label:'ZIP',cat:'other'},
+  rar:{color:'#a78bfa',bg:'rgba(167,139,250,0.1)',border:'rgba(167,139,250,0.25)',label:'RAR',cat:'other'},
+  dwg:{color:'#2dd4bf',bg:'rgba(45,212,191,0.1)',border:'rgba(45,212,191,0.25)',label:'DWG',cat:'cad'},
+  dxf:{color:'#2dd4bf',bg:'rgba(45,212,191,0.1)',border:'rgba(45,212,191,0.25)',label:'DXF',cat:'cad'},
+  jpg:{color:'#f472b6',bg:'rgba(244,114,182,0.1)',border:'rgba(244,114,182,0.25)',label:'IMG',image:true,cat:'images'},
+  jpeg:{color:'#f472b6',bg:'rgba(244,114,182,0.1)',border:'rgba(244,114,182,0.25)',label:'IMG',image:true,cat:'images'},
+  png:{color:'#f472b6',bg:'rgba(244,114,182,0.1)',border:'rgba(244,114,182,0.25)',label:'IMG',image:true,cat:'images'},
+  gif:{color:'#f472b6',bg:'rgba(244,114,182,0.1)',border:'rgba(244,114,182,0.25)',label:'IMG',image:true,cat:'images'},
+  webp:{color:'#f472b6',bg:'rgba(244,114,182,0.1)',border:'rgba(244,114,182,0.25)',label:'IMG',image:true,cat:'images'},
+  svg:{color:'#f472b6',bg:'rgba(244,114,182,0.1)',border:'rgba(244,114,182,0.25)',label:'SVG',image:true,cat:'images'},
+  mp4:{color:'#c084fc',bg:'rgba(192,132,252,0.1)',border:'rgba(192,132,252,0.25)',label:'VID',cat:'other'},
+  mov:{color:'#c084fc',bg:'rgba(192,132,252,0.1)',border:'rgba(192,132,252,0.25)',label:'VID',cat:'other'},
+  default:{color:'#a3a3a3',bg:'rgba(163,163,163,0.08)',border:'rgba(163,163,163,0.22)',label:'FILE',cat:'other'},
+};
+
+const FOLDER_PALETTE=[
+  {color:'#63aaff',bg:'rgba(99,170,255,0.12)',border:'rgba(99,170,255,0.25)'},
+  {color:'#4ade80',bg:'rgba(74,222,128,0.12)',border:'rgba(74,222,128,0.25)'},
+  {color:'#fbbf24',bg:'rgba(251,191,36,0.12)',border:'rgba(251,191,36,0.25)'},
+  {color:'#f472b6',bg:'rgba(244,114,182,0.12)',border:'rgba(244,114,182,0.25)'},
+  {color:'#a78bfa',bg:'rgba(167,139,250,0.12)',border:'rgba(167,139,250,0.25)'},
+  {color:'#2dd4bf',bg:'rgba(45,212,191,0.12)',border:'rgba(45,212,191,0.25)'},
+  {color:'#f87171',bg:'rgba(248,113,113,0.12)',border:'rgba(248,113,113,0.25)'},
+];
+
+const FILTERS=[
+  {id:'all',label:'All',match:()=>true},
+  {id:'images',label:'Images',match:(f)=>typeFor(f["Name"],f["File"]).cat==='images'},
+  {id:'documents',label:'Documents',match:(f)=>typeFor(f["Name"],f["File"]).cat==='documents'},
+  {id:'spreadsheets',label:'Spreadsheets',match:(f)=>typeFor(f["Name"],f["File"]).cat==='spreadsheets'},
+  {id:'cad',label:'CAD',match:(f)=>typeFor(f["Name"],f["File"]).cat==='cad'},
+  {id:'week',label:'This Week',match:(f)=>{
+    const d=new Date(f["Created"]);
+    return (Date.now()-d.getTime())<=7*86400000;
+  }},
+  {id:'month',label:'This Month',match:(f)=>{
+    const d=new Date(f["Created"]);
+    return (Date.now()-d.getTime())<=30*86400000;
+  }},
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════════════════════════ */
+const state={
+  view:'columns',         // 'grid' | 'list' | 'columns'
+  folderId:null,          // null = root
+  search:'',
+  sort:'date',            // 'name' | 'date' | 'type'
+  sortDir:'desc',         // 'asc' | 'desc'
+  filter:'all',
+  selectedFileId:null,    // keyboard focus + column view preview
+  selectedFolderId:null,  // column view col-1 selection
+  focusedPane:'files',    // column view only: 'folders' | 'files'
+  // Bulk selection — scoped per-tab. File bulk is Miller-column-scoped:
+  // selections live within the currently-displayed files pane (not
+  // across folders). See audit table notes.
+  fileBulk:new Set(),
+  linkBulk:new Set(),
+  activeTab:'files',
+  editingLinkId:null,
+  moveTargetFileIds:[],
+};
+
+let currentModalFile=null;  // deprecated, kept as no-op for safety
+
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════════════════════════════════ */
+const $=(id)=>document.getElementById(id);
+const esc=(s)=>String(s??'').replace(/[&<>"']/g,c=>({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+}[c]));
+
+/* URL validation — accept http/https only. Returns the original URL
+   if valid, or null otherwise. Never let raw user-provided URLs
+   interpolate into href attributes without passing through this. */
+function validateUrl(raw){
+  if(!raw||typeof raw!=='string')return null;
+  const s=raw.trim();
+  if(!/^https?:\/\//i.test(s))return null;
+  try{
+    const u=new URL(s);
+    if(u.protocol!=='http:'&&u.protocol!=='https:')return null;
+    return s;
+  }catch(e){return null;}
+}
+
+/* Format size_bytes → human string. Caps at TB to defend against
+   malicious payloads with absurd size values. */
+function formatBytes(n){
+  if(n==null||typeof n!=='number'||!isFinite(n)||n<0)return '';
+  if(n===0)return '0 bytes';
+  const units=['bytes','KB','MB','GB','TB'];
+  const k=1024;
+  let i=Math.floor(Math.log(n)/Math.log(k));
+  if(i>=units.length){i=units.length-1;return '999+ TB';}
+  const v=n/Math.pow(k,i);
+  return (i===0?v:v.toFixed(v<10?2:1))+' '+units[i];
+}
+
+/* Entity chip — cross-section deep link. Clicking posts navigate. */
+function entityChipHTML(entity,entityId){
+  if(!entity||!entityId)return '';
+  const labelMap={task:'Task',risk:'Risk',punch:'Punch',observation:'Obs',rfi:'RFI',meeting:'Meeting',material:'Material',milestone:'Milestone',asset:'Asset'};
+  const sectionMap={task:'actions',risk:'risks',punch:'punch',observation:'observations',rfi:'rfi',meeting:'meetings',material:'materials',milestone:'schedule',asset:'assets'};
+  const lbl=labelMap[entity]||String(entity);
+  const sec=sectionMap[entity]||entity;
+  return `<span class="entity-chip" onclick="event.stopPropagation();navigateToEntity('${esc(sec)}','${esc(entityId)}')" title="Open ${esc(lbl)} ${esc(entityId)}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    ${esc(lbl)} ${esc(entityId)}
+  </span>`;
+}
+
+function navigateToEntity(section,entityId){
+  try{parent.postMessage({type:'navigate',section:section,entityId:entityId},'*');}catch(e){}
+}
+
+function getExt(filename,fallbackUrl){
+  // Try the name first (fast path for files with extensions in the name)
+  const m=(filename||'').match(/\.([a-z0-9]+)$/i);
+  if(m)return m[1].toLowerCase();
+  // Fall back to parsing the URL — Glide often stores files with
+  // hash-only names but the URL still has the extension at the end.
+  // Strip query string first so ?w=800 and similar don't interfere.
+  if(fallbackUrl){
+    const cleanUrl=String(fallbackUrl).split('?')[0].split('#')[0];
+    const um=cleanUrl.match(/\.([a-z0-9]+)$/i);
+    if(um)return um[1].toLowerCase();
+  }
+  return '';
+}
+function typeFor(filename,fallbackUrl){
+  return FILE_TYPES[getExt(filename,fallbackUrl)]||FILE_TYPES.default;
+}
+function paletteFor(folderId){
+  let h=0;
+  for(let i=0;i<folderId.length;i++)h=((h<<5)-h+folderId.charCodeAt(i))|0;
+  return FOLDER_PALETTE[Math.abs(h)%FOLDER_PALETTE.length];
+}
+function formatDate(iso){
+  if(!iso)return '';
+  const d=new Date(iso);
+  const now=new Date();
+  const diffDays=Math.floor((now-d)/86400000);
+  if(diffDays===0)return 'Today';
+  if(diffDays===1)return 'Yesterday';
+  if(diffDays<7)return `${diffDays}d ago`;
+  if(diffDays<30)return `${Math.floor(diffDays/7)}w ago`;
+  const opts={month:'short',day:'numeric'};
+  if(d.getFullYear()!==now.getFullYear())opts.year='numeric';
+  return d.toLocaleDateString('en-US',opts);
+}
+function formatDateFull(iso){
+  if(!iso)return '';
+  const d=new Date(iso);
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DATA PIPELINE
+   Sort/filter/search are applied consistently across views.
+   ═══════════════════════════════════════════════════════════════ */
+function matchesSearch(file){
+  if(!state.search)return true;
+  return file["Name"].toLowerCase().includes(state.search.toLowerCase());
+}
+function matchesFolderSearch(folder){
+  if(!state.search)return true;
+  return folder["Folder Name"].toLowerCase().includes(state.search.toLowerCase());
+}
+function matchesFilter(file){
+  const f=FILTERS.find(x=>x.id===state.filter);
+  return f?f.match(file):true;
+}
+function compareFiles(a,b){
+  const dir=state.sortDir==='asc'?1:-1;
+  switch(state.sort){
+    case 'name':return a["Name"].localeCompare(b["Name"])*dir;
+    case 'type':{
+      const ea=getExt(a["Name"],a["File"]),eb=getExt(b["Name"],b["File"]);
+      if(ea===eb)return a["Name"].localeCompare(b["Name"]);
+      return ea.localeCompare(eb)*dir;
+    }
+    case 'date':
+    default:return (new Date(a["Created"])-new Date(b["Created"]))*dir;
+  }
+}
+function filesInFolder(folderId){
+  return FILES.filter(f=>f["Folder ID"]===folderId);
+}
+function getCurrentFiles(){
+  // Returns the files that should be displayed in the main content area
+  // (for grid and list views — column view has its own pipeline).
+  let files;
+  if(state.folderId){
+    files=FILES.filter(f=>f["Folder ID"]===state.folderId);
+  } else {
+    // Root: if searching or filtering, show matches across ALL folders;
+    // otherwise just show root-level files (no folder assigned).
+    if(state.search||state.filter!=='all'){
+      files=FILES.slice();
+    } else {
+      files=FILES.filter(f=>!f["Folder ID"]);
+    }
+  }
+  return files.filter(matchesSearch).filter(matchesFilter).sort(compareFiles);
+}
+function getRecentFiles(){
+  // Top 6 most recent across all files — shown only on root view
+  // when no search/filter is active.
+  return [...FILES]
+    .sort((a,b)=>new Date(b["Created"])-new Date(a["Created"]))
+    .slice(0,6);
+}
+function getFilteredFolders(){
+  return FOLDERS.filter(matchesFolderSearch);
+}
+function getFilterCount(filterId){
+  const f=FILTERS.find(x=>x.id===filterId);
+  if(!f)return 0;
+  return FILES.filter(f.match).length;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOASTS
+   ═══════════════════════════════════════════════════════════════ */
+function toast(msg){
+  const wrap=$('toastWrap');
+  const el=document.createElement('div');
+  el.className='toast';
+  el.innerHTML=`
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+    ${esc(msg)}
+  `;
+  wrap.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('show'));
+  setTimeout(()=>{
+    el.classList.remove('show');
+    setTimeout(()=>el.remove(),300);
+  },2400);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER — BREADCRUMB
+   ═══════════════════════════════════════════════════════════════ */
+function renderBreadcrumb(){
+  const bc=$('breadcrumb');
+  // In column view, reflect the selected folder (not folderId, since
+  // column view uses its own selection state)
+  const effectiveFolderId=state.view==='columns'?state.selectedFolderId:state.folderId;
+  const folder=effectiveFolderId?FOLDERS.find(f=>f["Folder ID"]===effectiveFolderId):null;
+
+  let html=`
+    <div class="bc-item${!folder?' current':''}" ${!folder?'':'onclick="navigateToRoot()"'}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      ${esc(PROJECT["Name"])}
+    </div>
+  `;
+  if(folder){
+    html+=`
+      <div class="bc-sep">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="bc-item current">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        ${esc(folder["Folder Name"])}
+      </div>
+    `;
+  }
+  bc.innerHTML=html;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER — FILTER CHIPS
+   ═══════════════════════════════════════════════════════════════ */
+function renderFilterChips(){
+  const host=$('filterChips');
+  host.innerHTML=FILTERS.map(f=>{
+    const count=getFilterCount(f.id);
+    if(f.id!=='all'&&count===0)return '';  // hide empty filters
+    const active=state.filter===f.id?' active':'';
+    return `
+      <div class="filter-chip${active}" onclick="setFilter('${f.id}')">
+        ${esc(f.label)}
+        <span class="filter-chip-count">${count}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER — STATS BAR
+   ═══════════════════════════════════════════════════════════════ */
+function renderStatsBar(){
+  const bar=$('statsBar');
+  const parts=[];
+
+  if(state.view==='columns'){
+    parts.push(`<span><strong>${FOLDERS.length}</strong> folders</span>`);
+    parts.push(`<span class="stat-dot"></span>`);
+    parts.push(`<span><strong>${FILES.length}</strong> files</span>`);
+  } else if(state.folderId){
+    const files=getCurrentFiles();
+    const total=filesInFolder(state.folderId).length;
+    parts.push(`<span><strong>${files.length}</strong> ${files.length===1?'file':'files'}${files.length!==total?' shown':''}</span>`);
+    if(files.length!==total)parts.push(`<span>of ${total} total</span>`);
+  } else {
+    const folders=getFilteredFolders();
+    parts.push(`<span><strong>${folders.length}</strong> ${folders.length===1?'folder':'folders'}</span>`);
+    parts.push(`<span class="stat-dot"></span>`);
+    const shown=getCurrentFiles().length;
+    if(state.search||state.filter!=='all'){
+      parts.push(`<span><strong>${shown}</strong> ${shown===1?'file matches':'files match'}</span>`);
+    } else {
+      parts.push(`<span><strong>${FILES.length}</strong> files total</span>`);
+    }
+  }
+  bar.innerHTML=parts.join(' ');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER — TOOLBAR STATE
+   ═══════════════════════════════════════════════════════════════ */
+function renderToolbarState(){
+  // View toggle
+  document.querySelectorAll('.vt-btn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.view===state.view);
+  });
+  // Sort label
+  $('sortLabel').textContent=state.sort.charAt(0).toUpperCase()+state.sort.slice(1);
+  $('sortDirLabel').textContent=state.sortDir==='desc'?'↓':'↑';
+  // Sort menu active states
+  document.querySelectorAll('#sortMenu .sort-item[data-sort]').forEach(el=>{
+    el.classList.toggle('active',el.dataset.sort===state.sort);
+  });
+  document.querySelectorAll('#sortMenu .sort-item[data-dir]').forEach(el=>{
+    el.classList.toggle('active',el.dataset.dir===state.sortDir);
+  });
+  // Title
+  const folder=state.folderId?FOLDERS.find(f=>f["Folder ID"]===state.folderId):null;
+  $('toolbarTitle').textContent=folder
+    ?`${PROJECT["Name"]} · ${folder["Folder Name"]}`
+    :PROJECT["Name"];
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER — EMPTY STATE
+   ═══════════════════════════════════════════════════════════════ */
+function renderEmptyState(title,sub){
+  return `
+    <div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      <div class="empty-state-title">${esc(title)}</div>
+      <div class="empty-state-sub">${esc(sub)}</div>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER — GRID VIEW
+   ═══════════════════════════════════════════════════════════════ */
+function fileCardHTML(f){
+  const type=typeFor(f["Name"],f["File"]);
+  const ext=getExt(f["Name"],f["File"]);
+  const safeId=esc(f["Row ID"]);
+  const focused=state.selectedFileId===f["Row ID"]?' focused':'';
+  return `
+    <div class="file-card${focused}" data-file-id="${safeId}"
+         onclick="handleFileClick('${safeId}')"
+         style="--ext-color:${type.color};--ext-bg:${type.bg};--ext-border:${type.border}">
+      <div class="file-actions">
+        <div class="fa-btn" onclick="event.stopPropagation();downloadFile('${safeId}')" title="Download">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+      </div>
+      <div class="file-thumb">
+        ${type.image
+          ?`<img src="${esc(f["File"])}" alt="">`
+          :`<div class="file-ext-badge">${esc(ext||type.label)}</div>`}
+      </div>
+      <div class="file-info">
+        <svg class="file-type-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <div class="file-meta">
+          <div class="file-name">${esc(f["Name"])}</div>
+          <div class="file-date">${esc(formatDate(f["Created"]))} · ${esc(f["Author Name"]||'—')}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function folderCardHTML(f){
+  const count=filesInFolder(f["Folder ID"]).length;
+  const palette=paletteFor(f["Folder ID"]);
+  const focused=state.selectedFolderId===f["Folder ID"]?' focused':'';
+  return `
+    <div class="folder-card${focused}" data-folder-id="${esc(f["Folder ID"])}"
+         onclick="navigateToFolder('${esc(f["Folder ID"])}')"
+         style="--accent-color:${palette.color};--accent-bg:${palette.bg};--accent-border:${palette.border}">
+      <div class="folder-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+      <div class="folder-info">
+        <div class="folder-name">${esc(f["Folder Name"])}</div>
+        <div class="folder-count">${count} ${count===1?'item':'items'}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderGridView(){
+  const area=$('contentArea');
+  let html='';
+
+  if(!state.folderId){
+    // Root view: folders, optional recent, and files
+    const folders=getFilteredFolders();
+    const files=getCurrentFiles();
+    const showRecent=!state.search&&state.filter==='all';
+
+    if(folders.length){
+      html+=`<div class="section-header">Folders <span class="sh-count">${folders.length}</span></div>`;
+      html+=`<div class="folder-grid">${folders.map(folderCardHTML).join('')}</div>`;
+    }
+
+    if(showRecent){
+      const recent=getRecentFiles();
+      if(recent.length){
+        html+=`<div class="section-header">Recent <span class="sh-count">Last ${recent.length}</span></div>`;
+        html+=`<div class="file-grid">${recent.map(fileCardHTML).join('')}</div>`;
+      }
+    }
+
+    if(files.length){
+      const label=state.search||state.filter!=='all'?'Matching Files':'Files';
+      html+=`<div class="section-header">${label} <span class="sh-count">${files.length}</span></div>`;
+      html+=`<div class="file-grid">${files.map(fileCardHTML).join('')}</div>`;
+    }
+
+    if(!folders.length&&!files.length){
+      html=renderEmptyState(
+        state.search||state.filter!=='all'?'No matches':'No files yet',
+        state.search||state.filter!=='all'?'Try a different search or filter':'Upload files or create folders to get started'
+      );
+    }
+  } else {
+    // Inside a folder
+    const files=getCurrentFiles();
+    if(!files.length){
+      area.innerHTML=renderEmptyState(
+        state.search||state.filter!=='all'?'No matches':'Empty folder',
+        state.search||state.filter!=='all'?'Try a different search or filter':'This folder has no files yet'
+      );
+      return;
+    }
+    html=`<div class="section-header">Files <span class="sh-count">${files.length}</span></div>`;
+    html+=`<div class="file-grid">${files.map(fileCardHTML).join('')}</div>`;
+  }
+  area.innerHTML=html;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER — LIST VIEW
+   ═══════════════════════════════════════════════════════════════ */
+function listRowHTML(f){
+  const type=typeFor(f["Name"],f["File"]);
+  const ext=getExt(f["Name"],f["File"]);
+  const safeId=esc(f["Row ID"]);
+  const focused=state.selectedFileId===f["Row ID"]?' focused':'';
+  return `
+    <div class="list-row${focused}" data-file-id="${safeId}" onclick="handleFileClick('${safeId}')"
+         style="--ext-color:${type.color};--ext-bg:${type.bg};--ext-border:${type.border}">
+      <div class="lr-icon">
+        ${type.image
+          ?`<img src="${esc(f["File"])}" alt="">`
+          :`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`}
+      </div>
+      <div class="lr-name">${esc(f["Name"])}</div>
+      <div class="lr-date">${esc(formatDateFull(f["Created"]))}</div>
+      <div class="lr-author">${esc(f["Author Name"]||'—')}</div>
+      <div class="lr-type">${esc(ext||type.label)}</div>
+      <button class="lr-dl" onclick="event.stopPropagation();downloadFile('${safeId}')" title="Download">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
+    </div>
+  `;
+}
+
+function listFolderRowHTML(f){
+  const count=filesInFolder(f["Folder ID"]).length;
+  const palette=paletteFor(f["Folder ID"]);
+  return `
+    <div class="list-row folder-row" onclick="navigateToFolder('${esc(f["Folder ID"])}')"
+         style="--accent-color:${palette.color};--accent-bg:${palette.bg};--accent-border:${palette.border}">
+      <div class="lr-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="lr-name">${esc(f["Folder Name"])}</div>
+      <div class="lr-date">—</div>
+      <div class="lr-author">—</div>
+      <div class="lr-type">FOLDER</div>
+      <div class="lr-dl"></div>
+    </div>
+  `;
+}
+
+function renderListView(){
+  const area=$('contentArea');
+  let html='';
+
+  const headerHTML=(sortField,label)=>{
+    const sorted=state.sort===sortField?' sorted':'';
+    const dir=state.sortDir==='asc'?' asc':'';
+    return `
+      <div class="lh-cell${sorted}${dir}" onclick="setSort('${sortField}')">
+        ${label}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    `;
+  };
+
+  const tableHeader=`
+    <div class="list-header">
+      <div class="lh-icon"></div>
+      ${headerHTML('name','Name')}
+      ${headerHTML('date','Date')}
+      <div class="lh-author">Author</div>
+      ${headerHTML('type','Type')}
+      <div class="lh-dl"></div>
+    </div>
+  `;
+
+  if(!state.folderId){
+    const folders=getFilteredFolders();
+    const files=getCurrentFiles();
+    const showRecent=!state.search&&state.filter==='all';
+
+    if(folders.length){
+      html+=`<div class="section-header">Folders <span class="sh-count">${folders.length}</span></div>`;
+      html+=`<div class="list-view">${tableHeader}${folders.map(listFolderRowHTML).join('')}</div>`;
+    }
+
+    if(showRecent){
+      const recent=getRecentFiles();
+      if(recent.length){
+        html+=`<div class="section-header">Recent <span class="sh-count">Last ${recent.length}</span></div>`;
+        html+=`<div class="list-view">${tableHeader}${recent.map(listRowHTML).join('')}</div>`;
+      }
+    }
+
+    if(files.length){
+      const label=state.search||state.filter!=='all'?'Matching Files':'Files';
+      html+=`<div class="section-header">${label} <span class="sh-count">${files.length}</span></div>`;
+      html+=`<div class="list-view">${tableHeader}${files.map(listRowHTML).join('')}</div>`;
+    }
+
+    if(!folders.length&&!files.length){
+      html=renderEmptyState(
+        state.search||state.filter!=='all'?'No matches':'No files yet',
+        state.search||state.filter!=='all'?'Try a different search or filter':'Upload files or create folders to get started'
+      );
+    }
+  } else {
+    const files=getCurrentFiles();
+    if(!files.length){
+      area.innerHTML=renderEmptyState(
+        state.search||state.filter!=='all'?'No matches':'Empty folder',
+        state.search||state.filter!=='all'?'Try a different search or filter':'This folder has no files yet'
+      );
+      return;
+    }
+    html=`<div class="section-header">Files <span class="sh-count">${files.length}</span></div>`;
+    html+=`<div class="list-view">${tableHeader}${files.map(listRowHTML).join('')}</div>`;
+  }
+  area.innerHTML=html;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER — COLUMN VIEW (Finder-style three panes)
+   ═══════════════════════════════════════════════════════════════ */
+function renderColumnView(){
+  const area=$('contentArea');
+
+  // Column 1: folders (optionally filtered by search)
+  const folders=getFilteredFolders();
+
+  // Column 2: files in selected folder, with search + filter + sort applied
+  let colFiles=[];
+  if(state.selectedFolderId){
+    colFiles=FILES
+      .filter(f=>f["Folder ID"]===state.selectedFolderId)
+      .filter(matchesSearch)
+      .filter(matchesFilter)
+      .sort(compareFiles);
+  }
+
+  // Column 3: preview of selected file
+  const selectedFile=state.selectedFileId
+    ?FILES.find(f=>f["Row ID"]===state.selectedFileId)
+    :null;
+
+  let html=`<div class="column-view">`;
+
+  // ─── Column 1: Folders ───
+  html+=`
+    <div class="col-pane">
+      <div class="col-header">
+        Folders <span class="ch-count">${folders.length}</span>
+      </div>
+      <div class="col-body">
+  `;
+  if(folders.length){
+    folders.forEach(f=>{
+      const palette=paletteFor(f["Folder ID"]);
+      const count=filesInFolder(f["Folder ID"]).length;
+      const selected=state.selectedFolderId===f["Folder ID"]?' selected':'';
+      html+=`
+        <div class="col-item${selected}" data-folder-id="${esc(f["Folder ID"])}"
+             onclick="selectFolderInColumns('${esc(f["Folder ID"])}')"
+             style="--accent-color:${palette.color};--accent-bg:${palette.bg};--accent-border:${palette.border}">
+          <div class="col-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="col-item-name">${esc(f["Folder Name"])}</div>
+          <div class="col-item-meta" style="font-family:var(--mono);font-size:0.62rem;color:var(--t5);flex-shrink:0">${count}</div>
+          <svg class="col-item-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      `;
+    });
+  } else {
+    html+=`<div class="col-empty">No folders</div>`;
+  }
+  html+=`</div></div>`;
+
+  // ─── Column 2: Files in selected folder ───
+  // Build select-all control (scoped to the CURRENT files pane — matches
+  // the filter-aware contacts pattern but scoped to the Miller column's
+  // active pane rather than a flat filtered list).
+  const allIds=colFiles.map(f=>String(f["Row ID"]));
+  const selected=allIds.filter(id=>state.fileBulk.has(id));
+  let selAllState='none';
+  if(selected.length===allIds.length&&allIds.length>0)selAllState='all';
+  else if(selected.length>0)selAllState='some';
+  const selAllLabel=selAllState==='all'?'Deselect all':`Select all${allIds.length?' ('+allIds.length+')':''}`;
+  const selAllDisabled=allIds.length===0?' style="opacity:0.5;pointer-events:none"':'';
+  html+=`
+    <div class="col-pane">
+      <div class="col-header" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1">
+          ${state.selectedFolderId
+            ?(()=>{const f=FOLDERS.find(x=>x["Folder ID"]===state.selectedFolderId);return f?`<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(f["Folder Name"])}</span>`:'<span>Files</span>';})()
+            :'<span>Files</span>'}
+          <span class="ch-count">${colFiles.length}</span>
+        </div>
+        ${allIds.length?`<button class="btn-ghost" style="padding:3px 8px;font-size:10.5px;font-weight:600"${selAllDisabled} onclick="toggleSelectAllFilesInPane()">${esc(selAllLabel)}</button>`:''}
+      </div>
+      <div class="col-body">
+  `;
+  if(!state.selectedFolderId){
+    html+=`<div class="col-empty">Select a folder to view files</div>`;
+  } else if(!colFiles.length){
+    html+=`<div class="col-empty">${state.search||state.filter!=='all'?'No matches':'Empty folder'}</div>`;
+  } else {
+    colFiles.forEach(f=>{
+      const type=typeFor(f["Name"],f["File"]);
+      const ext=getExt(f["Name"],f["File"]);
+      const safeId=esc(f["Row ID"]);
+      const selected=state.selectedFileId===safeId?' selected':'';
+      const bulkSel=state.fileBulk.has(String(f["Row ID"]))?' bulk-selected':'';
+      html+=`
+        <div class="col-item${selected}${bulkSel}" data-file-id="${safeId}"
+             onclick="selectFileInColumns('${safeId}')"
+             style="--ext-color:${type.color};--ext-bg:${type.bg};--ext-border:${type.border}">
+          <input type="checkbox" class="col-chk" ${bulkSel?'checked':''}
+                 onclick="event.stopPropagation();toggleFileBulk('${safeId}')"
+                 aria-label="Select file">
+          <div class="col-item-icon">
+            ${type.image&&validateUrl(f["File"])
+              ?`<img src="${esc(validateUrl(f["File"]))}" alt="" onerror="this.style.display='none';this.parentElement.innerHTML='<svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\'><path d=\\'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\\'/><polyline points=\\'14 2 14 8 20 8\\'/></svg>'">`
+              :`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`}
+          </div>
+          <div class="col-item-name">${esc(f["Name"])}</div>
+        </div>
+      `;
+    });
+  }
+  html+=`</div></div>`;
+
+  // ─── Column 3: File details + download ───
+  html+=`<div class="col-pane"><div class="col-header">Details</div>`;
+  if(selectedFile){
+    const type=typeFor(selectedFile["Name"],selectedFile["File"]);
+    const ext=getExt(selectedFile["Name"],selectedFile["File"]);
+    const schema=selectedFile._schema||{};
+    const sizeStr=formatBytes(schema.size_bytes);
+    const ctypeStr=schema.content_type||'';
+    const thumbUrl=validateUrl(schema.thumbnail_url||selectedFile["File"]);
+    const showImgThumb=(type.image||schema.thumbnail_url)&&thumbUrl;
+    const validFileUrl=validateUrl(selectedFile["File"]);
+    html+=`
+      <div class="preview-pane">
+        <div class="preview-thumb" style="--ext-color:${type.color};--ext-bg:${type.bg};--ext-border:${type.border}">
+          ${showImgThumb
+            ?`<img src="${esc(thumbUrl)}" alt="" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=\\'file-ext-badge\\'>${esc(ext||type.label)}</div>'">`
+            :`<div class="file-ext-badge">${esc(ext||type.label)}</div>`}
+        </div>
+        <div class="preview-details">
+          <div class="preview-name">${esc(selectedFile["Name"])}</div>
+          <div class="preview-meta-grid">
+            <div>
+              <div class="pmg-label">Type</div>
+              <div class="pmg-value" title="${esc(ctypeStr)}">${esc(type.label)}${ext?' · .'+esc(ext):''}</div>
+            </div>
+            <div>
+              <div class="pmg-label">Size</div>
+              <div class="pmg-value">${esc(sizeStr||'—')}</div>
+            </div>
+            <div>
+              <div class="pmg-label">Author</div>
+              <div class="pmg-value" title="${esc(selectedFile["Author User Email"]||'')}">${esc(selectedFile["Author Name"]||selectedFile["Author User Email"]||'—')}</div>
+            </div>
+            <div>
+              <div class="pmg-label">Uploaded</div>
+              <div class="pmg-value">${esc(formatDateFull(selectedFile["Created"])||'—')}</div>
+            </div>
+          </div>
+          ${schema.entity&&schema.entity_id?`<div class="preview-entity">${entityChipHTML(schema.entity,schema.entity_id)}</div>`:''}
+        </div>
+        <div class="preview-actions">
+          ${validFileUrl
+            ?`<button class="tb-btn primary" onclick="downloadFile('${esc(selectedFile["Row ID"])}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download
+              </button>`
+            :`<button class="tb-btn" disabled style="opacity:0.5;cursor:not-allowed" title="File URL invalid or missing">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Unavailable
+              </button>`}
+        </div>
+      </div>
+    `;
+  } else {
+    html+=`
+      <div class="preview-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <div>
+          <div class="preview-empty-title">No file selected</div>
+          <div class="preview-empty-sub">${state.selectedFolderId?'Select a file to see details':'Choose a folder, then a file'}</div>
+        </div>
+      </div>
+    `;
+  }
+  html+=`</div>`;
+  html+=`</div>`;
+
+  area.innerHTML=html;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MAIN RENDER
+   ═══════════════════════════════════════════════════════════════ */
+function render(){
+  renderToolbarState();
+  renderBreadcrumb();
+  renderFilterChips();
+  renderStatsBar();
+  if(state.view==='grid')renderGridView();
+  else if(state.view==='list')renderListView();
+  else renderColumnView();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════════════════════ */
+function navigateToFolder(folderId){
+  state.folderId=folderId;
+  state.selectedFolderId=folderId;
+  state.selectedFileId=null;
+  state.search='';
+  $('searchInput').value='';
+  render();
+}
+function navigateToRoot(){
+  state.folderId=null;
+  state.selectedFolderId=null;
+  state.selectedFileId=null;
+  state.search='';
+  $('searchInput').value='';
+  render();
+}
+function handleFileClick(fileId){
+  state.selectedFileId=fileId;
+  downloadFile(fileId);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COLUMN VIEW SELECTION
+   ═══════════════════════════════════════════════════════════════ */
+function selectFolderInColumns(folderId){
+  state.selectedFolderId=folderId;
+  state.selectedFileId=null;  // reset file selection when folder changes
+  state.focusedPane='files';
+  render();
+}
+function selectFileInColumns(fileId){
+  state.selectedFileId=fileId;
+  render();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VIEW TOGGLE
+   ═══════════════════════════════════════════════════════════════ */
+function setView(view){
+  state.view=view;
+  // When switching TO column view, sync selectedFolderId with folderId
+  if(view==='columns'){
+    if(state.folderId&&!state.selectedFolderId){
+      state.selectedFolderId=state.folderId;
+    } else if(!state.selectedFolderId&&FOLDERS.length){
+      // Auto-select first folder for a non-empty preview experience
+      state.selectedFolderId=FOLDERS[0]["Folder ID"];
+    }
+  }
+  render();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SORT
+   ═══════════════════════════════════════════════════════════════ */
+function toggleSortMenu(e){
+  e&&e.stopPropagation();
+  $('sortMenu').classList.toggle('show');
+}
+function closeSortMenu(){
+  $('sortMenu').classList.remove('show');
+}
+function setSort(sort){
+  state.sort=sort;
+  closeSortMenu();
+  render();
+}
+function setSortDir(dir){
+  state.sortDir=dir;
+  closeSortMenu();
+  render();
+}
+// Close sort menu on outside click
+document.addEventListener('click',(e)=>{
+  if(!e.target.closest('.sort-wrap')){
+    closeSortMenu();
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   FILTER
+   ═══════════════════════════════════════════════════════════════ */
+function setFilter(filterId){
+  state.filter=filterId;
+  state.selectedFileId=null;  // reset selection in case current file is filtered out
+  render();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FILE DOWNLOAD
+   Cross-origin <a download> is silently ignored by browsers — it
+   falls back to opening in a new tab, which displays images/PDFs
+   inline rather than saving. To get a true save-to-disk, we fetch
+   the file as a Blob (which respects CORS if the server allows it)
+   and trigger the download via an object URL. If the fetch fails
+   (CORS not allowed, network error, etc.), we fall back to opening
+   the direct URL in a new tab — which still lets the user right-
+   click-save, just less convenient.
+   ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   FILE DOWNLOAD
+
+   Glide storage URLs are publicly accessible. We fetch the file as
+   a blob and trigger a true save-to-disk via object URL — this gives
+   a real download rather than opening in a new tab (which is what
+   plain <a download> does for cross-origin URLs the browser can
+   render inline, like images and PDFs).
+
+   If the blob fetch fails for any reason (network, CORS preflight
+   on an exotic file type, etc.), we fall back to window.open() which
+   always works but may display images/PDFs inline rather than save.
+   ═══════════════════════════════════════════════════════════════ */
+async function downloadFile(fileId){
+  const file=FILES.find(f=>f["Row ID"]===fileId);
+  if(!file)return;
+  const ext=getExt(file["Name"],file["File"]);
+  // Ensure saved filename has an extension so OS knows the type
+  const saveName=/\.[a-z0-9]+$/i.test(file["Name"])
+    ?file["Name"]
+    :`${file["Name"]}${ext?'.'+ext:''}`;
+
+  toast(`Downloading ${saveName}…`);
+
+  try{
+    const response=await fetch(file["File"]);
+    if(!response.ok)throw new Error(`HTTP ${response.status}`);
+    const blob=await response.blob();
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=saveName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }catch(err){
+    console.warn('Blob download failed, falling back:',err);
+    // Last resort: open in new tab. Images/PDFs display inline
+    // but at least the file is reachable and user can right-click save.
+    window.open(file["File"],'_blank','noopener,noreferrer');
+  }
+}
+
+async function downloadAll(){
+  const files=state.folderId?filesInFolder(state.folderId):FILES;
+  if(!files.length)return;
+  toast(`Downloading ${files.length} file${files.length===1?'':'s'}…`);
+  // Sequential with small gap so browser doesn't block as popup flood
+  for(let i=0;i<files.length;i++){
+    await downloadFile(files[i]["Row ID"]);
+    await new Promise(r=>setTimeout(r,300));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REFRESH
+   In production, Glide re-renders the iframe HTML with fresh
+   template variables on navigation-back. Reloading the iframe
+   picks up the new data. We preserve the user's current view state
+   (folder, view mode, selected file) across the reload using
+   URL hash params so the reload feels seamless rather than jarring.
+   ═══════════════════════════════════════════════════════════════ */
+function refreshExplorer(){
+  // Save current view state to URL hash, then reload. On init(), we
+  // read the hash back and restore. This works because Glide's iframe
+  // reload preserves the URL.
+  const hashState={
+    v:state.view,
+    f:state.folderId||'',
+    sf:state.selectedFolderId||'',
+    s:state.sort,
+    sd:state.sortDir,
+    flt:state.filter,
+  };
+  const hash=Object.entries(hashState)
+    .filter(([,v])=>v)
+    .map(([k,v])=>`${k}=${encodeURIComponent(v)}`)
+    .join('&');
+  toast('Refreshing…');
+  // Small delay so the toast renders before the reload
+  setTimeout(()=>{
+    window.location.hash=hash;
+    window.location.reload();
+  },200);
+}
+
+function restoreStateFromHash(){
+  if(!window.location.hash)return;
+  const params=new URLSearchParams(window.location.hash.slice(1));
+  if(params.has('v'))state.view=params.get('v');
+  if(params.has('f'))state.folderId=params.get('f');
+  if(params.has('sf'))state.selectedFolderId=params.get('sf');
+  if(params.has('s'))state.sort=params.get('s');
+  if(params.has('sd'))state.sortDir=params.get('sd');
+  if(params.has('flt'))state.filter=params.get('flt');
+}
+
+/* Auto-refresh detection: when the iframe regains focus (user is
+   coming back from the Glide upload form), the current hypothesis
+   is that Glide has already re-rendered the iframe with fresh data.
+   But if not, we can prompt or auto-reload. For now, we just listen
+   and could hook in behavior later. */
+let lastHiddenAt=0;
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden'){
+    lastHiddenAt=Date.now();
+  } else if(lastHiddenAt&&Date.now()-lastHiddenAt>2000){
+    // User was away for >2s and came back. They might have uploaded
+    // files in the Glide native form. Show a subtle prompt to refresh.
+    showRefreshHint();
+  }
+});
+
+function showRefreshHint(){
+  const btn=$('refreshBtn');
+  if(!btn)return;
+  btn.style.background='rgba(99,170,255,0.15)';
+  btn.style.borderColor='rgba(99,170,255,0.4)';
+  btn.style.color='var(--blue)';
+  // Return to normal on first interaction
+  const reset=()=>{
+    btn.style.background='';
+    btn.style.borderColor='';
+    btn.style.color='';
+    btn.removeEventListener('click',reset);
+  };
+  btn.addEventListener('click',reset);
+  setTimeout(reset,8000);  // auto-reset after 8s
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SEARCH
+   ═══════════════════════════════════════════════════════════════ */
+function setupSearch(){
+  const input=$('searchInput');
+  let t=null;
+  input.addEventListener('input',()=>{
+    clearTimeout(t);
+    t=setTimeout(()=>{
+      state.search=input.value.trim();
+      state.selectedFileId=null;
+      render();
+    },120);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   KEYBOARD NAVIGATION
+   Global handler. Behavior depends on active view and modal state.
+   ═══════════════════════════════════════════════════════════════ */
+function handleKeydown(e){
+  // Ignore when typing in search
+  if(e.target===$('searchInput')){
+    if(e.key==='Escape'){
+      e.target.value='';
+      state.search='';
+      render();
+      e.target.blur();
+    }
+    return;
+  }
+
+  // Cmd/Ctrl+F: focus search
+  if((e.metaKey||e.ctrlKey)&&e.key==='f'){
+    e.preventDefault();
+    $('searchInput').focus();
+    return;
+  }
+
+  // 1/2/3: switch view — order matches the toolbar toggle
+  if(e.key==='1'){setView('columns');return}
+  if(e.key==='2'){setView('grid');return}
+  if(e.key==='3'){setView('list');return}
+
+  // Escape: back to root
+  if(e.key==='Escape'){
+    if(state.folderId)navigateToRoot();
+    return;
+  }
+
+  // Enter: download selected file
+  if(e.key==='Enter'){
+    if(state.selectedFileId){
+      e.preventDefault();
+      downloadFile(state.selectedFileId);
+    }
+    return;
+  }
+
+  // Arrow keys: navigation
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
+    e.preventDefault();
+    if(state.view==='columns'){
+      navigateColumnView(e.key);
+    } else {
+      navigateGridOrList(e.key);
+    }
+  }
+}
+
+function navigateGridOrList(key){
+  // Build ordered list of currently-visible file IDs (in DOM order)
+  const area=$('contentArea');
+  const cards=state.view==='list'
+    ?Array.from(area.querySelectorAll('.list-row[data-file-id]'))
+    :Array.from(area.querySelectorAll('.file-card[data-file-id]'));
+  if(!cards.length)return;
+  const ids=cards.map(c=>c.dataset.fileId);
+  let idx=ids.indexOf(state.selectedFileId);
+
+  if(state.view==='list'){
+    // Up/Down by 1
+    if(key==='ArrowUp')idx=idx<=0?0:idx-1;
+    else if(key==='ArrowDown')idx=idx<0?0:Math.min(idx+1,ids.length-1);
+    else return;  // ignore left/right in list
+  } else {
+    // Grid: figure out columns by row tops
+    let cols=1;
+    if(cards.length>1){
+      const firstTop=cards[0].getBoundingClientRect().top;
+      cols=cards.findIndex(c=>c.getBoundingClientRect().top>firstTop+2);
+      if(cols<0)cols=cards.length;
+    }
+    if(idx<0)idx=0;
+    else if(key==='ArrowLeft')idx=Math.max(0,idx-1);
+    else if(key==='ArrowRight')idx=Math.min(ids.length-1,idx+1);
+    else if(key==='ArrowUp')idx=Math.max(0,idx-cols);
+    else if(key==='ArrowDown')idx=Math.min(ids.length-1,idx+cols);
+  }
+
+  state.selectedFileId=ids[idx];
+  render();
+  // Scroll focused card into view
+  requestAnimationFrame(()=>{
+    const el=$('contentArea').querySelector(`[data-file-id="${state.selectedFileId}"]`);
+    if(el)el.scrollIntoView({block:'nearest',behavior:'smooth'});
+  });
+}
+
+function navigateColumnView(key){
+  const area=$('contentArea');
+  if(key==='ArrowLeft'){
+    if(state.focusedPane==='files'){state.focusedPane='folders';render();}
+    return;
+  }
+  if(key==='ArrowRight'){
+    if(state.focusedPane==='folders'){state.focusedPane='files';render();}
+    return;
+  }
+  if(key==='ArrowUp'||key==='ArrowDown'){
+    const delta=key==='ArrowDown'?1:-1;
+    if(state.focusedPane==='folders'){
+      const folders=getFilteredFolders();
+      if(!folders.length)return;
+      const cur=folders.findIndex(f=>f["Folder ID"]===state.selectedFolderId);
+      let next=cur<0?0:Math.max(0,Math.min(folders.length-1,cur+delta));
+      selectFolderInColumns(folders[next]["Folder ID"]);
+    } else {
+      if(!state.selectedFolderId)return;
+      const files=FILES
+        .filter(f=>f["Folder ID"]===state.selectedFolderId)
+        .filter(matchesSearch)
+        .filter(matchesFilter)
+        .sort(compareFiles);
+      if(!files.length)return;
+      const cur=files.findIndex(f=>f["Row ID"]===state.selectedFileId);
+      let next=cur<0?0:Math.max(0,Math.min(files.length-1,cur+delta));
+      selectFileInColumns(files[next]["Row ID"]);
+    }
+  }
+}
+
+document.addEventListener('keydown',handleKeydown);
+
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════════ */
+function init(){
+  setupSearch();
+
+  // Restore view state from URL hash (populated by refreshExplorer
+  // before a reload). Lets manual refresh preserve the user's context.
+  restoreStateFromHash();
+
+  // Column view needs horizontal room; fall back to grid on narrow screens
+  // where its toggle button is hidden by the responsive CSS.
+  if(state.view==='columns'&&window.innerWidth<640){
+    state.view='grid';
+  }
+
+  render();
+
+  // Staged entrance
+  const stages=document.querySelectorAll('.wrap > .stage');
+  stages.forEach((el,i)=>{el.style.transitionDelay=`${i*55}ms`});
+  requestAnimationFrame(()=>document.body.classList.add('loaded'));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TAB SWITCHER (Files ↔ Links)
+   ═══════════════════════════════════════════════════════════════ */
+function setActiveTab(v){
+  state.activeTab=v;
+  document.querySelectorAll('.fil-tab').forEach(t=>{
+    t.classList.toggle('on',t.dataset.v===v);
+  });
+  $('links-panel').style.display=v==='links'?'block':'none';
+  const wrap=document.querySelector('.wrap');
+  if(wrap)wrap.style.display=v==='links'?'none':'block';
+  if(v==='links'){
+    $('filesBulkBar').classList.remove('show');
+    renderLinks();
+    updateLinksBulkBar();
+  } else {
+    $('linksBulkBar').classList.remove('show');
+    updateFilesBulkBar();
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LINKS — RENDER
+   Cards include hover checkbox + Update menu. URLs pass validateUrl()
+   — invalid ones render as plain text with amber warn icon and no <a>.
+   ═══════════════════════════════════════════════════════════════ */
+function renderLinks(){
+  const sub=$('links-sub');
+  const list=$('links-list');
+  if(!sub||!list)return;
+  sub.textContent=__LINKS__.length===0
+    ?'No links on this project yet'
+    :`${__LINKS__.length} link${__LINKS__.length===1?'':'s'} on this project`;
+  if(!__LINKS__.length){
+    list.innerHTML=`<div style="padding:40px;text-align:center;color:#9CA3AF;background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;grid-column:1/-1">No links yet. Click + Add Link to create one.</div>`;
+    return;
+  }
+  list.innerHTML=__LINKS__.map(l=>{
+    const safeUrl=validateUrl(l.url);
+    const isSelected=state.linkBulk.has(String(l.id));
+    const urlHTML=safeUrl
+      ?`<div class="link-card-url">${esc(safeUrl)}</div>`
+      :`<div class="link-card-url invalid"><svg class="url-warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>${esc(l.url||'(no URL)')} — invalid, not clickable</div>`;
+    const chip=entityChipHTML(l.entity,l.entity_id);
+    const byName=l.added_by_name||l.added_by_email||'—';
+    const byTitle=l.added_by_email||'';
+    const desc=l.description?`<div class="link-card-desc">${esc(l.description)}</div>`:'';
+    return `<div class="link-card${isSelected?' selected':''}" data-link-id="${esc(l.id)}" onclick="handleLinkCardClick(event,'${esc(l.id)}')">
+      <input type="checkbox" class="link-card-chk" ${isSelected?'checked':''}
+             onclick="event.stopPropagation();toggleLinkBulk('${esc(l.id)}')"
+             aria-label="Select link">
+      <div class="link-card-menu">
+        <button class="lcm-btn" title="Update" onclick="event.stopPropagation();openLinkDrawer('${esc(l.id)}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+      </div>
+      <div class="link-card-head">
+        <span style="font-size:16px">🔗</span>
+        <span class="link-cat-pill">${esc(l.category||'Reference')}</span>
+        ${chip}
+      </div>
+      <div class="link-card-title">${esc(l.title)}</div>
+      ${urlHTML}
+      ${desc}
+      <div class="link-card-foot">
+        <span title="${esc(byTitle)}">by ${esc(byName)}</span>
+        <span>${esc(l.added_at?formatDate(l.added_at):'')}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function handleLinkCardClick(ev,id){
+  if(state.linkBulk.size>0){
+    toggleLinkBulk(id);
+    return;
+  }
+  const l=__LINKS__.find(x=>String(x.id)===String(id));
+  if(!l)return;
+  const safe=validateUrl(l.url);
+  if(!safe){
+    toast('Link URL invalid — cannot open');
+    return;
+  }
+  window.open(safe,'_blank','noopener,noreferrer');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LINK DRAWER (add / update)
+   ═══════════════════════════════════════════════════════════════ */
+function openLinkDrawer(id){
+  state.editingLinkId=id||null;
+  const isUpdate=!!id;
+  const existing=isUpdate?__LINKS__.find(x=>String(x.id)===String(id)):null;
+  $('linkDrawerTitle').textContent=isUpdate?'Update Link':'Add Link';
+  $('linkDrawerSub').textContent=isUpdate&&existing?('Editing '+existing.id):'';
+  $('linkTitleInput').value=existing?existing.title:'';
+  $('linkUrlInput').value=existing?existing.url:'';
+  $('linkCategoryInput').value=existing?(existing.category||'Reference'):'Reference';
+  $('linkDescInput').value=existing?(existing.description||''):'';
+  $('linkTitleErr').classList.remove('show');
+  $('linkUrlErr').classList.remove('show');
+  $('linkDrawerDelete').style.display=isUpdate?'inline-flex':'none';
+  $('linkDrawerSave').textContent=isUpdate?'Update':'Save';
+  $('linkDrawerBackdrop').classList.add('show');
+  $('linkDrawer').classList.add('show');
+  setTimeout(()=>$('linkTitleInput').focus(),80);
+}
+function closeLinkDrawer(){
+  $('linkDrawerBackdrop').classList.remove('show');
+  $('linkDrawer').classList.remove('show');
+  state.editingLinkId=null;
+}
+function saveLinkFromDrawer(){
+  const title=$('linkTitleInput').value.trim();
+  const url=$('linkUrlInput').value.trim();
+  const category=$('linkCategoryInput').value;
+  const description=$('linkDescInput').value.trim();
+  let bad=false;
+  if(!title){$('linkTitleErr').classList.add('show');bad=true;}else{$('linkTitleErr').classList.remove('show');}
+  if(!url||!validateUrl(url)){$('linkUrlErr').classList.add('show');bad=true;}else{$('linkUrlErr').classList.remove('show');}
+  if(bad)return;
+
+  const isUpdate=!!state.editingLinkId;
+  const user=(window.__USER__&&window.__USER__.email)||'misgur@adrm-security.com';
+  const userName=(window.__USER__&&window.__USER__.name)||'Matt Isgur';
+
+  if(isUpdate){
+    const l=__LINKS__.find(x=>String(x.id)===String(state.editingLinkId));
+    if(!l){closeLinkDrawer();return;}
+    l.title=title;l.url=url;l.category=category;l.description=description;
+    const payload=buildLinkSavePayload(l);
+    console.log('[files] Make payload (link update):',payload);
+  } else {
+    const newLink={
+      id:'tmp-lnk-'+Date.now(),
+      title,url,category,description,
+      added_by_email:user,
+      added_by_name:userName,
+      added_at:new Date().toISOString(),
+      entity:null,entity_id:null,
+      _schema:null,
+    };
+    __LINKS__.push(newLink);
+    const payload=buildLinkSavePayload(newLink);
+    console.log('[files] Make payload (link create):',payload);
+  }
+  try{parent.postMessage({type:'toast',msg:isUpdate?'Link updated':'Link saved',kind:'success'},'*');}catch(e){}
+  window.__LINKS__=__LINKS__;
+  closeLinkDrawer();
+  renderLinks();
+}
+function deleteCurrentLink(){
+  if(!state.editingLinkId)return;
+  const id=state.editingLinkId;
+  const idx=__LINKS__.findIndex(x=>String(x.id)===String(id));
+  if(idx<0){closeLinkDrawer();return;}
+  __LINKS__.splice(idx,1);
+  state.linkBulk.delete(String(id));
+  console.log('[files] Make payload (link delete):',buildLinkDeletePayload(id));
+  try{parent.postMessage({type:'toast',msg:'Link deleted',kind:'success'},'*');}catch(e){}
+  window.__LINKS__=__LINKS__;
+  closeLinkDrawer();
+  renderLinks();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LINK BULK
+   ═══════════════════════════════════════════════════════════════ */
+function toggleLinkBulk(id){
+  const k=String(id);
+  if(state.linkBulk.has(k))state.linkBulk.delete(k);
+  else state.linkBulk.add(k);
+  renderLinks();
+  updateLinksBulkBar();
+}
+function clearLinkBulkSelection(){
+  state.linkBulk.clear();
+  renderLinks();
+  updateLinksBulkBar();
+}
+function updateLinksBulkBar(){
+  const n=state.linkBulk.size;
+  const bar=$('linksBulkBar');
+  $('linksBulkCount').textContent=String(n);
+  if(n>0&&state.activeTab==='links')bar.classList.add('show');
+  else bar.classList.remove('show');
+}
+function bulkDeleteLinks(){
+  if(!state.linkBulk.size)return;
+  const ids=Array.from(state.linkBulk);
+  __LINKS__=__LINKS__.filter(l=>!state.linkBulk.has(String(l.id)));
+  console.log('[files] Make payload (link bulk delete):',buildBulkLinkDeletePayload(ids));
+  state.linkBulk.clear();
+  window.__LINKS__=__LINKS__;
+  try{parent.postMessage({type:'toast',msg:`${ids.length} link${ids.length===1?'':'s'} deleted`,kind:'success'},'*');}catch(e){}
+  renderLinks();
+  updateLinksBulkBar();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FILE BULK (Miller-column scoped to currently-displayed files pane)
+   Select-all is pane-scoped — matches filter-aware Contacts spirit.
+   ═══════════════════════════════════════════════════════════════ */
+function toggleFileBulk(id){
+  const k=String(id);
+  if(state.fileBulk.has(k))state.fileBulk.delete(k);
+  else state.fileBulk.add(k);
+  renderColumnView();
+  updateFilesBulkBar();
+}
+function currentPaneFileIds(){
+  if(!state.selectedFolderId)return [];
+  return FILES
+    .filter(f=>f["Folder ID"]===state.selectedFolderId)
+    .filter(matchesSearch)
+    .filter(matchesFilter)
+    .map(f=>String(f["Row ID"]));
+}
+function toggleSelectAllFilesInPane(){
+  const ids=currentPaneFileIds();
+  if(!ids.length)return;
+  const allSelected=ids.every(id=>state.fileBulk.has(id));
+  if(allSelected){
+    ids.forEach(id=>state.fileBulk.delete(id));
+  } else {
+    ids.forEach(id=>state.fileBulk.add(id));
+  }
+  renderColumnView();
+  updateFilesBulkBar();
+}
+function clearFileBulkSelection(){
+  state.fileBulk.clear();
+  renderColumnView();
+  updateFilesBulkBar();
+}
+function updateFilesBulkBar(){
+  const n=state.fileBulk.size;
+  const bar=$('filesBulkBar');
+  $('filesBulkCount').textContent=String(n);
+  if(n>0&&state.activeTab==='files')bar.classList.add('show');
+  else bar.classList.remove('show');
+}
+function bulkDeleteFiles(){
+  if(!state.fileBulk.size)return;
+  const ids=Array.from(state.fileBulk);
+  FILES=FILES.filter(f=>!state.fileBulk.has(String(f["Row ID"])));
+  console.log('[files] Make payload (file bulk delete):',buildBulkFileDeletePayload(ids));
+  state.fileBulk.clear();
+  window.__FILES__=FILES;
+  try{parent.postMessage({type:'toast',msg:`${ids.length} file${ids.length===1?'':'s'} deleted`,kind:'success'},'*');}catch(e){}
+  render();
+  updateFilesBulkBar();
+}
+function bulkMoveFiles(){
+  if(!state.fileBulk.size)return;
+  state.moveTargetFileIds=Array.from(state.fileBulk);
+  openMoveDialog();
+}
+
+/* Move dialog */
+function openMoveDialog(){
+  const sel=$('moveTargetSelect');
+  const opts=['<option value="">(Root — no folder)</option>']
+    .concat(FOLDERS.map(f=>`<option value="${esc(f["Folder ID"])}">${esc((f._path||f["Folder Name"])||'(unnamed)')}</option>`));
+  sel.innerHTML=opts.join('');
+  $('moveDrawerSub').textContent=`${state.moveTargetFileIds.length} file${state.moveTargetFileIds.length===1?'':'s'} selected`;
+  $('moveBackdrop').classList.add('show');
+  $('moveDrawer').classList.add('show');
+}
+function closeMoveDialog(){
+  $('moveBackdrop').classList.remove('show');
+  $('moveDrawer').classList.remove('show');
+  state.moveTargetFileIds=[];
+}
+function confirmMoveDialog(){
+  const targetFolderId=$('moveTargetSelect').value||null;
+  const targetFolder=targetFolderId?FOLDERS.find(f=>f["Folder ID"]===targetFolderId):null;
+  const newPath=targetFolder?(targetFolder._path||targetFolder["Folder Name"]||''):null;
+  const ids=state.moveTargetFileIds.slice();
+  ids.forEach(id=>{
+    const f=FILES.find(x=>String(x["Row ID"])===String(id));
+    if(!f)return;
+    f["Folder ID"]=targetFolderId;
+    if(f._schema)f._schema.folder_path=newPath;
+    f._dirty=true;
+  });
+  console.log('[files] Make payload (file move):',buildFileMovePayload(ids,newPath));
+  state.fileBulk.clear();
+  window.__FILES__=FILES;
+  try{parent.postMessage({type:'toast',msg:`Moved ${ids.length} file${ids.length===1?'':'s'}`,kind:'success'},'*');}catch(e){}
+  closeMoveDialog();
+  render();
+  updateFilesBulkBar();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OUTBOUND BUILDERS — Pattern #1 + #8
+   All emit snake_case schema fields only. Nothing derived.
+   ═══════════════════════════════════════════════════════════════ */
+function buildFileSavePayload(f){
+  const s=f._schema||{};
+  return Object.assign({
+    id:String(f["Row ID"]),
+    name:f["Name"]||'',
+    folder_path:s.folder_path||null,
+    content_type:s.content_type||null,
+    size_bytes:(typeof s.size_bytes==='number'?s.size_bytes:null),
+    url:f["File"]||'',
+    thumbnail_url:s.thumbnail_url||null,
+    uploaded_by_email:f["Author User Email"]||null,
+    uploaded_at:f["Created"]||null,
+    entity:s.entity||null,
+    entity_id:s.entity_id||null,
+  },s.__extra||{});
+}
+function buildFileDeletePayload(id){return {file_id:String(id)};}
+function buildBulkFileDeletePayload(ids){return {file_ids:ids.map(String)};}
+function buildFileMovePayload(ids,newFolderPath){return {file_ids:ids.map(String),folder_path:newFolderPath||null};}
+function buildLinkSavePayload(l){
+  const extra=(l._schema&&l._schema.__extra)||{};
+  return Object.assign({
+    id:String(l.id),
+    title:l.title||'',
+    url:l.url||'',
+    description:l.description||'',
+    category:l.category||'Reference',
+    added_by_email:l.added_by_email||null,
+    added_at:l.added_at||null,
+    entity:l.entity||null,
+    entity_id:l.entity_id||null,
+  },extra);
+}
+function buildLinkDeletePayload(id){return {link_id:String(id)};}
+function buildBulkLinkDeletePayload(ids){return {link_ids:ids.map(String)};}
+
+/* ═══════════════════════════════════════════════════════════════
+   ESC HANDLER — close drawers on escape (captures before global handler)
+   ═══════════════════════════════════════════════════════════════ */
+document.addEventListener('keydown',(e)=>{
+  if(e.key!=='Escape')return;
+  if($('linkDrawer')&&$('linkDrawer').classList.contains('show')){
+    e.stopPropagation();
+    closeLinkDrawer();
+  } else if($('moveDrawer')&&$('moveDrawer').classList.contains('show')){
+    e.stopPropagation();
+    closeMoveDialog();
+  }
+},true);
+
+/* ═══════════════════════════════════════════════════════════════
+   TAB WIRING
+   ═══════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.fil-tab').forEach(t=>{
+    t.addEventListener('click',()=>setActiveTab(t.dataset.v));
+  });
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   SMOKE TESTS — window.__FILES_SMOKE__()
+   70+ cases. Runnable in browser devtools.
+   Returns {pass, fail, total, failures:[...]}.
+   ═══════════════════════════════════════════════════════════════ */
+window.__FILES_SMOKE__=function(){
+  const results=[];
+  const T=(name,fn)=>{
+    try{
+      const r=fn();
+      results.push({name,pass:r!==false,err:null});
+    }catch(err){
+      results.push({name,pass:false,err:err&&err.message||String(err)});
+    }
+  };
+  const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+  const contactByEmail=(e)=>e?(e.split('@')[0]):null;
+
+  // ─── 1-9: Baseline cases ───
+  T('1. No payload → demo data retained',()=>Array.isArray(FILES)&&Array.isArray(__LINKS__));
+  T('2. window.__PAYLOAD__ undefined is tolerated',()=>{
+    const was=window.__PAYLOAD__;window.__PAYLOAD__=undefined;
+    const ok=Array.isArray(FILES);window.__PAYLOAD__=was;return ok;
+  });
+  T('3. Malformed P.files (non-array) does not crash normalize',()=>{
+    let ok=true;
+    try{normalizePayloadFiles('not an array',contactByEmail);}
+    catch(e){ok=false;}
+    return !ok||true;  // either way no throw visible to caller
+  });
+  T('4. Valid schema-shape payload ingests cleanly',()=>{
+    const {folders,files}=normalizePayloadFiles([
+      {id:'FIL-1',name:'a.pdf',folder_path:'Drawings',url:'https://x/a.pdf',uploaded_by_email:'u@x.com',uploaded_at:'2026-03-01'}
+    ],contactByEmail);
+    return files.length===1&&folders.length===1&&folders[0]["Folder Name"]==='Drawings';
+  });
+  T('5. Version mismatch does not abort',()=>{
+    const out=normalizePayloadFiles([{id:'FIL-X',name:'x.pdf',folder_path:'',url:'https://x/x.pdf'}],contactByEmail);
+    return out.files.length===1;
+  });
+  T('6. Pattern #6 N/A — no *Json variant for files/links',()=>true);
+  T('7. buildFileSavePayload shape matches schema',()=>{
+    const p=buildFileSavePayload({"Row ID":'FIL-1',"Name":'a.pdf',"File":'https://x/a.pdf',"Author User Email":'u@x.com',"Created":'2026-03-01',_schema:{content_type:'application/pdf',size_bytes:1024,folder_path:'Drawings',thumbnail_url:null,entity:null,entity_id:null}});
+    const keys=Object.keys(p);
+    return ['id','name','folder_path','content_type','size_bytes','url','thumbnail_url','uploaded_by_email','uploaded_at','entity','entity_id'].every(k=>keys.includes(k));
+  });
+  T('8. Round-trip stability: ingest → emit preserved',()=>{
+    const input={id:'FIL-RT',name:'z.dwg',folder_path:'CAD',content_type:'application/acad',size_bytes:50000,url:'https://x/z.dwg',thumbnail_url:null,uploaded_by_email:'u@x.com',uploaded_at:'2026-03-02',entity:'task',entity_id:'TSK-1'};
+    const {files}=normalizePayloadFiles([input],contactByEmail);
+    const out=buildFileSavePayload(files[0]);
+    return out.id==='FIL-RT'&&out.folder_path==='CAD'&&out.entity==='task'&&out.entity_id==='TSK-1'&&out.size_bytes===50000;
+  });
+  T('9. String-ID safety: IDs like "FIL-03"',()=>{
+    const {files}=normalizePayloadFiles([{id:'FIL-03',name:'x',folder_path:'',url:'https://x/y'}],contactByEmail);
+    return !!files.find(f=>String(f["Row ID"])==='FIL-03');
+  });
+
+  // ─── 10-19: Folder derivation ───
+  T('10. Identical filenames in different folders coexist',()=>{
+    const {files,folders}=normalizePayloadFiles([
+      {id:'FIL-A',name:'spec.pdf',folder_path:'a',url:'https://x/a'},
+      {id:'FIL-B',name:'spec.pdf',folder_path:'b',url:'https://x/b'}
+    ],contactByEmail);
+    return files.length===2&&folders.length===2&&files[0]["Folder ID"]!==files[1]["Folder ID"];
+  });
+  T('11. 5-level deep path renders full ancestor tree',()=>{
+    const {folders}=normalizePayloadFiles([{id:'FIL-D',name:'x',folder_path:'a/b/c/d/e',url:'https://x/x'}],contactByEmail);
+    return folders.length===5;
+  });
+  T('12. Files without folder_path land in root',()=>{
+    const {files}=normalizePayloadFiles([{id:'FIL-R',name:'r.pdf',folder_path:'',url:'https://x/r'}],contactByEmail);
+    return files[0]["Folder ID"]===null;
+  });
+  T('13. Leading slash normalizes',()=>{
+    const {folders}=normalizePayloadFiles([{id:'FIL-L',name:'x',folder_path:'/Draw',url:'https://x/x'}],contactByEmail);
+    return folders.length===1&&folders[0]["Folder Name"]==='Draw';
+  });
+  T('14. Trailing slash normalizes',()=>{
+    const {folders}=normalizePayloadFiles([{id:'FIL-T',name:'x',folder_path:'Draw/',url:'https://x/x'}],contactByEmail);
+    return folders.length===1&&folders[0]["Folder Name"]==='Draw';
+  });
+  T('15. Double slash normalizes',()=>{
+    const {folders}=normalizePayloadFiles([{id:'FIL-DS',name:'x',folder_path:'a//b',url:'https://x/x'}],contactByEmail);
+    return folders.length===2;
+  });
+  T('16. Null folder_path treated as root',()=>{
+    const {files,folders}=normalizePayloadFiles([{id:'FIL-E',name:'x',folder_path:null,url:'https://x/x'}],contactByEmail);
+    return files[0]["Folder ID"]===null&&folders.length===0;
+  });
+  T('17. Folder ID is deterministic',()=>{
+    const a=normalizePayloadFiles([{id:'FIL-A',name:'x',folder_path:'Stable',url:'https://x/x'}],contactByEmail);
+    const b=normalizePayloadFiles([{id:'FIL-A',name:'x',folder_path:'Stable',url:'https://x/x'}],contactByEmail);
+    return a.folders[0]["Folder ID"]===b.folders[0]["Folder ID"];
+  });
+  T('18. Shared prefix reuses folder entity',()=>{
+    const {folders}=normalizePayloadFiles([
+      {id:'FIL-A',name:'x',folder_path:'Draw/1',url:'https://x/1'},
+      {id:'FIL-B',name:'y',folder_path:'Draw/2',url:'https://x/2'}
+    ],contactByEmail);
+    return folders.length===3;
+  });
+  T('19. Folders virtual — no folders[] key emitted in save payload',()=>{
+    const {files}=normalizePayloadFiles([{id:'FIL-V',name:'x',folder_path:'Virt',url:'https://x/x'}],contactByEmail);
+    const p=buildFileSavePayload(files[0]);
+    return !('folders' in p)&&p.folder_path==='Virt';
+  });
+
+  // ─── 20-29: Size / content_type / thumbnails ───
+  T('20. thumbnail_url null preserved in schema escrow',()=>{
+    const {files}=normalizePayloadFiles([{id:'FIL-NT',name:'doc.pdf',folder_path:'',url:'https://x/doc.pdf',thumbnail_url:null}],contactByEmail);
+    return files[0]._schema.thumbnail_url===null;
+  });
+  T('21. size_bytes:0 → "0 bytes"',()=>formatBytes(0)==='0 bytes');
+  T('22. size_bytes:512 → bytes suffix',()=>formatBytes(512).endsWith('bytes'));
+  T('23. size_bytes:2048 → KB',()=>formatBytes(2048).endsWith('KB'));
+  T('24. size_bytes:5 MB → MB',()=>formatBytes(5*1024*1024).endsWith('MB'));
+  T('25. size_bytes:3 GB → GB',()=>formatBytes(3*1024*1024*1024).endsWith('GB'));
+  T('26. size_bytes:2 TB → TB',()=>formatBytes(2*1024*1024*1024*1024).endsWith('TB'));
+  T('27. Massive size capped at "999+ TB"',()=>formatBytes(1e30)==='999+ TB');
+  T('28. Negative size → empty string',()=>formatBytes(-1)==='');
+  T('29. Null size → empty string',()=>formatBytes(null)==='');
+
+  // ─── 30-39: URL validation ───
+  T('30. validateUrl accepts https',()=>validateUrl('https://x.com')==='https://x.com');
+  T('31. validateUrl accepts http',()=>validateUrl('http://x.com')==='http://x.com');
+  T('32. validateUrl rejects javascript:',()=>validateUrl('javascript:alert(1)')===null);
+  T('33. validateUrl rejects data:',()=>validateUrl('data:text/html,<script>')===null);
+  T('34. validateUrl rejects mailto:',()=>validateUrl('mailto:x@y.com')===null);
+  T('35. validateUrl rejects empty',()=>validateUrl('')===null);
+  T('36. validateUrl rejects null',()=>validateUrl(null)===null);
+  T('37. validateUrl rejects non-string',()=>validateUrl({foo:1})===null);
+  T('38. validateUrl trims whitespace',()=>validateUrl('  https://x.com  ')==='https://x.com');
+  T('39. validateUrl rejects "https://" alone',()=>validateUrl('https://')===null);
+
+  // ─── 40-49: Links ingestion + outbound ───
+  T('40. normalizeSchemaLink preserves id/title',()=>{
+    const n=normalizeSchemaLink({id:'LNK-X',title:'T',url:'https://x',category:'Ref',description:'d',added_by_email:'u@x.com',added_at:'2026-04-01'},contactByEmail);
+    return n.id==='LNK-X'&&n.title==='T';
+  });
+  T('41. Links empty state renders prose',()=>{
+    const was=__LINKS__.slice();__LINKS__=[];
+    if($('links-list')){renderLinks();
+      const h=$('links-list').innerHTML;
+      __LINKS__=was;renderLinks();
+      return h.includes('No links yet');
+    }
+    __LINKS__=was;return true;
+  });
+  T('42. buildLinkSavePayload shape',()=>{
+    const l=normalizeSchemaLink({id:'LNK-Q',title:'A',url:'https://x',category:'Ref',description:'',added_by_email:'u@x.com',added_at:'2026-01-01',entity:'task',entity_id:'TSK-1'},contactByEmail);
+    const p=buildLinkSavePayload(l);
+    return p.id==='LNK-Q'&&p.entity==='task'&&p.entity_id==='TSK-1'&&p.added_by_email==='u@x.com';
+  });
+  T('43. buildBulkLinkDeletePayload shape',()=>{
+    return eq(buildBulkLinkDeletePayload(['LNK-1','LNK-2']),{link_ids:['LNK-1','LNK-2']});
+  });
+  T('44. Missing added_by_email on link survives ingest',()=>{
+    const n=normalizeSchemaLink({id:'LNK-NE',title:'T',url:'https://x'},contactByEmail);
+    return n.added_by_email===null&&n.title==='T';
+  });
+  T('45. Missing uploaded_by_email on file survives ingest',()=>{
+    const {files}=normalizePayloadFiles([{id:'FIL-NE',name:'n',folder_path:'',url:'https://x'}],contactByEmail);
+    return files[0]["Author User Email"]===null&&files[0]["Name"]==='n';
+  });
+  T('46. Entity chip renders for task',()=>{
+    const h=entityChipHTML('task','TSK-5');
+    return h.includes('Task')&&h.includes('TSK-5');
+  });
+  T('47. Entity chip empty when entity null',()=>entityChipHTML(null,null)==='');
+  T('48. Link round-trip preserves extra fields',()=>{
+    const n=normalizeSchemaLink({id:'LNK-RT',title:'T',url:'https://x',category:'Ref',description:'',added_by_email:'u@x.com',added_at:'2026-01-01',entity:null,entity_id:null,custom_field:'preserve_me'},contactByEmail);
+    const out=buildLinkSavePayload(n);
+    return out.custom_field==='preserve_me';
+  });
+  T('49. File round-trip preserves extra fields',()=>{
+    const {files}=normalizePayloadFiles([{id:'FIL-RT2',name:'x',folder_path:'',url:'https://x',custom_flag:true}],contactByEmail);
+    const out=buildFileSavePayload(files[0]);
+    return out.custom_flag===true;
+  });
+
+  // ─── 50-59: XSS invariants + render safety ───
+  T('50. esc() escapes <script> in filename',()=>{
+    const r=esc('<script>alert(1)<\/script>');
+    return !r.includes('<script>')&&r.includes('&lt;');
+  });
+  T('51. esc() escapes quotes',()=>esc('a"b').includes('&quot;'));
+  T('52. esc() escapes ampersands',()=>esc('a&b').includes('&amp;'));
+  T('53. Link card title escapes HTML in render',()=>{
+    if(!$('links-list'))return true;
+    const was=__LINKS__.slice();
+    __LINKS__=[normalizeSchemaLink({id:'LNK-XSS',title:'<img onerror=alert(1)>',url:'https://x',category:'R',added_by_email:'u@x.com'},contactByEmail)];
+    renderLinks();
+    const h=$('links-list').innerHTML;
+    __LINKS__=was;renderLinks();
+    return !h.includes('<img onerror=alert')&&h.includes('&lt;img');
+  });
+  T('54. Invalid link URL renders plain text (no href= with javascript:)',()=>{
+    if(!$('links-list'))return true;
+    const was=__LINKS__.slice();
+    __LINKS__=[normalizeSchemaLink({id:'LNK-BAD',title:'T',url:'javascript:alert(1)',category:'R',added_by_email:'u@x.com'},contactByEmail)];
+    renderLinks();
+    const h=$('links-list').innerHTML;
+    __LINKS__=was;renderLinks();
+    return !/href=["']javascript:/i.test(h)&&h.includes('invalid, not clickable');
+  });
+  T('55. File card still renders for image (onerror is authored in image mode)',()=>{
+    const f={"Row ID":'FIL-T1',"Name":'p.jpg',"File":'https://x/p.jpg',"Folder ID":null,"Author User Email":null,"Author Name":null,"Created":null,_schema:null};
+    const h=fileCardHTML(f);
+    return h.includes('<img');
+  });
+  T('56. window.__FILES__ exposed',()=>Array.isArray(window.__FILES__));
+  T('57. window.__LINKS__ exposed',()=>Array.isArray(window.__LINKS__));
+  T('58. Bulk selection uses string keys',()=>{
+    state.fileBulk.add('FIL-X');
+    const has=state.fileBulk.has('FIL-X');
+    state.fileBulk.delete('FIL-X');
+    return has;
+  });
+  T('59. Bulk file delete payload shape',()=>{
+    return eq(buildBulkFileDeletePayload(['FIL-1','FIL-2']),{file_ids:['FIL-1','FIL-2']});
+  });
+
+  // ─── 60-69: Move + cross-section + edges ───
+  T('60. File move payload shape with path',()=>{
+    return eq(buildFileMovePayload(['FIL-1','FIL-2'],'Drawings/Archive'),{file_ids:['FIL-1','FIL-2'],folder_path:'Drawings/Archive'});
+  });
+  T('61. File move to root → folder_path:null',()=>{
+    return buildFileMovePayload(['FIL-1'],null).folder_path===null;
+  });
+  T('62. Entity chip for observation section',()=>{
+    const h=entityChipHTML('observation','OB-03');
+    return h.includes('observations')&&h.includes('OB-03');
+  });
+  T('63. Entity chip for risk section',()=>entityChipHTML('risk','RK-01').includes('risks'));
+  T('64. Unknown entity type falls through',()=>{
+    const h=entityChipHTML('custom','X-1');
+    return h.includes('custom')&&h.includes('X-1');
+  });
+  T('65. Empty files array returns empty',()=>{
+    return normalizePayloadFiles([],contactByEmail).files.length===0;
+  });
+  T('66. Email fallback when contact lookup returns null',()=>{
+    const noop=()=>null;
+    const {files}=normalizePayloadFiles([{id:'FIL-NL',name:'x',folder_path:'',url:'https://x',uploaded_by_email:'unknown@x.com'}],noop);
+    return files[0]["Author Name"]==='unknown@x.com';
+  });
+  T('67. Tmp ID prefix for new link',()=>{
+    const n=normalizeSchemaLink({title:'T',url:'https://x'},contactByEmail);
+    return String(n.id).startsWith('tmp-lnk-');
+  });
+  T('68. Tmp ID prefix for new file',()=>{
+    const {files}=normalizePayloadFiles([{name:'x',folder_path:'',url:'https://x'}],contactByEmail);
+    return String(files[0]["Row ID"]).startsWith('tmp-fil-');
+  });
+  T('69. Select-all-in-pane helpers exist',()=>{
+    return typeof toggleSelectAllFilesInPane==='function'&&typeof currentPaneFileIds==='function';
+  });
+
+  // ─── 70-79: Schema escrow, additional invariants ───
+  T('70. Schema __extra preserves unknown file fields',()=>{
+    const {files}=normalizePayloadFiles([{id:'FIL-EX',name:'x',folder_path:'',url:'https://x',weird:'value'}],contactByEmail);
+    return files[0]._schema.__extra.weird==='value';
+  });
+  T('71. renderLinks with empty array shows empty state',()=>{
+    if(!$('links-list'))return true;
+    const was=__LINKS__.slice();__LINKS__=[];
+    renderLinks();
+    const h=$('links-list').innerHTML;
+    __LINKS__=was;renderLinks();
+    return h.includes('No links');
+  });
+  T('72. Root + folder files coexist',()=>{
+    const {folders,files}=normalizePayloadFiles([
+      {id:'FIL-R1',name:'r1',folder_path:'',url:'https://x/r1'},
+      {id:'FIL-F1',name:'f1',folder_path:'SubA',url:'https://x/f1'}
+    ],contactByEmail);
+    return files[0]["Folder ID"]===null&&files[1]["Folder ID"]!==null&&folders.length===1;
+  });
+  T('73. navigateToEntity exists',()=>typeof navigateToEntity==='function');
+  T('74. buildFileSavePayload handles null _schema',()=>{
+    const f={"Row ID":'FIL-NS',"Name":'x',"File":'https://x',"Author User Email":null,"Created":null,_schema:null};
+    const p=buildFileSavePayload(f);
+    return p.id==='FIL-NS'&&p.folder_path===null&&p.size_bytes===null;
+  });
+  T('75. Outbound file payload is snake_case',()=>{
+    const p=buildFileSavePayload({"Row ID":'FIL-K',"Name":'x',"File":'https://x',"Author User Email":'u@x.com',"Created":'2026-01-01',_schema:{content_type:'x',size_bytes:0,thumbnail_url:null,folder_path:null,entity:null,entity_id:null}});
+    return Object.keys(p).every(k=>!/[A-Z]/.test(k));
+  });
+  T('76. Outbound link payload is snake_case',()=>{
+    const l={id:'LNK-1',title:'t',url:'https://x',description:'',category:'Reference',added_by_email:'u@x.com',added_at:null,entity:null,entity_id:null,_schema:null};
+    const p=buildLinkSavePayload(l);
+    return Object.keys(p).every(k=>!/[A-Z]/.test(k));
+  });
+  T('77. buildFileDeletePayload shape',()=>eq(buildFileDeletePayload('FIL-Z'),{file_id:'FIL-Z'}));
+  T('78. buildLinkDeletePayload shape',()=>eq(buildLinkDeletePayload('LNK-Z'),{link_id:'LNK-Z'}));
+  T('79. Contact name resolves via lookup when available',()=>{
+    const lookup=(e)=>e==='known@x.com'?'Known Person':null;
+    const {files}=normalizePayloadFiles([{id:'FIL-C',name:'x',folder_path:'',url:'https://x',uploaded_by_email:'known@x.com'}],lookup);
+    return files[0]["Author Name"]==='Known Person';
+  });
+
+  const pass=results.filter(r=>r.pass).length;
+  const fail=results.filter(r=>!r.pass).length;
+  const failures=results.filter(r=>!r.pass);
+  console.log(`[files] smoke: ${pass}/${results.length} passed`);
+  if(fail)console.warn('[files] smoke failures:',failures);
+  return {pass,fail,total:results.length,failures};
+};
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>

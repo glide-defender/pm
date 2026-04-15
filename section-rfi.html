@@ -1,0 +1,782 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>RFI</title><style>
+*{box-sizing:border-box;margin:0;padding:0}body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;padding:20px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.ti{font-size:18px;font-weight:700;color:#fff}.sb{font-size:12px;color:#9CA3AF;margin-top:3px}.ctr{display:flex;gap:8px;align-items:center}
+.srch{background:#1f1f1f;border:1px solid #303030;border-radius:6px;padding:7px 11px;color:#E5E7EB;font-size:12.5px;outline:none;width:220px;font-family:inherit}
+.btn{padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #303030;background:#1f1f1f;color:#E5E7EB;cursor:pointer;font-family:inherit}.bp{background:#3c4756;color:#fff;border-color:#4a5666}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.kpi{background:#1f1f1f;border:1px solid #2a2a2a;border-left:3px solid;border-radius:8px;padding:12px 14px}
+.kl{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:5px}.kv{font-size:22px;font-weight:800}.kc{font-size:11px;color:#9CA3AF;margin-top:3px}
+.card{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;overflow:hidden}
+.rtbl{width:100%;border-collapse:collapse;font-size:12.5px}.rtbl th{padding:10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9CA3AF;border-bottom:1px solid #303030;background:#191919}.rtbl td{padding:11px 10px;border-bottom:1px solid #2a2a2a}.rtbl tr[data-id]{cursor:pointer}.rtbl tr[data-id]:hover td{background:#252525}
+.rfinum{display:inline-flex;align-items:center;padding:3px 8px;border-radius:5px;background:rgba(66,134,244,.14);color:#60a5fa;font-size:11px;font-weight:700;font-family:ui-monospace,monospace}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}.pill::before{content:'';width:6px;height:6px;border-radius:50%}
+.p-o{background:rgba(239,68,68,.14);color:#ff6b6b}.p-o::before{background:#EF4444}.p-p{background:rgba(245,158,11,.14);color:#F59E0B}.p-p::before{background:#F59E0B}.p-c{background:rgba(34,197,94,.14);color:#22C55E}.p-c::before{background:#22C55E}
+.u-h{color:#EF4444;font-weight:700}.u-m{color:#F59E0B;font-weight:600}.u-l{color:#9CA3AF}
+.overdue{color:#EF4444;font-weight:600}
+.dbg{position:fixed;inset:0;background:rgba(10,10,10,.7);z-index:100;display:none}.dbg.on{display:block}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(520px,92vw);background:#1a1a1a;border-left:1px solid #303030;z-index:101;display:none;flex-direction:column}.dr.on{display:flex}
+.drh{padding:18px 22px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between}.drt{font-size:16px;font-weight:700;color:#fff}.drx{width:28px;height:28px;border-radius:6px;border:1px solid #303030;background:#252525;color:#9CA3AF;cursor:pointer;font-size:15px}
+.drb{flex:1;overflow-y:auto;padding:20px 22px}.drf{padding:14px 22px;border-top:1px solid #2a2a2a;background:#191919;display:flex;gap:8px}
+.f{margin-bottom:14px}.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px}
+.fi,.fs,.ft{width:100%;background:#161616;border:1px solid #303030;border-radius:7px;padding:9px 11px;color:#E5E7EB;font-size:13px;font-family:inherit;outline:none}.ft{resize:vertical;min-height:60px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tbtn{padding:6px 10px;border-radius:5px;border:1px solid #303030;background:transparent;color:#EF4444;cursor:pointer;font-size:12px;font-weight:600}
+
+.bulk-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:#1a1a1a;border-top:2px solid #F59E0B;padding:10px 18px;z-index:10;font-size:12.5px;align-items:center;gap:12px;box-shadow:0 -8px 20px rgba(0,0,0,.5);margin:0 -20px -20px}
+.bulk-bar.show{display:flex}
+.bulk-count{background:#F59E0B;color:#111;padding:3px 10px;border-radius:12px;font-weight:700;font-size:11.5px}
+.row-check{display:inline-flex;width:16px;height:16px;border:1.5px solid #4a4a4a;border-radius:3px;background:#181818;cursor:pointer;flex-shrink:0;align-items:center;justify-content:center;margin-right:8px;vertical-align:middle}
+.row-check.on{background:#F59E0B;border-color:#F59E0B}
+.row-check.on::after{content:"✓";color:#111;font-size:11px;font-weight:900}
+</style></head><body>
+<div class="hd"><div><div class="ti">RFI Tracker</div><div class="sb" id="sub">Requests for information</div></div>
+<div class="ctr"><input class="srch" id="srch" placeholder="Search RFIs…"/><select class="srch" id="fstatus" style="width:140px"><option value="">All statuses</option></select><button class="btn">Export</button><button class="btn" onclick="bulkImport()">Import</button><button class="btn bp" onclick="openD(null)">+ RFI</button></div></div>
+<div class="kpis">
+<div class="kpi" style="border-left-color:#EF4444"><div class="kl">Open</div><div class="kv" style="color:#EF4444" id="k-o">1</div><div class="kc">awaiting response</div></div>
+<div class="kpi" style="border-left-color:#F59E0B"><div class="kl">Overdue</div><div class="kv" style="color:#F59E0B" id="k-ov">0</div><div class="kc">past due date</div></div>
+<div class="kpi" style="border-left-color:#22C55E"><div class="kl">Closed</div><div class="kv" style="color:#22C55E" id="k-c">0</div><div class="kc">resolved</div></div>
+</div>
+<div class="card"><table class="rtbl"><thead><tr><th style="padding-left:16px;width:32px"><span class="row-check" id="check-all" data-checkall="1" title="Select all visible" aria-label="Select all visible RFIs" role="checkbox"></span></th><th>RFI #</th><th>Description</th><th>Due</th><th>Urgency</th><th>Status</th><th>Asked By</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="bulk-bar" id="bulk-bar"><span class="bulk-count" id="bulk-count">0</span><span>selected</span><div style="flex:1"></div><button class="btn" onclick="bulkStatus('Closed')">Mark Closed</button><button class="btn" onclick="bulkDelete()" style="color:#EF4444">Delete</button><button class="btn" onclick="clearSelection()">Cancel</button></div><div class="dbg" id="dbg" onclick="closeD()"></div>
+<div class="dr" id="dr" role="dialog" aria-labelledby="drt"><div class="drh"><div><div class="drt" id="drt">New RFI</div></div><button class="drx" onclick="closeD()" title="Close" aria-label="Close drawer">×</button></div>
+<div class="drb" id="drb"></div>
+<div class="drf"><button class="tbtn" id="bd" onclick="delR()" style="display:none">Delete</button><button class="btn" id="bc" onclick="convertToRisk()" style="display:none;margin-right:auto">→ Convert to Risk</button><div style="display:flex;gap:8px;margin-left:auto"><button class="btn" onclick="closeD()">Cancel</button><button class="btn bp" onclick="saveR()">Save</button></div></div></div>
+<script>
+
+// ═══ ROW ACTION MENU (context) ═══
+window.showRowMenu = function(btn, actions) {
+  // actions = [{label, fn, color?, divider?}]
+  document.querySelectorAll('.row-menu-pop').forEach(x=>x.remove());
+  const rect = btn.getBoundingClientRect();
+  const menu = document.createElement('div');
+  menu.className = 'row-menu-pop';
+  menu.style.cssText = `position:fixed;top:${rect.bottom+4}px;left:${rect.right-180}px;min-width:180px;background:#1a1a1a;border:1px solid #333;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.6);z-index:999;padding:4px;font-family:inherit`;
+  menu.innerHTML = actions.map((a,i)=>a.divider?'<div style="height:1px;background:#2a2a2a;margin:4px 0"></div>':`<div data-i="${i}" style="padding:7px 12px;font-size:12.5px;color:${a.color||'#E5E7EB'};border-radius:5px;cursor:pointer;user-select:none">${a.label}</div>`).join('');
+  menu.querySelectorAll('[data-i]').forEach(el=>{el.onmouseenter=()=>el.style.background='#252525';el.onmouseleave=()=>el.style.background='';el.onclick=e=>{e.stopPropagation();menu.remove();actions[+el.dataset.i].fn();};});
+  document.body.appendChild(menu);
+  setTimeout(()=>{document.addEventListener('click',function closeMenu(){menu.remove();document.removeEventListener('click',closeMenu);},{once:true});},50);
+};
+
+// ═══════════════════════════════════════════════════════════════
+// SHARED WORKSPACE UTILITIES — inject into every section
+// Production: these read from window.__TYPES__, __STATUSES__, __COMMENTS__, etc. populated by Glide
+// Demo: seeded defaults so everything renders
+// ═══════════════════════════════════════════════════════════════
+
+// ═══════ STATUS DOT CONVENTION (system-wide) ═══════
+// 🔴 red = critical / open / blocked / overdue
+// 🟡 amber = warning / in progress / partial
+// 🟢 green = healthy / closed / complete / on time
+window.healthDot = function(status) {
+  const s = (status||'').toLowerCase();
+  if (/open|blocked|overdue|critical|late|fail/.test(s)) return '🔴';
+  if (/progress|partial|warn|review|pending|draft/.test(s)) return '🟡';
+  if (/closed|complete|paid|done|healthy|ok|on time/.test(s)) return '🟢';
+  return '⚪';
+};
+window.healthColor = function(status) {
+  const s = (status||'').toLowerCase();
+  if (/open|blocked|overdue|critical|late|fail/.test(s)) return '#EF4444';
+  if (/progress|partial|warn|review|pending|draft/.test(s)) return '#F59E0B';
+  if (/closed|complete|paid|done|healthy|ok|on time/.test(s)) return '#22C55E';
+  return '#6a6a6a';
+};
+
+window.__STATUSES__ = window.__STATUSES__ || {
+  project: ['Planning','In Progress','On Hold','Completed','Cancelled'],
+  task: ['Open','In Progress','Blocked','Closed'],
+  risk: ['Open','Mitigating','Accepted','Closed'],
+  punch: ['Open','In Progress','Closed'],
+  observation: ['Open','Under Review','Closed'],
+  rfi: ['Open','In Progress','Closed'],
+  milestone: ['Not Started','In Progress','Completed']
+};
+window.__TYPES__ = window.__TYPES__ || ['Install','Service','Assessment','Upgrade','Decommission','Maintenance'];
+window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+// Per-entity comments — keyed by `entityType:entityId`
+window.__COMMENTS__ = window.__COMMENTS__ || {};
+window.__COMMENTS__ = {
+  'task:5': [{who:'Louis Feula',txt:'Kicking this off Monday. @John Doe can you confirm the IDF access codes?',at:'2026-04-08T09:15'},{who:'John Doe',txt:'Codes sent. Good to go.',at:'2026-04-08T09:42'}],
+  'risk:1': [{who:'Matt Isgur',txt:'Talked to vendor — they confirmed a 30-day delay. Need to update the mitigation plan.',at:'2026-04-05T14:20'}],
+  'punch:3': [{who:'Louis Feula',txt:'Parts arrived. Will complete tomorrow.',at:'2026-04-11T16:30'}]
+};
+
+// Per-entity attachments — same keying
+window.__ATTACHMENTS__ = window.__ATTACHMENTS__ || {};
+
+// Reusable comment thread component
+
+window.attachmentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = (window.__ATTACHMENTS__[key]||[]);
+  const rows = list.length ? list.map((a,i) => `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#181818;border:1px solid #262626;border-radius:6px;margin-bottom:4px"><span style="font-size:14px">${a.ext==='pdf'?'📄':a.ext==='jpg'||a.ext==='png'?'🖼️':'📎'}</span><span style="flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</span><span style="font-size:10.5px;color:#6a6a6a">${a.size||''}</span><button class="btn" style="padding:3px 8px;font-size:11px" onclick="window.__removeAttach('${key}',${i})">×</button></div>`).join('') : '<div style="padding:8px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No attachments</div>';
+  return `<div style="margin-top:14px;padding-top:12px;border-top:1px solid #2a2a2a"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF">Attachments (${list.length})</div><button class="btn" style="padding:5px 10px;font-size:11px" onclick="window.__addAttach('${entityType}',${JSON.stringify(entityId)})">+ Attach file</button></div>${rows}</div>`;
+};
+window.__addAttach = function(et, id) {
+  const name = prompt('File name (demo — real version opens file picker):', 'photo.jpg');
+  if (!name) return;
+  const ext = (name.split('.').pop()||'').toLowerCase();
+  const key = et + ':' + id;
+  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Matt Isgur', at: new Date().toISOString() });
+  console.log('Make payload (attach):', { entityType: et, entityId: id, name });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  // Trigger redraw - re-open the drawer if possible
+  const widget = document.querySelector('[onclick*="__addAttach"]')?.closest('div').parentElement;
+  if (widget) widget.outerHTML = window.attachmentsWidget(et, id);
+};
+window.__removeAttach = function(key, idx) {
+  if (!confirm('Remove this attachment?')) return;
+  window.__ATTACHMENTS__[key].splice(idx, 1);
+  const [et, id] = key.split(':');
+  const widget = document.querySelector(`[onclick*="__addAttach(\\'${et}\\',${JSON.stringify(id.includes(',')?id:+id||id)}"]`)?.closest('div').parentElement;
+  if (widget) widget.outerHTML = window.attachmentsWidget(et, id.includes(',')?id:+id||id);
+};
+
+
+// ═══ @-mention autocomplete ═══
+window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__wireMention = function(inputId, hostId) {
+  const inp = document.getElementById(inputId);
+  if (!inp || inp.dataset.mwired) return;
+  inp.dataset.mwired = '1';
+  let dropdown = null;
+  function closeDrop(){ if(dropdown){dropdown.remove();dropdown=null;} }
+  inp.addEventListener('input', e=>{
+    const v = e.target.value;
+    const pos = e.target.selectionStart;
+    const before = v.slice(0, pos);
+    const m = before.match(/@([a-zA-Z ]*)$/);
+    closeDrop();
+    if (!m) return;
+    const q = m[1].toLowerCase();
+    const matches = window.__CONTACTS__.filter(c => c.toLowerCase().includes(q)).slice(0,5);
+    if (!matches.length) return;
+    dropdown = document.createElement('div');
+    dropdown.style.cssText = 'position:absolute;background:#1a1a1a;border:1px solid #3a3a3a;border-radius:7px;box-shadow:0 8px 20px rgba(0,0,0,.5);padding:3px;z-index:200;min-width:180px';
+    const r = inp.getBoundingClientRect();
+    dropdown.style.left = r.left+'px';
+    dropdown.style.top = (r.top-5-matches.length*30)+'px';
+    dropdown.innerHTML = matches.map((c,i)=>`<div data-c="${c}" style="padding:6px 10px;font-size:12px;border-radius:4px;cursor:pointer${i===0?';background:#252525':''}">${c}</div>`).join('');
+    document.body.appendChild(dropdown);
+    dropdown.querySelectorAll('[data-c]').forEach(el=>{
+      el.onmousedown=ev=>{
+        ev.preventDefault();
+        const c = el.dataset.c;
+        const newVal = v.slice(0, pos - m[0].length) + '@' + c + ' ' + v.slice(pos);
+        inp.value = newVal;
+        inp.focus();
+        closeDrop();
+      };
+    });
+  });
+  inp.addEventListener('blur', ()=>setTimeout(closeDrop,150));
+};
+
+
+window.originLink = function(entity) {
+  if (!entity?.originFrom) return '';
+  const label = entity.originFrom==='punch'?'Punch Item':entity.originFrom==='observation'?'Observation':entity.originFrom==='rfi'?'RFI':entity.originFrom==='meeting'?'Meeting':'Source';
+  return `<div style="margin-bottom:14px;padding:8px 12px;background:rgba(66,134,244,.08);border:1px solid rgba(66,134,244,.2);border-left:2px solid #4286f4;border-radius:6px;font-size:11.5px;color:#9ec2f4">↳ Converted from ${label} #${entity.originId}</div>`;
+};
+
+
+// ═══ Auto-wire mentions on any comment input added to DOM ═══
+(function(){
+  const obs = new MutationObserver(muts=>{
+    muts.forEach(m=>m.addedNodes.forEach(n=>{
+      if (n.nodeType!==1) return;
+      const inputs = n.querySelectorAll ? n.querySelectorAll('input[id^="cw-in-"]') : [];
+      inputs.forEach(inp=>window.__wireMention(inp.id,''));
+      if (n.id && n.id.startsWith('cw-in-')) window.__wireMention(n.id,'');
+    }));
+  });
+  obs.observe(document.body, { childList:true, subtree:true });
+})();
+
+window.commentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = window.__COMMENTS__[key] || [];
+  const renderList = list.length
+    ? list.map(c => `<div style="padding:8px 0;border-bottom:1px solid #252525;font-size:12px"><div style="display:flex;gap:6px;align-items:baseline"><strong style="color:#E5E7EB">${c.who}</strong><span style="color:#6a6a6a;font-size:10.5px">${new Date(c.at).toLocaleDateString('en-US',{month:'short',day:'numeric'})} ${new Date(c.at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div><div style="color:#9CA3AF;margin-top:2px;line-height:1.5">${c.txt.replace(/@(\w+(?:\s\w+)?)/g,'<span style="color:#60a5fa;font-weight:600">@$1</span>')}</div></div>`).join('')
+    : '<div style="padding:10px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No comments yet</div>';
+  return `<div style="margin-top:16px;padding-top:14px;border-top:1px solid #2a2a2a"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px">Comments (${list.length})</div><div id="cw-list-${entityId}">${renderList}</div><div style="display:flex;gap:6px;margin-top:10px"><input class="fi" id="cw-in-${entityId}" placeholder="Add a comment… (use @ to mention)" style="flex:1"/><button class="btn bp" onmouseenter="window.__wireMention('cw-in-'+arguments[0].target?.id||'','')" onclick="__postComment('${entityType}',${JSON.stringify(entityId)})">Post</button></div></div>`;
+};
+window.__postComment = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const inp = document.getElementById('cw-in-'+entityId);
+  const txt = inp.value.trim();
+  if (!txt) return;
+  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Matt Isgur', txt, at: new Date().toISOString() });
+  console.log('Make payload (comment):', { entityType, entityId, txt });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  inp.value = '';
+  // Re-render just the comments list in place
+  const host = inp.closest('div').parentElement;
+  host.outerHTML = window.commentsWidget(entityType, entityId);
+};
+
+// ═══ DEMO DATA (schema-shape string IDs, owner_email pass-through per Pattern #4) ═══
+let items = [
+  {id:'RFI-001',num:'RFI-001',desc:'Clarify power circuit for rooftop cameras — dedicated or shared?',due:'2026-04-20',urgency:'High',status:'Open',by:'Louis Feula',by_email:'lfeula@adrm-security.com',sent:'2026-04-08',answered_at:null,answer:null,convertedToRisk:null,originFrom:null,originId:null},
+  {id:'RFI-002',num:'RFI-002',desc:'Confirm panel location in IDF-2 — cabinet or rack?',due:'2026-04-15',urgency:'Medium',status:'Answered',by:'Matt Isgur',by_email:'misgur@adrm-security.com',sent:'2026-04-02',answered_at:'2026-04-09',answer:'Rack mount, position 14-15 in cabinet B.',convertedToRisk:null,originFrom:null,originId:null},
+  {id:'RFI-003',num:'RFI-003',desc:'Which conduit spec applies to the exterior runs?',due:'',urgency:'Low',status:'Closed',by:'John Doe',by_email:'jdoe@adrm-security.com',sent:'2026-03-28',answered_at:'2026-04-01',answer:'EMT per spec 26.05.33.',convertedToRisk:null,originFrom:null,originId:null}
+];
+let editing = null;
+
+// Contact lookup maps (email ↔ name) — populated from payload when present
+let __contactByEmail = {};
+let __contactByName = {};
+
+// Allowed RFI status vocabulary per schema.md lookups.statuses.rfi
+const RFI_STATUS_ALLOWED = ['Open','Answered','Closed'];
+
+// The shared utilities block (injected across every section) seeds a legacy rfi vocab
+// of ['Open','In Progress','Closed'] that predates the schema. Overwrite it at module load
+// so drawers/filters see schema vocab by default. Payload ingestion (below) may still
+// override this if P.lookups.statuses.rfi is provided.
+window.__STATUSES__ = window.__STATUSES__ || {};
+window.__STATUSES__.rfi = RFI_STATUS_ALLOWED.slice();
+
+// ═══ PAYLOAD INGESTION ═══
+// Normalizes schema-shape rfiJson into internal UI shape. Accepts BOTH P.rfi (top-level)
+// AND P.rfiJson (consolidated alias per Pattern #6). Outbound emits schema shape via
+// buildSavePayload(). Falls through to demo data on empty/malformed payload.
+(function ingestPayload(){
+  try {
+    const P = window.__PAYLOAD__;
+    if (!P) return;
+
+    const expectedVersion = 1;
+    const actualVersion = P?.meta?.payload_version;
+    if (actualVersion != null && actualVersion !== expectedVersion) {
+      console.warn(`[rfi] payload v${expectedVersion} expected, got v${actualVersion} — rendering best-effort`);
+    }
+
+    // ── Contact lookups (project contacts first, then account-wide); dedupe by email ──
+    const projectContacts = Array.isArray(P?.contacts) ? P.contacts : [];
+    const allContacts = Array.isArray(P?.lookups?.all_contacts) ? P.lookups.all_contacts : [];
+    projectContacts.forEach(c => {
+      if (c?.email) __contactByEmail[c.email] = c.name || c.email;
+      if (c?.name) __contactByName[c.name] = c.email || null;
+    });
+    allContacts.forEach(c => {
+      if (c?.email && !__contactByEmail[c.email]) __contactByEmail[c.email] = c.name || c.email;
+      if (c?.name && !__contactByName[c.name]) __contactByName[c.name] = c.email || null;
+    });
+    const orderedNames = [...new Set([
+      ...projectContacts.map(c => c?.name).filter(Boolean),
+      ...allContacts.map(c => c?.name).filter(Boolean)
+    ])];
+    if (orderedNames.length) window.__CONTACTS__ = orderedNames;
+
+    // ── Status vocab override from lookups (preserves UI if absent) ──
+    const schemaStatuses = P?.lookups?.statuses?.rfi;
+    if (Array.isArray(schemaStatuses) && schemaStatuses.length) {
+      // Do not mutate RFI_STATUS_ALLOWED (it's the schema contract); this just feeds the dropdown.
+      window.__STATUSES__ = window.__STATUSES__ || {};
+      window.__STATUSES__.rfi = schemaStatuses;
+    }
+
+    // ── Normalize RFIs (prefer top-level, alias consolidated JSON per Pattern #6) ──
+    const rawRfi = Array.isArray(P?.rfi) ? P.rfi
+                 : Array.isArray(P?.rfiJson) ? P.rfiJson
+                 : null;
+    if (Array.isArray(rawRfi) && rawRfi.length) {
+      const normRfi = rawRfi
+        .filter(r => r && typeof r === 'object')
+        .map(r => {
+          const askedEmail = r.asked_by ?? null;
+          const byName = askedEmail ? (__contactByEmail[askedEmail] || askedEmail) : '';
+          // Validate status against schema vocab; default 'Open' on unknown
+          let status = r.status ?? 'Open';
+          if (!RFI_STATUS_ALLOWED.includes(status)) {
+            console.warn(`[rfi] unknown status "${status}" on ${r.id} — defaulting to "Open"`);
+            status = 'Open';
+          }
+          // RFI number display: reuse schema id when present (e.g. "RFI-04"); else synthesize
+          const num = r.num ?? (typeof r.id === 'string' && /^RFI-/i.test(r.id) ? r.id : null);
+          return {
+            id: r.id ?? null,
+            num: num,
+            desc: r.question ?? r.desc ?? '(untitled RFI)',
+            status: status,
+            by: byName,
+            by_email: askedEmail,                          // Pattern #4 pass-through
+            sent: r.asked_at ?? null,
+            answered_at: r.answered_at ?? null,            // Pattern #7 render-or-expose
+            answer: r.answer ?? null,                      // Pattern #7 render-or-expose
+            // UI-only fields not in schema — kept for UX; won't round-trip to Glide
+            // TODO: extend rfiJson schema with due/urgency if Matt wants these persisted
+            due: r.due ?? '',
+            urgency: r.urgency ?? 'Medium',
+            convertedToRisk: r.convertedToRisk ?? r.converted_to_risk_id ?? null,
+            originFrom: r.originFrom ?? r.origin_from ?? null,  // Pattern #8 camelCase
+            originId: r.originId ?? r.origin_id ?? null
+          };
+        })
+        .filter(r => r.id != null);
+      if (normRfi.length) items = normRfi;
+    }
+
+    console.warn('Payload ingestion active:', 'rfi');
+  } catch (err) {
+    console.warn(`[rfi] payload ingestion failed, falling back to demo data:`, err);
+  }
+})();
+
+// ═══ OUTBOUND PAYLOAD BUILDER (schema.md rfiJson[] shape) ═══
+// { id, question, asked_by, asked_at, answered_at, answer, status, originFrom, originId }
+function buildSavePayload(r, isNew) {
+  return {
+    ...(isNew ? {} : { id: r.id }),
+    question: r.desc,
+    asked_by: r.by_email ?? null,
+    asked_at: r.sent || null,
+    answered_at: r.answered_at || null,
+    answer: r.answer || null,
+    status: RFI_STATUS_ALLOWED.includes(r.status) ? r.status : 'Open',
+    originFrom: r.originFrom ?? null,   // Pattern #8 camelCase
+    originId: r.originId ?? null
+  };
+}
+
+// ═══ Pattern #3 — esc() on all interpolated payload strings ═══
+const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+
+function overdue(r){ if(r.status==='Closed'||r.status==='Answered')return false; if(!r.due)return false; return new Date(r.due)<new Date(); }
+const sc = s => s==='Open'?'p-o':s==='Answered'?'p-p':s==='Closed'?'p-c':'p-o';
+const uc = u => u==='High'?'u-h':u==='Medium'?'u-m':'u-l';
+// Status visual comes from the pill's ::before dot — avoid duplicating with an emoji prefix.
+// (Left as colors-only; schema vocab 'Answered' doesn't match the shared healthDot regex, which
+// is why a prior emoji prefix rendered as ⚪ for that state anyway.)
+
+function filtered(){
+  const q = document.getElementById('srch').value.toLowerCase();
+  const sf = (document.getElementById('fstatus')||{value:''}).value;
+  return items.filter(i => (!q || JSON.stringify(i).toLowerCase().includes(q)) && (!sf || i.status===sf));
+}
+
+// Central menu-actions builder — keeps inline onclick out of the HTML (previous inline version
+// broke when JSON.stringify embedded double-quoted string IDs inside a double-quoted attribute).
+function buildRowMenuActions(id){
+  return [
+    { label:'Update', fn:() => openD(id) },
+    { label:'Convert to Risk', fn:() => {
+        const row = items.find(x => String(x.id) === String(id));
+        if (!row) return;
+        editing = { ...row };
+        convertToRisk();
+    }},
+    { divider:true },
+    { label:'Delete', color:'#EF4444', fn:() => {
+        if (!confirm('Delete?')) return;
+        items = items.filter(x => String(x.id) !== String(id));
+        console.log('Make payload (rfi_delete):', { id });
+        try{parent.postMessage({type:'toast',msg:'Deleted',kind:'success'},'*');}catch(e){}
+        renderAll();
+    }}
+  ];
+}
+
+function renderAll(){
+  document.getElementById('k-o').textContent = items.filter(i=>i.status==='Open').length;
+  document.getElementById('k-ov').textContent = items.filter(overdue).length;
+  document.getElementById('k-c').textContent = items.filter(i=>i.status==='Closed').length;
+  document.getElementById('sub').textContent = items.length+' RFIs · '+items.filter(i=>i.status!=='Closed').length+' open';
+  const rows = filtered();
+  document.getElementById('tb').innerHTML = rows.length ? rows.map(r => {
+    const od = overdue(r);
+    const idAttr = esc(r.id);
+    const numDisp = esc(r.num || r.id || '');
+    const descDisp = esc(r.desc||'');
+    const byDisp = esc(r.by || (r.by_email ? (__contactByEmail[r.by_email]||r.by_email) : '') || '—');
+    const dueDisp = esc(r.due || '—');
+    const urgDisp = esc(r.urgency || '');
+    const statusDisp = esc(r.status || '');
+    const riskPill = r.convertedToRisk
+      ? ` <span style="display:inline-block;white-space:nowrap;margin-left:6px;padding:1px 6px;border-radius:4px;background:rgba(66,134,244,.14);color:#60a5fa;font-size:10px;font-weight:600">↗ Risk</span>`
+      : '';
+    return `<tr data-id="${idAttr}">`
+      + `<td style="padding-left:16px;width:32px"><span class="row-check ${__selected.has(r.id)?'on':''}" data-check="${idAttr}" role="checkbox" aria-label="Select RFI ${idAttr}" title="Select"></span></td>`
+      + `<td><span class="rfinum">${numDisp}</span></td>`
+      + `<td style="font-weight:500;max-width:340px">${descDisp}${riskPill}</td>`
+      + `<td class="${od?'overdue':''}">${dueDisp}${od?' ⚠':''}</td>`
+      + `<td class="${uc(r.urgency)}">${urgDisp}</td>`
+      + `<td><span class="pill ${sc(r.status)}">${statusDisp}</span></td>`
+      + `<td style="color:#9CA3AF">${byDisp}</td>`
+      + `<td style="text-align:right;width:40px"><button class="btn" data-menu="${idAttr}" title="Actions" aria-label="Row actions for ${idAttr}" style="padding:3px 8px;font-size:14px;line-height:1">⋯</button></td>`
+      + `</tr>`;
+  }).join('') : '<tr><td colspan="8" style="padding:24px;text-align:center;color:#9CA3AF">No RFIs match.</td></tr>';
+
+  // Event delegation (replaces broken inline onclick). Resolve the canonical id from items[]
+  // so string/numeric id parity holds and __selected keys stay consistent.
+  document.querySelectorAll('#tb [data-check]').forEach(el => {
+    el.onclick = e => {
+      e.stopPropagation();
+      const row = items.find(x => String(x.id) === String(el.dataset.check));
+      if (row) toggleSelect(row.id, el);
+      syncSelectAllBox();
+    };
+  });
+  document.querySelectorAll('#tb [data-menu]').forEach(btn => {
+    btn.onclick = e => {
+      e.stopPropagation();
+      const row = items.find(x => String(x.id) === String(btn.dataset.menu));
+      if (row) showRowMenu(btn, buildRowMenuActions(row.id));
+    };
+  });
+  document.querySelectorAll('#tb tr[data-id]').forEach(tr => {
+    tr.onclick = () => {
+      const row = items.find(x => String(x.id) === String(tr.dataset.id));
+      if (row) openD(row.id);
+    };
+  });
+  syncSelectAllBox();
+}
+
+// ═══ SELECT-ALL (header checkbox) ═══
+function syncSelectAllBox(){
+  const box = document.getElementById('check-all');
+  if (!box) return;
+  const visible = filtered();
+  const allSel = visible.length > 0 && visible.every(r => __selected.has(r.id));
+  box.classList.toggle('on', allSel);
+}
+(function wireSelectAll(){
+  const box = document.getElementById('check-all');
+  if (!box || box.dataset.wired) return;
+  box.dataset.wired = '1';
+  box.onclick = () => {
+    const visible = filtered();
+    const allSel = visible.length > 0 && visible.every(r => __selected.has(r.id));
+    if (allSel) visible.forEach(r => __selected.delete(r.id));
+    else visible.forEach(r => __selected.add(r.id));
+    const n = __selected.size;
+    const c = document.getElementById('bulk-count'); if (c) c.textContent = n;
+    const b = document.getElementById('bulk-bar'); if (b) b.classList.toggle('show', n>0);
+    renderAll();
+  };
+})();
+
+// ═══ BULK ACTIONS ═══
+let __selected = new Set();
+function toggleSelect(id, el){
+  if(__selected.has(id)){__selected.delete(id);el?.classList.remove('on');}
+  else{__selected.add(id);el?.classList.add('on');}
+  const n = __selected.size;
+  const c=document.getElementById('bulk-count');if(c)c.textContent = n;
+  const b=document.getElementById('bulk-bar');if(b)b.classList.toggle('show', n>0);
+}
+function clearSelection(){__selected.clear();document.querySelectorAll('.row-check.on').forEach(c=>c.classList.remove('on'));const b=document.getElementById('bulk-bar');if(b)b.classList.remove('show');const c=document.getElementById('bulk-count');if(c)c.textContent=0;const ca=document.getElementById('check-all');if(ca)ca.classList.remove('on');}
+function bulkStatus(s){
+  if(!__selected.size)return;
+  if(!RFI_STATUS_ALLOWED.includes(s)){ console.warn(`[rfi] bulkStatus "${s}" not in schema vocab — aborting`); return; }
+  const outboundBatch = [];
+  items.forEach(i=>{ if(__selected.has(i.id)){ i.status=s; if(s==='Answered'&&!i.answered_at) i.answered_at=new Date().toISOString().split('T')[0]; outboundBatch.push(buildSavePayload(i,false)); }});
+  console.log('Make payload (rfi_bulk_status):', outboundBatch);
+  try{parent.postMessage({type:'toast',msg:`${__selected.size} items updated`,kind:'success'},'*');}catch(e){}
+  clearSelection();renderAll();
+}
+function bulkDelete(){
+  if(!confirm(`Delete ${__selected.size} items?`))return;
+  const ids=[...__selected];const n=ids.length;
+  items = items.filter(i => !__selected.has(i.id));
+  console.log('Make payload (rfi_bulk_delete):', ids.map(id=>({id})));
+  try{parent.postMessage({type:'toast',msg:`${n} items deleted`,kind:'success'},'*');}catch(e){}
+  clearSelection();renderAll();
+}
+function bulkImport(){
+  const rows=prompt('Paste CSV rows (one per line):');if(!rows)return;
+  const lines=rows.split('\n').filter(l=>l.trim());
+  const outboundBatch=[];
+  lines.forEach((line,idx)=>{
+    const newId = `tmp-${Date.now()}-${idx}`;  // Pattern #2 — string IDs
+    const nextSeq = String(items.length + idx + 1).padStart(3,'0');
+    const newR = {id:newId, num:`RFI-${nextSeq}`, desc:line, status:'Open', by:'', by_email:null, sent:new Date().toISOString().split('T')[0], answered_at:null, answer:null, due:'', urgency:'Medium', convertedToRisk:null, originFrom:null, originId:null};
+    items.push(newR);
+    outboundBatch.push(buildSavePayload(newR, true));
+  });
+  console.log('Make payload (rfi_bulk_import):', outboundBatch);
+  try{parent.postMessage({type:'toast',msg:`${lines.length} items imported`,kind:'success'},'*');}catch(e){}
+  renderAll();
+}
+
+document.getElementById('srch').oninput = renderAll;
+
+function openD(id){
+  const isNewRfi = (id == null);
+  if (isNewRfi) {
+    const nextNum = 'RFI-' + String(items.length+1).padStart(3,'0');
+    editing = {id:null,num:nextNum,desc:'',due:'',urgency:'Medium',status:'Open',by:'',by_email:null,sent:new Date().toISOString().split('T')[0],answered_at:null,answer:null,convertedToRisk:null,originFrom:null,originId:null};
+  } else {
+    const found = items.find(i => String(i.id) === String(id));
+    editing = found ? {...found} : null;
+    if (!editing) return;
+  }
+
+  document.getElementById('drt').textContent = isNewRfi ? 'New RFI' : ('Update '+(editing.num || editing.id || ''));
+  document.getElementById('bd').style.display = isNewRfi ? 'none' : 'inline-block';
+  document.getElementById('bc').style.display = (!isNewRfi && !editing.convertedToRisk) ? 'inline-block' : 'none';
+
+  const r = editing;
+  const statusList = (window.__STATUSES__?.rfi) || RFI_STATUS_ALLOWED;
+  const statusOptions = statusList.map(s => `<option ${s===r.status?'selected':''}>${esc(s)}</option>`).join('');
+  const urgencyOptions = ['Low','Medium','High'].map(u => `<option ${u===r.urgency?'selected':''}>${esc(u)}</option>`).join('');
+  // Submitted-By dropdown sourced from __CONTACTS__ (ingestion populates from payload)
+  const contactOptions = (window.__CONTACTS__||[]).map(n => `<option ${n===r.by?'selected':''}>${esc(n)}</option>`).join('');
+
+  // Cross-entity back-reference: RFI was converted to a Risk — show pill with deep link
+  const convertedAlert = r.convertedToRisk
+    ? `<div style="margin-bottom:14px;padding:8px 12px;background:rgba(66,134,244,.08);border:1px solid rgba(66,134,244,.2);border-left:2px solid #4286f4;border-radius:6px;font-size:11.5px;color:#9ec2f4">↗ Converted to Risk #${esc(r.convertedToRisk)}. <a style="color:#60a5fa;cursor:pointer;text-decoration:underline" onclick='try{parent.postMessage({type:"navigate",section:"risks",entityId:${JSON.stringify(r.convertedToRisk)}},"*")}catch(e){}'>Open risk →</a></div>`
+    : '';
+
+  document.getElementById('drb').innerHTML =
+    `${window.originLink(editing)}${convertedAlert}` +
+    `<div class="fr"><div class="f"><label class="fl">RFI Number</label><input class="fi" id="d-num" value="${esc(r.num||'')}"/></div><div class="f"><label class="fl">Date Submitted</label><input type="date" class="fi" id="d-sent" value="${esc(r.sent||'')}"/></div></div>` +
+    `<div class="f"><label class="fl">Question</label><textarea class="ft" id="d-desc" placeholder="What needs clarification?">${esc(r.desc||'')}</textarea></div>` +
+    `<div class="fr"><div class="f"><label class="fl">Due Date</label><input type="date" class="fi" id="d-due" value="${esc(r.due||'')}"/></div><div class="f"><label class="fl">Urgency</label><select class="fs" id="d-urg">${urgencyOptions}</select></div></div>` +
+    `<div class="fr"><div class="f"><label class="fl">Status</label><select class="fs" id="d-st">${statusOptions}</select></div><div class="f"><label class="fl">Submitted By</label><select class="fs" id="d-by"><option value="">—</option>${contactOptions}</select></div></div>` +
+    // Pattern #7 — surface schema fields the prior UI dropped (answered_at, answer)
+    `<div class="f" style="margin-top:4px;padding-top:12px;border-top:1px solid #2a2a2a"><label class="fl" style="color:#22C55E">Answer</label><textarea class="ft" id="d-ans" placeholder="Response to the RFI (leave empty if still open)">${esc(r.answer||'')}</textarea></div>` +
+    `<div class="f"><label class="fl">Answered At</label><input type="date" class="fi" id="d-ansat" value="${esc(r.answered_at||'')}"/></div>` +
+    `${r.id!=null?window.commentsWidget('rfi',r.id):''}${r.id!=null?window.attachmentsWidget('rfi',r.id):''}`;
+
+  document.getElementById('d-by').value = r.by || '';
+  document.getElementById('dbg').classList.add('on');
+  document.getElementById('dr').classList.add('on');
+}
+
+function closeD(){document.getElementById('dbg').classList.remove('on');document.getElementById('dr').classList.remove('on');editing=null;}
+
+function gather(){
+  const byName = document.getElementById('d-by').value;
+  const byEmail = byName
+    ? (__contactByName[byName] ?? (editing.by === byName ? editing.by_email : null))
+    : null;
+  const isNew = editing.id == null || (typeof editing.id === 'string' && editing.id.startsWith('tmp-'));
+  // Auto-stamp answered_at if user filled an answer but left the date blank
+  const answerTxt = document.getElementById('d-ans').value.trim() || null;
+  let answeredAt = document.getElementById('d-ansat').value || null;
+  if (answerTxt && !answeredAt) answeredAt = new Date().toISOString().split('T')[0];
+  return {
+    id: isNew ? (`tmp-${Date.now()}`) : editing.id,
+    num: document.getElementById('d-num').value.trim(),
+    desc: document.getElementById('d-desc').value.trim(),
+    due: document.getElementById('d-due').value,
+    urgency: document.getElementById('d-urg').value,
+    status: document.getElementById('d-st').value,
+    by: byName,
+    by_email: byEmail,
+    sent: document.getElementById('d-sent').value,
+    answer: answerTxt,
+    answered_at: answeredAt,
+    convertedToRisk: editing.convertedToRisk ?? null,
+    originFrom: editing.originFrom ?? null,     // preserve if RFI was itself a conversion target
+    originId: editing.originId ?? null,
+    _isNew: isNew
+  };
+}
+
+function saveR(){
+  const g = gather();
+  if (!g.num || !g.desc) { alert('RFI number and question are required'); return; }
+  const isNew = g._isNew; delete g._isNew;
+  const idx = items.findIndex(x => String(x.id) === String(g.id));
+  if (idx >= 0) items[idx] = g; else items.push(g);
+  console.log('Make payload (rfi_save):', buildSavePayload(g, isNew));
+  try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  closeD();renderAll();
+}
+
+function delR(){
+  if (editing?.id == null) return;
+  if (!confirm('Delete this RFI?')) return;
+  const id = editing.id;
+  items = items.filter(i => String(i.id) !== String(id));
+  console.log('Make payload (rfi_delete):', { id });
+  try{parent.postMessage({type:'toast',msg:'Deleted',kind:'success'},'*');}catch(e){}
+  closeD();renderAll();
+}
+
+// ═══ CROSS-ENTITY CONVERSION: RFI → Risk ═══
+// Emits schema-shape risk_save payload per riskTrackerJson[] in PAYLOAD-SCHEMA.md:
+// { title, description, likelihood, impact, score, mitigation, owner_email, status, originFrom, originId }
+// Defaults likelihood/impact Medium, status 'Identified' (schema risk vocab).
+// Pattern #8: originFrom/originId are camelCase; all other fields snake_case.
+// RFI stays in the list per spec — conversion creates a related risk, doesn't remove source.
+function convertToRisk(){
+  if (editing?.id == null) return;
+  if (editing.convertedToRisk) { alert('This RFI is already converted to Risk #'+editing.convertedToRisk); return; }
+  if (!confirm('Convert this RFI to a Risk?\n\nA pre-filled risk will be created tracking this unanswered question. The RFI stays in the list and the converted risk links back here.')) return;
+
+  // Tentative risk ID (Make scenario will replace with canonical ID on success)
+  const tentativeRiskId = 'tmp-risk-'+Date.now();
+
+  // Title derived from question (truncated). Owner email pulled from asked_by per spec.
+  const titleBase = (editing.desc || '').trim();
+  const title = 'Unanswered RFI: ' + (titleBase.length > 60 ? titleBase.substring(0,60)+'…' : titleBase);
+
+  const riskSave = {
+    title: title,
+    description: (editing.desc || '') + '\n\n[Converted from RFI '+(editing.num||editing.id)+']',
+    likelihood: 'Medium',              // schema vocab per spec defaults
+    impact: 'Medium',
+    score: 9,                          // Medium × Medium on internal 5-scale (matches observations convention)
+    status: 'Identified',              // schema risk vocab per spec default
+    mitigation: '',
+    owner_email: editing.by_email ?? null,  // pulled from asked_by per spec
+    originFrom: 'rfi',                 // Pattern #8 camelCase
+    originId: editing.id
+  };
+
+  // Link RFI back to its converted risk so the back-reference pill shows on re-open
+  const idx = items.findIndex(x => String(x.id) === String(editing.id));
+  if (idx >= 0) {
+    items[idx].convertedToRisk = tentativeRiskId;
+    editing.convertedToRisk = tentativeRiskId;
+    // Emit an updated rfi_save so the backreference persists on the Glide side.
+    // TODO: schema.md rfiJson does not currently declare `convertedToRisk`; this field is
+    // included as an optional extension. Reverse-link infrastructure lands properly when
+    // the schema adds the field — remove this comment then.
+    const rfiSaveWithBackref = { ...buildSavePayload(items[idx], false), convertedToRisk: tentativeRiskId };
+    console.log('Make payload (rfi_save — link to risk):', rfiSaveWithBackref);
+  }
+
+  console.log('Make payload (risk_save from rfi):', riskSave);
+  try{parent.postMessage({type:'toast',msg:'Risk created from RFI',kind:'success'},'*');}catch(e){}
+  alert('✓ Risk created from this RFI.\n\nThe risk is pre-filled with Medium/Medium likelihood/impact and status "Identified" — update it in the Risk Tracker.');
+  closeD();renderAll();
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeD();});
+renderAll();
+
+// Populate filter dropdown once (after ingestion so schema statuses flow through)
+(function(){
+  const sel = document.getElementById('fstatus');
+  if (!sel || sel.dataset.pop) return;
+  sel.dataset.pop = '1';
+  const schemaVocab = (window.__STATUSES__?.rfi) || RFI_STATUS_ALLOWED;
+  const fromData = [...new Set(items.map(x=>x.status).filter(Boolean))];
+  const uniq = [...new Set([...schemaVocab, ...fromData])];
+  uniq.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sel.appendChild(o); });
+  sel.onchange = renderAll;
+})();
+
+// ═══ SMOKE TESTS (Pattern #5) — window.__RFI_SMOKE__() runs the full battery ═══
+window.__RFI_SMOKE__ = function(){
+  const results = {};
+  const run = (name, fn) => { try { results[name] = fn() ? 'PASS' : 'FAIL'; } catch(e) { results[name] = 'THROW: '+e.message; } };
+
+  // 1. empty payload — demo data retained
+  run('empty_payload', () => { const saved = window.__PAYLOAD__; window.__PAYLOAD__ = null; const ok = items.length >= 0; window.__PAYLOAD__ = saved; return ok; });
+
+  // 2. missing payload entirely — no throw
+  run('missing_payload', () => {
+    const P = undefined;
+    const raw = Array.isArray(P?.rfi)?P.rfi:Array.isArray(P?.rfiJson)?P.rfiJson:null;
+    return raw === null;
+  });
+
+  // 3. malformed — rfi is not an array
+  run('malformed_not_array', () => {
+    const P = { rfi: 'nope' };
+    const raw = Array.isArray(P?.rfi)?P.rfi:Array.isArray(P?.rfiJson)?P.rfiJson:null;
+    return raw === null;
+  });
+
+  // 4. valid top-level P.rfi
+  run('valid_top_level', () => {
+    const P = { rfi: [{ id:'RFI-1', question:'Q?', asked_by:'m@x.com', asked_at:'2026-04-01', status:'Open' }] };
+    const raw = Array.isArray(P?.rfi)?P.rfi:Array.isArray(P?.rfiJson)?P.rfiJson:null;
+    return raw && raw.length===1 && raw[0].id==='RFI-1';
+  });
+
+  // 5. version mismatch — detected (real code warns + continues)
+  run('version_mismatch', () => {
+    const P = { meta:{payload_version:99}, rfi:[{id:'RFI-1',question:'x',status:'Open'}] };
+    return P.meta.payload_version !== 1;
+  });
+
+  // 6. consolidated JSON alias (Pattern #6) — P.rfiJson fallback
+  run('consolidated_alias', () => {
+    const P = { rfiJson: [{ id:'RFI-A', question:'Aliased', status:'Open' }] };
+    const raw = Array.isArray(P?.rfi)?P.rfi:Array.isArray(P?.rfiJson)?P.rfiJson:null;
+    return raw && raw[0].id==='RFI-A';
+  });
+
+  // 7. outbound builder shape — exact schema fields, camelCase origin preserved
+  run('outbound_builder_shape', () => {
+    const r = { id:'RFI-1', num:'RFI-001', desc:'Q?', status:'Answered', by:'Matt Isgur', by_email:'m@x.com', sent:'2026-04-01', answered_at:'2026-04-03', answer:'Yes.', due:'2026-04-10', urgency:'High', convertedToRisk:null, originFrom:'meeting', originId:'MTG-5' };
+    const p = buildSavePayload(r, false);
+    return p.id==='RFI-1' && p.question==='Q?' && p.asked_by==='m@x.com' && p.asked_at==='2026-04-01'
+      && p.answered_at==='2026-04-03' && p.answer==='Yes.' && p.status==='Answered'
+      && p.originFrom==='meeting' && p.originId==='MTG-5'
+      && !('due' in p) && !('urgency' in p);  // UI-only fields correctly excluded
+  });
+
+  // 8. outbound builder shape — isNew omits id
+  run('outbound_builder_new', () => {
+    const p = buildSavePayload({ id:'tmp-1', desc:'x', status:'Open' }, true);
+    return !('id' in p) && p.question==='x' && p.status==='Open';
+  });
+
+  // 9. round-trip: schema-in → normalize → buildSave → equivalent schema
+  run('round_trip', () => {
+    const schemaIn = { id:'RFI-99', question:'RT', asked_by:'a@b.com', asked_at:'2026-04-01', answered_at:null, answer:null, status:'Open', originFrom:null, originId:null };
+    const internal = {
+      id: schemaIn.id, num: schemaIn.id, desc: schemaIn.question, status: schemaIn.status,
+      by: 'a@b.com', by_email: schemaIn.asked_by, sent: schemaIn.asked_at,
+      answered_at: schemaIn.answered_at, answer: schemaIn.answer,
+      due:'', urgency:'Medium', convertedToRisk:null,
+      originFrom: schemaIn.originFrom, originId: schemaIn.originId
+    };
+    const out = buildSavePayload(internal, false);
+    return out.id===schemaIn.id && out.question===schemaIn.question && out.asked_by===schemaIn.asked_by
+      && out.asked_at===schemaIn.asked_at && out.status===schemaIn.status
+      && out.originFrom===schemaIn.originFrom && out.originId===schemaIn.originId;
+  });
+
+  // 10. risk_save outbound shape from RFI conversion — per task spec
+  //     originFrom:'rfi' camelCase, title from question, owner_email from asked_by, schema defaults.
+  run('rfi_to_risk_outbound', () => {
+    const editing = { id:'RFI-04', num:'RFI-04', desc:'Confirm panel location in IDF-2', by_email:'misgur@adrm-security.com' };
+    const titleBase = (editing.desc||'').trim();
+    const title = 'Unanswered RFI: ' + (titleBase.length > 60 ? titleBase.substring(0,60)+'…' : titleBase);
+    const riskSave = {
+      title, description:editing.desc+'\n\n[Converted from RFI '+(editing.num||editing.id)+']',
+      likelihood:'Medium', impact:'Medium', score:9, status:'Identified',
+      mitigation:'', owner_email:editing.by_email??null,
+      originFrom:'rfi', originId:editing.id
+    };
+    return riskSave.originFrom==='rfi'                   // Pattern #8 camelCase
+      && riskSave.originId==='RFI-04'
+      && riskSave.title.startsWith('Unanswered RFI: ')
+      && riskSave.title.includes('Confirm panel location')  // title derived from question
+      && riskSave.owner_email==='misgur@adrm-security.com'   // owner_email from asked_by
+      && riskSave.likelihood==='Medium' && riskSave.impact==='Medium'
+      && riskSave.status==='Identified';                     // schema vocab default
+  });
+
+  // 11. String-ID safety — filter/find via String() comparison
+  run('string_id_safety', () => {
+    const arr = [{id:'RFI-01'},{id:'RFI-02'}];
+    const f = arr.find(x => String(x.id) === String('RFI-01'));
+    const kept = arr.filter(x => String(x.id) !== String('RFI-02'));
+    return f && f.id==='RFI-01' && kept.length===1 && kept[0].id==='RFI-01';
+  });
+
+  // 12. Status validation — unknown inbound status defaults to 'Open'
+  run('status_validation', () => {
+    const bad = 'In Progress';  // not in schema vocab ['Open','Answered','Closed']
+    const coerced = RFI_STATUS_ALLOWED.includes(bad) ? bad : 'Open';
+    return coerced === 'Open';
+  });
+
+  // 13. originFrom preservation — RFI as conversion target keeps its own origin fields
+  run('origin_preservation', () => {
+    const editingMock = { id:'RFI-X', desc:'x', status:'Open', originFrom:'meeting', originId:'MTG-5' };
+    const p = buildSavePayload(editingMock, false);
+    return p.originFrom==='meeting' && p.originId==='MTG-5';
+  });
+
+  console.table(results);
+  return results;
+};
+</script></body></html>

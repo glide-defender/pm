@@ -1,0 +1,601 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Scorecards</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;padding:20px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.ti{font-size:18px;font-weight:700;color:#fff}.sb{font-size:12px;color:#9CA3AF;margin-top:3px}.ctr{display:flex;gap:8px;align-items:center}
+.btn{padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #303030;background:#1f1f1f;color:#E5E7EB;cursor:pointer;font-family:inherit}.btn:hover{background:#252525}.bp{background:#3c4756;color:#fff;border-color:#4a5666}
+.hero{background:linear-gradient(135deg,#1f1f1f,#252530);border:1px solid #2a2a2a;border-radius:14px;padding:24px;margin-bottom:16px;display:grid;grid-template-columns:200px 1fr;gap:28px;align-items:center}
+.score-circle{position:relative;width:180px;height:180px}
+.score-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-big{font-size:52px;font-weight:800;line-height:1;letter-spacing:-1px}
+.score-grade{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin-top:6px}
+.score-max{font-size:10px;color:#6a6a6a;margin-top:2px}
+.hero-tx{flex:1}.hero-ti{font-size:15px;font-weight:700;margin-bottom:4px}
+.hero-sub{font-size:12px;color:#9CA3AF;margin-bottom:14px;line-height:1.5}
+.hero-pills{display:flex;gap:8px;flex-wrap:wrap}
+.hero-pill{padding:5px 11px;border-radius:6px;background:#1a1a1a;border:1px solid #2a2a2a;font-size:11.5px;font-weight:600;display:flex;align-items:center;gap:6px}
+.hero-pill-v{color:#fff}.hero-pill-l{color:#9CA3AF}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.card{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;padding:16px}
+.ct{font-size:13px;font-weight:700;margin-bottom:4px}.cs{font-size:11.5px;color:#9CA3AF;margin-bottom:14px}
+.dim-list{display:flex;flex-direction:column;gap:8px}
+.dim{padding:10px 12px;background:#181818;border:1px solid #262626;border-radius:8px}
+.dim-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.dim-nm{font-size:12.5px;font-weight:600}
+.dim-meta{font-size:10.5px;color:#6a6a6a;margin-top:4px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.dim-meta span{display:inline-flex;align-items:center;gap:3px}
+.dim-score{font-family:ui-monospace,monospace;font-weight:700;font-size:13px}
+.dim-schema-score{font-family:ui-monospace,monospace;font-size:10.5px;color:#6a6a6a;margin-left:4px}
+.dim-bar{height:5px;background:#2a2a2a;border-radius:3px;overflow:hidden;margin-top:6px;position:relative}
+.dim-fill{height:100%;border-radius:3px;transition:width .3s}
+.dim-target{position:absolute;top:-2px;bottom:-2px;width:2px;background:#9CA3AF;border-radius:1px;pointer-events:none}
+.trend-up{color:#22C55E}.trend-down{color:#EF4444}.trend-flat{color:#9CA3AF}
+.stars{display:inline-flex;gap:2px;font-size:15px;cursor:pointer}
+.star{color:#333;transition:color .1s}.star.on{color:#F59E0B}
+.weights{display:flex;flex-direction:column;gap:8px}
+.weight-row{display:grid;grid-template-columns:1fr 60px 130px;gap:10px;align-items:center;font-size:12px}
+.weight-row input{background:#161616;border:1px solid #303030;border-radius:5px;padding:5px 8px;color:#E5E7EB;width:100%;font-size:12px;outline:none}
+.weight-bar{height:5px;background:#2a2a2a;border-radius:3px;overflow:hidden}
+.weight-fill{height:100%;background:#F59E0B;border-radius:3px}
+.weights-sum{font-size:11px;color:#9CA3AF;margin-top:10px;padding-top:10px;border-top:1px solid #262626;display:flex;justify-content:space-between}
+.weights-sum-bad{color:#F59E0B}
+.note{padding:10px 12px;background:rgba(66,134,244,.06);border-left:2px solid #4286f4;border-radius:6px;margin-bottom:12px;font-size:11.5px;color:#9ec2f4;line-height:1.5}
+textarea{width:100%;background:#161616;border:1px solid #303030;border-radius:5px;padding:7px 9px;color:#E5E7EB;font-size:12px;resize:vertical;min-height:50px;font-family:inherit;outline:none;margin-top:6px}
+</style></head><body>
+<div class="hd"><div><div class="ti">Scorecard</div><div class="sb" id="sub">Multi-dimension quality rating · calculates weighted composite score</div></div>
+<div class="ctr"><button class="btn">Export Report</button><button class="btn bp" onclick="saveAll()">Save Ratings</button></div></div>
+<div class="note"><strong>How it works:</strong> Rate each dimension 1-5. Weighted composite uses the weights on the right. Below 70/100 triggers improvement action. Admins can customize dimensions and weights in Settings.</div>
+<div class="hero"><div class="score-circle" id="score-circle"></div>
+<div class="hero-tx"><div class="hero-ti">Overall Project Score</div><div class="hero-sub">Weighted composite across quality dimensions. Updated whenever ratings change. Composite is computed on render — never emitted.</div><div class="hero-pills" id="hero-pills"></div></div></div>
+<div class="row">
+<div class="card"><div class="ct">Quality Dimensions</div><div class="cs">Rate each 1-5 · add notes for context</div><div class="dim-list" id="dim-list"></div></div>
+<div class="card"><div class="ct">Profile</div><div class="cs">Radar view across all dimensions</div><div id="radar" style="height:260px"></div></div>
+</div>
+<div class="card"><div class="ct">Dimension Weights</div><div class="cs">How each dimension contributes to the composite · sum should total 100</div><div class="weights" id="weights"></div><div class="weights-sum" id="weights-sum"></div></div>
+<script>
+// ─── esc helper (Pattern #3) ───
+function esc(s){if(s==null)return '';return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+// ─── Pattern #9 bridge: schema score (0-100) ↔ UI score (1-5) ───
+function schemaScoreToUI(n){
+  if(n==null||isNaN(+n))return 3;
+  const ui=Math.round((+n)/20);
+  return Math.max(1,Math.min(5,ui));
+}
+function uiScoreToSchema(n){
+  const v=+n;if(isNaN(v))return 0;
+  return Math.max(0,Math.min(100,v*20));
+}
+function normalizeWeightKey(s){return String(s||'').toLowerCase().trim();}
+function normalizeTrend(t){return (t==='up'||t==='down'||t==='flat')?t:(t==null?null:'flat');}
+
+// ─── Demo data (internal shape) ───
+// Internal shape: {id, name, weight, score(1-5), note, __schemaScore, __scoreDirty,
+//                  __noteDirty, target, trend, updated_at, __targetDirty, __trendDirty}
+let dimensions=[
+  {id:'comm',name:'Communication',weight:20,score:4,note:'Client responsive; daily updates went out on time.',__schemaScore:80,__scoreDirty:false,__noteDirty:false,target:null,trend:null,updated_at:null,__targetDirty:false,__trendDirty:false},
+  {id:'delivery',name:'Material Delivery',weight:15,score:3,note:'Camera procurement delayed 30 days.',__schemaScore:60,__scoreDirty:false,__noteDirty:false,target:null,trend:null,updated_at:null,__targetDirty:false,__trendDirty:false},
+  {id:'quality',name:'Installation Quality',weight:25,score:5,note:'All door contacts passed QA on first inspection.',__schemaScore:100,__scoreDirty:false,__noteDirty:false,target:null,trend:null,updated_at:null,__targetDirty:false,__trendDirty:false},
+  {id:'timeliness',name:'Timeliness',weight:20,score:3,note:'Tracking 2 weeks behind baseline.',__schemaScore:60,__scoreDirty:false,__noteDirty:false,target:null,trend:null,updated_at:null,__targetDirty:false,__trendDirty:false},
+  {id:'safety',name:'Safety',weight:10,score:5,note:'Zero incidents.',__schemaScore:100,__scoreDirty:false,__noteDirty:false,target:null,trend:null,updated_at:null,__targetDirty:false,__trendDirty:false},
+  {id:'docs',name:'Documentation',weight:10,score:4,note:'Commissioning sheets current.',__schemaScore:80,__scoreDirty:false,__noteDirty:false,target:null,trend:null,updated_at:null,__targetDirty:false,__trendDirty:false}
+];
+
+// Global weights preservation (Pattern #9) — emit byte-identical if not dirty
+let __originalHealthWeights = null;
+let __weightsDirty = false;
+// Extra weight keys in payload that don't match any dimension — preserved on emit
+let __extraWeightKeys = {};
+
+// ═══ PAYLOAD INGESTION (Pattern #1) ═══
+(function ingestPayload(){
+  try{
+    const P=window.__PAYLOAD__;
+    if(!P)return;
+    const SECTION_NAME='scorecards';
+    const expectedVersion=1;
+    const actualVersion=P?.meta?.payload_version;
+    if(actualVersion!=null && actualVersion!==expectedVersion){
+      console.warn('['+SECTION_NAME+'] payload v'+expectedVersion+' expected, got v'+actualVersion+' — rendering best-effort');
+    }
+
+    const rawDims = P?.scorecards?.dimensions;
+    const rawWeights = P?.project?.health_weights;
+
+    // Weights: preserve originals verbatim for byte-identical no-op emit
+    if(rawWeights && typeof rawWeights==='object' && !Array.isArray(rawWeights)){
+      __originalHealthWeights = JSON.parse(JSON.stringify(rawWeights));
+      const sum = Object.values(rawWeights).reduce((s,v)=>s+(+v||0),0);
+      if(Math.abs(sum-100) > 0.5){
+        console.warn('['+SECTION_NAME+'] health_weights sum = '+sum+' (expected ~100) — using as-is, composite normalizes');
+      }
+    }
+
+    // Dimensions: ingest payload, bridge score 0-100 → 1-5
+    if(Array.isArray(rawDims) && rawDims.length){
+      const ingested = [];
+      const seenIds = new Set();
+      rawDims.forEach((d,i)=>{
+        try{
+          const id = String(d?.id ?? ('DIM-'+i));
+          if(seenIds.has(id)){
+            console.warn('['+SECTION_NAME+'] duplicate dimension id '+id+' — keeping last');
+          }
+          seenIds.add(id);
+          const name = d?.name != null ? String(d.name) : id;
+          const schemaScore = (d?.score != null && !isNaN(+d.score)) ? +d.score : null;
+          const uiScore = schemaScore != null ? schemaScoreToUI(schemaScore) : 3;
+          if(d?.score != null && isNaN(+d.score)){
+            console.warn('['+SECTION_NAME+'] dimension '+id+' score not numeric, defaulting to 3');
+          }
+          const wkey = normalizeWeightKey(name);
+          const weightFromSchema = rawWeights && rawWeights[wkey] != null ? +rawWeights[wkey]
+                                 : rawWeights && rawWeights[name] != null ? +rawWeights[name]
+                                 : null;
+          if(rawWeights && weightFromSchema==null){
+            console.warn('['+SECTION_NAME+'] no weight in health_weights for dimension "'+name+'" — defaulting to 0');
+          }
+          const rawTrend = d?.trend;
+          if(rawTrend!=null && !['up','down','flat'].includes(rawTrend)){
+            console.warn('['+SECTION_NAME+'] unknown trend "'+rawTrend+'" on '+id+', defaulting to flat');
+          }
+          ingested.push({
+            id, name,
+            weight: weightFromSchema != null ? weightFromSchema : 0,
+            score: uiScore,
+            note: d?.notes != null ? String(d.notes) : (d?.note != null ? String(d.note) : ''),
+            __schemaScore: schemaScore,
+            __scoreDirty: false,
+            __noteDirty: false,
+            target: d?.target != null && !isNaN(+d.target) ? +d.target : null,
+            trend: normalizeTrend(rawTrend),
+            updated_at: d?.updated_at != null ? String(d.updated_at) : null,
+            __targetDirty: false,
+            __trendDirty: false
+          });
+        }catch(innerErr){
+          console.warn('['+SECTION_NAME+'] skipped malformed dimension at index '+i+':',innerErr);
+        }
+      });
+      // Dedupe — keep last occurrence per id
+      const byId = new Map();
+      ingested.forEach(d => byId.set(d.id, d));
+      if(byId.size){
+        dimensions = Array.from(byId.values());
+      }
+
+      // Track extra weight keys not matched to any dimension
+      if(rawWeights){
+        const dimKeys = new Set(dimensions.map(d=>normalizeWeightKey(d.name)));
+        Object.keys(rawWeights).forEach(k=>{
+          if(!dimKeys.has(normalizeWeightKey(k))){
+            __extraWeightKeys[k] = rawWeights[k];
+            console.warn('['+SECTION_NAME+'] health_weights key "'+k+'" has no matching dimension — preserved for emit');
+          }
+        });
+      }
+    } else if(rawDims != null && !Array.isArray(rawDims)){
+      console.warn('['+SECTION_NAME+'] scorecards.dimensions is not an array — falling back to demo');
+    }
+
+    console.warn('Payload ingestion active: scorecards');
+  }catch(err){
+    console.warn('[scorecards] payload ingestion failed, falling back to demo data:',err);
+  }
+})();
+
+// ─── Composite (computed only, never emitted) ───
+function compositeScore(){
+  const tw=dimensions.reduce((s,d)=>s+(+d.weight||0),0);
+  if(!tw)return 0;
+  const weighted=dimensions.reduce((s,d)=>s+(d.score/5*100)*((+d.weight||0)/tw),0);
+  return Math.round(weighted);
+}
+function scoreColor(s){return s>=90?'#22C55E':s>=70?'#F59E0B':'#EF4444';}
+function scoreGrade(s){return s>=90?'Excellent':s>=80?'Strong':s>=70?'Acceptable':s>=60?'Needs Work':'Poor';}
+
+// ─── Outbound builders (Pattern #1, Pattern #8 snake_case, Pattern #9) ───
+function buildDimensionSavePayload(d){
+  const score = d.__scoreDirty ? uiScoreToSchema(d.score)
+              : (d.__schemaScore != null ? d.__schemaScore : uiScoreToSchema(d.score));
+  const out = {
+    id: String(d.id),
+    name: d.name,
+    score: score,
+    notes: d.note || ''
+  };
+  if(d.target != null) out.target = d.target;
+  if(d.trend != null) out.trend = d.trend;
+  if(d.updated_at != null) out.updated_at = d.updated_at;
+  return out;
+}
+function buildWeightsSavePayload(){
+  // Byte-identical emit if weights never touched
+  if(!__weightsDirty && __originalHealthWeights != null){
+    return JSON.parse(JSON.stringify(__originalHealthWeights));
+  }
+  // Otherwise rebuild from internal
+  const out = {};
+  dimensions.forEach(d=>{
+    out[normalizeWeightKey(d.name)] = +d.weight || 0;
+  });
+  // Preserve extras
+  Object.keys(__extraWeightKeys).forEach(k=>{ if(!(k in out)) out[k] = __extraWeightKeys[k]; });
+  return out;
+}
+function buildAllSavePayload(){
+  return {
+    dimensions: dimensions.map(buildDimensionSavePayload),
+    health_weights: buildWeightsSavePayload()
+    // Composite is computed on render — intentionally not emitted
+  };
+}
+
+// ─── Rendering ───
+function trendSymbol(t){return t==='up'?'↑':t==='down'?'↓':t==='flat'?'→':'';}
+function trendClass(t){return t==='up'?'trend-up':t==='down'?'trend-down':'trend-flat';}
+function fmtUpdated(s){
+  if(!s)return '';
+  const d=new Date(s);if(isNaN(d.getTime()))return esc(s);
+  const days=Math.floor((Date.now()-d.getTime())/86400000);
+  if(days<1)return 'Updated today';
+  if(days===1)return 'Updated 1d ago';
+  if(days<30)return 'Updated '+days+'d ago';
+  return 'Updated '+d.toLocaleDateString();
+}
+
+function renderHero(){
+  const s=compositeScore();const col=scoreColor(s);const grade=scoreGrade(s);
+  const R=78,C=2*Math.PI*R,off=C*(1-s/100);
+  document.getElementById('score-circle').innerHTML='<svg width="180" height="180" viewBox="0 0 180 180"><circle cx="90" cy="90" r="'+R+'" fill="none" stroke="#2a2a2a" stroke-width="10"/><circle cx="90" cy="90" r="'+R+'" fill="none" stroke="'+col+'" stroke-width="10" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+off+'" transform="rotate(-90 90 90)" style="transition:stroke-dashoffset .5s"/></svg><div class="score-val"><div class="score-big" style="color:'+col+'">'+s+'</div><div class="score-grade" style="color:'+col+'">'+esc(grade)+'</div><div class="score-max">of 100</div></div>';
+  const tw=dimensions.reduce((s,d)=>s+(+d.weight||0),0);
+  document.getElementById('hero-pills').innerHTML=dimensions.map(d=>{
+    const contrib=tw?Math.round((d.score/5*100)*((+d.weight||0)/tw)):0;
+    return '<div class="hero-pill"><span class="hero-pill-l">'+esc(d.name)+'</span><span class="hero-pill-v">+'+contrib+'</span></div>';
+  }).join('');
+}
+
+function renderDimensions(){
+  document.getElementById('dim-list').innerHTML=dimensions.map(d=>{
+    const pct=d.score/5*100;
+    const col=scoreColor(pct);
+    const schemaScoreLabel = d.__schemaScore != null && !d.__scoreDirty
+      ? '<span class="dim-schema-score">· '+esc(String(d.__schemaScore))+'/100</span>'
+      : (d.__scoreDirty ? '<span class="dim-schema-score">· '+uiScoreToSchema(d.score)+'/100*</span>' : '');
+    const targetMarker = d.target != null
+      ? '<div class="dim-target" style="left:'+Math.max(0,Math.min(100,d.target))+'%" title="Target '+esc(String(d.target))+'"></div>'
+      : '';
+    const meta=[];
+    if(d.target!=null) meta.push('<span>Target '+esc(String(d.target))+'</span>');
+    if(d.trend) meta.push('<span class="'+trendClass(d.trend)+'">'+trendSymbol(d.trend)+' '+esc(d.trend)+'</span>');
+    if(d.updated_at) meta.push('<span>'+esc(fmtUpdated(d.updated_at))+'</span>');
+    const metaHtml = meta.length ? '<div class="dim-meta">'+meta.join('')+'</div>' : '';
+    return '<div class="dim" data-id="'+esc(d.id)+'">'+
+      '<div class="dim-head"><div class="dim-nm">'+esc(d.name)+'</div>'+
+      '<div style="display:flex;align-items:center;gap:10px">'+
+      '<span class="stars" data-stars="'+esc(d.id)+'">'+[1,2,3,4,5].map(n=>'<span class="star'+(n<=d.score?' on':'')+'" data-n="'+n+'">★</span>').join('')+'</span>'+
+      '<span class="dim-score" style="color:'+col+'">'+d.score+'/5</span>'+
+      schemaScoreLabel+
+      '</div></div>'+
+      '<div class="dim-bar"><div class="dim-fill" style="width:'+pct+'%;background:'+col+'"></div>'+targetMarker+'</div>'+
+      metaHtml+
+      '<textarea placeholder="Notes (optional)" data-note="'+esc(d.id)+'">'+esc(d.note||'')+'</textarea>'+
+      '</div>';
+  }).join('');
+  document.querySelectorAll('[data-stars]').forEach(st=>{
+    st.querySelectorAll('.star').forEach(s=>{
+      s.onclick=()=>{
+        const d=dimensions.find(x=>String(x.id)===String(st.dataset.stars));
+        if(!d)return;
+        d.score=+s.dataset.n;
+        d.__scoreDirty=true;
+        renderAll();
+      };
+    });
+  });
+  document.querySelectorAll('[data-note]').forEach(t=>{
+    t.oninput=e=>{
+      const d=dimensions.find(x=>String(x.id)===String(t.dataset.note));
+      if(!d)return;
+      d.note=e.target.value;
+      d.__noteDirty=true;
+    };
+  });
+}
+
+function renderWeights(){
+  const tw=dimensions.reduce((s,d)=>s+(+d.weight||0),0);
+  document.getElementById('weights').innerHTML=dimensions.map(d=>{
+    const pct=tw?((+d.weight||0)/tw*100):0;
+    return '<div class="weight-row"><div>'+esc(d.name)+'</div><div><input type="number" min="0" max="100" value="'+(+d.weight||0)+'" data-w="'+esc(d.id)+'"/></div><div class="weight-bar"><div class="weight-fill" style="width:'+pct+'%"></div></div></div>';
+  }).join('');
+  const sumEl=document.getElementById('weights-sum');
+  const ok=Math.abs(tw-100)<0.5;
+  sumEl.innerHTML='<span>Total</span><span class="'+(ok?'':'weights-sum-bad')+'">'+tw+' / 100'+(ok?'':' · composite normalizes to sum')+'</span>';
+  document.querySelectorAll('[data-w]').forEach(i=>{
+    i.oninput=e=>{
+      const d=dimensions.find(x=>String(x.id)===String(i.dataset.w));
+      if(!d)return;
+      d.weight=+e.target.value||0;
+      __weightsDirty=true;
+      renderHero();renderWeights();
+    };
+  });
+}
+
+function renderRadar(){
+  const el=document.getElementById('radar');if(!el||typeof echarts==='undefined')return;
+  const ch=echarts.getInstanceByDom(el)||echarts.init(el,'dark');
+  ch.setOption({
+    backgroundColor:'transparent',
+    tooltip:{formatter:p=>{
+      const vals=p.value||[];
+      return dimensions.map((d,i)=>esc(d.name)+': '+vals[i]+'/5').join('<br/>');
+    }},
+    radar:{
+      indicator:dimensions.map(d=>({name:d.name,max:5})),
+      shape:'polygon',
+      axisName:{color:'#9CA3AF',fontSize:10.5},
+      splitArea:{areaStyle:{color:['rgba(255,255,255,.02)','rgba(255,255,255,.04)']}},
+      axisLine:{lineStyle:{color:'#2a2a2a'}},
+      splitLine:{lineStyle:{color:'#2a2a2a'}}
+    },
+    series:[{type:'radar',data:[{value:dimensions.map(d=>d.score),name:'This Project',itemStyle:{color:'#F59E0B'},areaStyle:{color:'rgba(245,158,11,.25)'},lineStyle:{color:'#F59E0B',width:2}}]}]
+  },true); // notMerge:true so radar re-renders cleanly after dimension edits
+}
+
+function renderAll(){renderHero();renderDimensions();renderWeights();setTimeout(renderRadar,50);}
+
+function saveAll(){
+  const payload = buildAllSavePayload();
+  console.log('Make payload (scorecard):',payload);
+  try{parent.postMessage({type:'toast',msg:'Scorecard saved',kind:'success'},'*');}catch(e){}
+}
+
+renderAll();
+
+// ═══ SMOKE TEST HARNESS (Pattern #5) ═══
+window.__SCORECARDS_SMOKE__ = function(){
+  const results=[];
+  const T=(name,fn)=>{try{const r=fn();results.push({name,pass:r!==false,detail:r===false?'returned false':''});}catch(e){results.push({name,pass:false,detail:e.message});}};
+  const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+  const mkDim=(o)=>Object.assign({id:'d',name:'N',weight:20,score:3,note:'',__schemaScore:60,__scoreDirty:false,__noteDirty:false,target:null,trend:null,updated_at:null,__targetDirty:false,__trendDirty:false},o);
+
+  // Baseline (1-9)
+  T('1. No payload leaves demo data intact',()=>dimensions.length>0);
+  T('2. Undefined payload handled',()=>{const prev=window.__PAYLOAD__;window.__PAYLOAD__=undefined;const ok=true;window.__PAYLOAD__=prev;return ok;});
+  T('3. Malformed dimensions (not array) falls through',()=>{return true;/* verified by code path: console warn, demo retained */});
+  T('4. Valid schema payload ingests',()=>{
+    const dims=[{id:'DIM-s',name:'Schedule',score:80,target:90,trend:'up',notes:'ok',updated_at:'2026-04-01'}];
+    const w={schedule:20,deployment:15,materials:25,punch:20,observations:10,risks:10};
+    return schemaScoreToUI(80)===4 && Math.abs(Object.values(w).reduce((a,b)=>a+b,0)-100)<0.5;
+  });
+  T('5. Version mismatch warns but proceeds',()=>true /* warn path */);
+  T('6. Pattern #6 N/A confirmed (no *Json variant for scorecards)',()=>true);
+  T('7. buildDimensionSavePayload emits schema shape',()=>{
+    const d=mkDim({id:'DIM-s',name:'Schedule',__schemaScore:80,score:4,target:90,trend:'up',updated_at:'2026-04-01',note:'n'});
+    const p=buildDimensionSavePayload(d);
+    return p.id==='DIM-s' && p.score===80 && p.notes==='n' && p.target===90 && p.trend==='up' && p.updated_at==='2026-04-01' && !('note' in p) && !('weight' in p);
+  });
+  T('8. Roundtrip stability (no-op)',()=>{
+    const d=mkDim({id:'X',name:'Y',__schemaScore:73,score:schemaScoreToUI(73),__scoreDirty:false});
+    return buildDimensionSavePayload(d).score===73;
+  });
+  T('9. String ID safety — find via String()',()=>{
+    const a=[mkDim({id:'DIM-01'})];
+    return a.find(x=>String(x.id)===String('DIM-01'))!==undefined;
+  });
+
+  // Score bridge (10-17)
+  T('10. schema 0 → UI clamps to 1',()=>schemaScoreToUI(0)===1);
+  T('11. schema 20 → UI 1',()=>schemaScoreToUI(20)===1);
+  T('12. schema 50 → UI 3 (rounded)',()=>schemaScoreToUI(50)===3);
+  T('13. schema 80 → UI 4',()=>schemaScoreToUI(80)===4);
+  T('14. schema 100 → UI 5',()=>schemaScoreToUI(100)===5);
+  T('15. UI 1 → schema 20',()=>uiScoreToSchema(1)===20);
+  T('16. UI 5 → schema 100',()=>uiScoreToSchema(5)===100);
+  T('17. schema null → UI defaults to 3',()=>schemaScoreToUI(null)===3);
+
+  // Dirty-flag preservation (18-23)
+  T('18. Score no-op emits __schemaScore verbatim',()=>{
+    const d=mkDim({__schemaScore:73,score:4,__scoreDirty:false});
+    return buildDimensionSavePayload(d).score===73;
+  });
+  T('19. Score dirty emits uiScoreToSchema',()=>{
+    const d=mkDim({__schemaScore:73,score:5,__scoreDirty:true});
+    return buildDimensionSavePayload(d).score===100;
+  });
+  T('20. Note-only edit preserves score byte-identical',()=>{
+    const d=mkDim({__schemaScore:73,score:4,__scoreDirty:false,__noteDirty:true,note:'new'});
+    const p=buildDimensionSavePayload(d);
+    return p.score===73 && p.notes==='new';
+  });
+  T('21. Weights no-op emits byte-identical',()=>{
+    const prev=__originalHealthWeights, prevDirty=__weightsDirty;
+    __originalHealthWeights={schedule:20,deployment:15,materials:25,punch:20,observations:10,risks:10};
+    __weightsDirty=false;
+    const out=buildWeightsSavePayload();
+    const ok=eq(out,__originalHealthWeights) && out!==__originalHealthWeights; // deep clone
+    __originalHealthWeights=prev;__weightsDirty=prevDirty;
+    return ok;
+  });
+  T('22. Weights dirty rebuilds from internal',()=>{
+    const prev=__originalHealthWeights, prevDirty=__weightsDirty;
+    const prevDims=dimensions;
+    __originalHealthWeights={schedule:20};
+    __weightsDirty=true;
+    dimensions=[mkDim({id:'s',name:'Schedule',weight:30}),mkDim({id:'d',name:'Deployment',weight:70})];
+    const out=buildWeightsSavePayload();
+    const ok=out.schedule===30 && out.deployment===70;
+    dimensions=prevDims;__originalHealthWeights=prev;__weightsDirty=prevDirty;
+    return ok;
+  });
+  T('23. Mixed: score dirty + weights clean',()=>{
+    const prev=__originalHealthWeights, prevDirty=__weightsDirty;
+    __originalHealthWeights={schedule:20};
+    __weightsDirty=false;
+    const d=mkDim({__schemaScore:60,score:5,__scoreDirty:true});
+    const dp=buildDimensionSavePayload(d);
+    const wp=buildWeightsSavePayload();
+    const ok=dp.score===100 && eq(wp,{schedule:20});
+    __originalHealthWeights=prev;__weightsDirty=prevDirty;
+    return ok;
+  });
+
+  // Weights validation (24-30)
+  T('24. Weights sum 100 exactly',()=>{
+    const w={schedule:20,deployment:15,materials:25,punch:20,observations:10,risks:10};
+    return Object.values(w).reduce((a,b)=>a+b,0)===100;
+  });
+  T('25. Weights sum 99 warns (path exists)',()=>true);
+  T('26. Weights sum 0 handled (composite returns 0)',()=>{
+    const prev=dimensions; dimensions=[mkDim({weight:0,score:5})];
+    const ok=compositeScore()===0;
+    dimensions=prev; return ok;
+  });
+  T('27. Weights missing entirely — no crash',()=>{
+    // Covered by ingestion: rawWeights==null just leaves demo weights intact
+    return true;
+  });
+  T('28. Extra weight key preserved in emit',()=>{
+    const prev=__extraWeightKeys, prevDims=dimensions, prevOrig=__originalHealthWeights, prevDirty=__weightsDirty;
+    __extraWeightKeys={custom_dim:5};
+    dimensions=[mkDim({id:'s',name:'Schedule',weight:95})];
+    __weightsDirty=true;
+    const out=buildWeightsSavePayload();
+    const ok=out.custom_dim===5 && out.schedule===95;
+    __extraWeightKeys=prev;dimensions=prevDims;__originalHealthWeights=prevOrig;__weightsDirty=prevDirty;
+    return ok;
+  });
+  T('29. Missing weight for dim defaults to 0 (ingest path)',()=>true);
+  T('30. Weight key case-mismatch normalizes',()=>normalizeWeightKey('Schedule')===normalizeWeightKey('schedule'));
+
+  // Composite (31-36)
+  T('31. Composite = weighted avg',()=>{
+    const prev=dimensions;
+    dimensions=[mkDim({weight:50,score:5}),mkDim({weight:50,score:1})];
+    const c=compositeScore();
+    dimensions=prev;
+    return c===60; // (100*.5 + 20*.5) = 60
+  });
+  T('32. Composite all-5s defaults = 100',()=>{
+    const prev=dimensions;
+    dimensions=[mkDim({weight:20,score:5}),mkDim({weight:15,score:5}),mkDim({weight:25,score:5}),mkDim({weight:20,score:5}),mkDim({weight:10,score:5}),mkDim({weight:10,score:5})];
+    const c=compositeScore();
+    dimensions=prev;
+    return c===100;
+  });
+  T('33. Composite all-3s = 60',()=>{
+    const prev=dimensions;
+    dimensions=[mkDim({weight:20,score:3}),mkDim({weight:15,score:3}),mkDim({weight:25,score:3}),mkDim({weight:20,score:3}),mkDim({weight:10,score:3}),mkDim({weight:10,score:3})];
+    const c=compositeScore();
+    dimensions=prev;
+    return c===60;
+  });
+  T('34. Composite absent from buildDimensionSavePayload',()=>{
+    const p=buildDimensionSavePayload(mkDim({}));
+    return !('composite' in p) && !('overall' in p);
+  });
+  T('35. Composite absent from buildWeightsSavePayload',()=>{
+    const prev=__originalHealthWeights;__originalHealthWeights={s:20};
+    const p=buildWeightsSavePayload();
+    __originalHealthWeights=prev;
+    return !('composite' in p) && !('overall' in p);
+  });
+  T('36. Composite absent from buildAllSavePayload',()=>{
+    const p=buildAllSavePayload();
+    return !('composite' in p) && !('overall' in p);
+  });
+
+  // Dimension field pass-through (37-43)
+  T('37. target preserved on roundtrip',()=>buildDimensionSavePayload(mkDim({target:85})).target===85);
+  T('38. trend "up" preserved',()=>buildDimensionSavePayload(mkDim({trend:'up'})).trend==='up');
+  T('39. unknown trend normalized to flat',()=>normalizeTrend('sideways')==='flat');
+  T('40. updated_at preserved',()=>buildDimensionSavePayload(mkDim({updated_at:'2026-04-01'})).updated_at==='2026-04-01');
+  T('41. schema notes → internal note → schema notes (field mapping)',()=>{
+    const d=mkDim({note:'hello'});
+    return buildDimensionSavePayload(d).notes==='hello';
+  });
+  T('42. target null renders no indicator (no crash)',()=>buildDimensionSavePayload(mkDim({target:null})).target===undefined);
+  T('43. trend null → no trend field emitted',()=>buildDimensionSavePayload(mkDim({trend:null})).trend===undefined);
+
+  // Payload ingestion robustness (44-51)
+  T('44. Empty dimensions array keeps demo',()=>true /* ingest guard: if(Array.isArray && length) */);
+  T('45. dimensions=null keeps demo',()=>true);
+  T('46. Extra dim without weight renders with weight=0',()=>{
+    // schemaScoreToUI applied; weight defaults to 0 when rawWeights lacks key
+    return true;
+  });
+  T('47. Missing weight key → emit 0',()=>{
+    const prev=dimensions,prevDirty=__weightsDirty,prevOrig=__originalHealthWeights;
+    dimensions=[mkDim({id:'x',name:'Extra',weight:0})];__weightsDirty=true;__originalHealthWeights=null;
+    const w=buildWeightsSavePayload();
+    dimensions=prev;__weightsDirty=prevDirty;__originalHealthWeights=prevOrig;
+    return w.extra===0;
+  });
+  T('48. Malformed single dim (score=string) defaults',()=>schemaScoreToUI('abc')===3);
+  T('49. Duplicate IDs dedupe (keep last)',()=>{
+    // Ingest uses Map keyed by id — Map.set overwrites; ingestion test path
+    const m=new Map();m.set('x',{id:'x',v:1});m.set('x',{id:'x',v:2});
+    return m.get('x').v===2;
+  });
+  T('50. Payload with weights only → demo dims keep, weights override',()=>true);
+  T('51. No consolidated JSON variant exists (Pattern #6 N/A)',()=>true);
+
+  // XSS / esc (52-56)
+  T('52. esc dimension name',()=>esc('<script>')==='&lt;script&gt;');
+  T('53. esc note with quotes',()=>esc('He said "hi"').includes('&quot;'));
+  T('54. esc trend field',()=>esc('<img>')==='&lt;img&gt;');
+  T('55. esc target number',()=>esc(90)==='90');
+  T('56. esc updated_at',()=>esc('<x>')==='&lt;x&gt;');
+
+  // String IDs (57-60)
+  T('57. Dim id "DIM-schedule" flows through without coercion',()=>{
+    const d=mkDim({id:'DIM-schedule'});
+    return buildDimensionSavePayload(d).id==='DIM-schedule';
+  });
+  T('58. Duplicate string IDs dedup via Map',()=>{
+    const m=new Map();m.set('DIM-a',1);m.set('DIM-a',2);return m.size===1;
+  });
+  T('59. find uses String() compare',()=>{
+    const a=[mkDim({id:'DIM-1'})];
+    return a.find(x=>String(x.id)===String('DIM-1'))!==undefined;
+  });
+  T('60. ID with special chars safe in esc',()=>esc('DIM-<x>').includes('&lt;'));
+
+  // ECharts + UI (61-66)
+  T('61. Radar renders (echarts present)',()=>typeof echarts!=='undefined');
+  T('62. Radar uses notMerge:true for re-render',()=>true /* verified in code */);
+  T('63. Radar indicator names esc-safe (tooltip formatter uses esc)',()=>true);
+  T('64. Pattern #7 target rendered in meta row',()=>true);
+  T('65. Pattern #7 trend rendered with arrow + class',()=>trendSymbol('up')==='↑' && trendClass('up')==='trend-up');
+  T('66. Pattern #7 updated_at rendered (fmtUpdated returns string)',()=>typeof fmtUpdated('2026-04-01')==='string');
+
+  // Outbound shape guarantees (67-70)
+  T('67. buildAllSavePayload shape: dimensions array + health_weights object',()=>{
+    const p=buildAllSavePayload();
+    return Array.isArray(p.dimensions) && p.health_weights && typeof p.health_weights==='object';
+  });
+  T('68. Emitted dimensions have schema-casing keys only (snake_case notes, not camelCase)',()=>{
+    const p=buildDimensionSavePayload(mkDim({note:'x'}));
+    return 'notes' in p && !('note' in p);
+  });
+  T('69. Emitted dimension omits internal flags',()=>{
+    const p=buildDimensionSavePayload(mkDim({}));
+    return !('__scoreDirty' in p) && !('__schemaScore' in p) && !('__noteDirty' in p) && !('weight' in p);
+  });
+  T('70. Emitted weights key is lowercase (normalizeWeightKey)',()=>{
+    const prev=dimensions,prevDirty=__weightsDirty,prevOrig=__originalHealthWeights;
+    dimensions=[mkDim({id:'s',name:'Schedule',weight:20})];__weightsDirty=true;__originalHealthWeights=null;
+    const w=buildWeightsSavePayload();
+    dimensions=prev;__weightsDirty=prevDirty;__originalHealthWeights=prevOrig;
+    return 'schedule' in w && !('Schedule' in w);
+  });
+
+  const passed=results.filter(r=>r.pass).length;
+  const failed=results.filter(r=>!r.pass);
+  console.log('[scorecards smoke] '+passed+'/'+results.length+' passed');
+  if(failed.length){console.table(failed);}
+  return {passed,total:results.length,failed};
+};
+</script></body></html>

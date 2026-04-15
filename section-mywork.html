@@ -1,0 +1,1403 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>My Work</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;padding:20px}
+.hd{margin-bottom:18px}
+.ti{font-size:20px;font-weight:700;color:#fff}
+.sb{font-size:12.5px;color:#9CA3AF;margin-top:4px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.kpi{background:#1f1f1f;border:1px solid #2a2a2a;border-left:3px solid;border-radius:8px;padding:12px 14px;cursor:pointer;transition:border-color .12s}
+.kpi:hover{border-color:#3a3a3a}
+.kl{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:5px}
+.kv{font-size:22px;font-weight:800}
+.kc{font-size:11px;color:#9CA3AF;margin-top:3px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.card.wide{grid-column:1 / -1}
+.ch{padding:14px 16px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ch-l{min-width:0;flex:1}
+.ct{font-size:13px;font-weight:700}
+.cs{font-size:11px;color:#9CA3AF;margin-top:2px}
+.ch-a{font-size:11px;color:#9CA3AF;cursor:pointer;white-space:nowrap}
+.ch-a:hover{color:#F59E0B}
+.cbody{max-height:320px;overflow-y:auto}
+.item{padding:10px 16px;border-bottom:1px solid #252525;display:flex;align-items:center;gap:10px;font-size:12.5px;cursor:pointer}
+.item:last-child{border-bottom:none}
+.item:hover{background:#252525}
+.item.highlight{background:rgba(245,158,11,.12);border-left:2px solid #F59E0B}
+.item-nm{flex:1;color:#E5E7EB;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.item-meta{font-size:10.5px;color:#6a6a6a;white-space:nowrap;flex-shrink:0}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex-shrink:0;vertical-align:middle}
+.empty{padding:24px;text-align:center;color:#9CA3AF;font-size:11.5px}
+.banner{padding:12px 16px;background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(66,134,244,.06));border:1px solid #2a2a2a;border-radius:10px;margin-bottom:16px;font-size:13px}
+.banner strong{color:#F59E0B}
+.hrs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#252525}
+.hrs-cell{background:#1f1f1f;padding:16px;text-align:center}
+.hrs-v{font-size:20px;font-weight:800;color:#F59E0B}
+.hrs-l{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#9CA3AF;margin-top:4px}
+.hrs-sub{font-size:11px;color:#6a6a6a;margin-top:2px}
+</style></head><body>
+<div class="hd">
+  <div class="ti" id="greeting">Good afternoon</div>
+  <div class="sb" id="subtitle">Here's what needs your attention today</div>
+</div>
+<div class="banner" id="banner"></div>
+<div class="kpis" id="kpis"></div>
+<div class="grid" id="cards"></div>
+
+<script>
+(function(){
+  'use strict';
+  const SECTION_NAME = 'mywork';
+
+  // ─── XSS-safe interpolation (Pattern #3) ───
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  // ─── Email comparator (case-insensitive, trim-safe) — Pattern #4 ───
+  const normalizeEmail = e => String(e == null ? '' : e).toLowerCase().trim();
+  const emailEq = (a, b) => {
+    const na = normalizeEmail(a), nb = normalizeEmail(b);
+    return na !== '' && na === nb;
+  };
+
+  // ─── Defensive array read ───
+  const arr = v => Array.isArray(v) ? v : [];
+  const pickArr = (primary, fallback) => {
+    const p = arr(primary);
+    if (p.length) return p;
+    return arr(fallback);
+  };
+
+  // ═══ PAYLOAD INGESTION ═══
+  // My Work is a cross-cut aggregation view — it owns no data of its own.
+  // This IIFE runs version check + boot warning; data reads happen lazily
+  // via accessor functions below so we always reflect the latest state of
+  // globals populated by peer sections (which may ingest after we do).
+  (function ingestPayload(){
+    try {
+      const P = window.__PAYLOAD__;
+      if (!P) return; // no payload → fall through to DEMO_PAYLOAD seed below
+
+      const expectedVersion = 1;
+      const actualVersion = P?.meta?.payload_version;
+      if (actualVersion != null && actualVersion !== expectedVersion) {
+        console.warn(`[${SECTION_NAME}] payload v${expectedVersion} expected, got v${actualVersion} — rendering best-effort`);
+      }
+
+      // My Work doesn't overwrite a local state array; it reads cross-section
+      // globals at render time. Nothing to map here — just flag boot.
+      console.warn('Payload ingestion active:', SECTION_NAME);
+    } catch (err) {
+      console.warn(`[${SECTION_NAME}] payload ingestion failed, falling back to demo data:`, err);
+    }
+  })();
+
+  // ═══ DEMO PAYLOAD SEED ═══
+  // If no live payload AND peer-section globals are empty (e.g. running
+  // this section standalone, or chat loaded My Work before any peers
+  // ingested), seed a synthetic payload so the dashboard renders populated.
+  // This matches the behavior of the original hardcoded-demo version.
+  (function seedDemo(){
+    if (window.__PAYLOAD__) return;
+    const ME = 'misgur@adrm-security.com';
+    const OTHER = 'lfeula@adrm-security.com';
+    // Dates anchored relative to "now" so demo always looks current.
+    const today = new Date();
+    const iso = (d) => new Date(d).toISOString().slice(0,10);
+    const isoFull = (d) => new Date(d).toISOString();
+    const addDays = (n) => { const d = new Date(today); d.setDate(d.getDate()+n); return d; };
+    const addHours = (n) => { const d = new Date(today); d.setHours(d.getHours()+n); return d; };
+
+    window.__PAYLOAD__ = {
+      loggedin_user_email: ME,
+      loggedin_user_name:  'Matt Isgur',
+      loggedin_user_role:  'PM',
+      tasks: [
+        { id:'TSK-101', title:'Commission access control at Door 3', assignee_email:ME, status:'In Progress', priority:'High',   end: iso(addDays(11)) },
+        { id:'TSK-102', title:'Verify VLAN segmentation on IoT',      assignee_email:ME, status:'In Progress', priority:'Normal', end: iso(addDays(1)) },
+        { id:'TSK-103', title:'Invoice for closeout',                 assignee_email:ME, status:'Not Started', priority:'Normal', end: iso(addDays(44)) },
+        { id:'TSK-104', title:'Speak to client about service contract', assignee_email:ME, status:'In Progress', priority:'High', end: iso(addDays(-6)) },
+        { id:'TSK-105', title:'Submit shop drawings rev 3',           assignee_email:OTHER, status:'In Progress', priority:'Normal', end: iso(addDays(3)) }
+      ],
+      riskTrackerJson: [
+        { id:'RK-01', title:'Network delayed going live',    owner_email:ME, status:'Open',       likelihood:'High',   impact:'High', score:16 },
+        { id:'RK-02', title:'Procurement delay on cameras',  owner_email:ME, status:'Mitigating', likelihood:'Medium', impact:'Medium', score:9 }
+      ],
+      punchListJson: [
+        { id:'PL-01', title:'Door 3 strike aligned wrong',  assignee_email:ME, status:'Open',        severity:'Medium', due: iso(addDays(-3)) },
+        { id:'PL-02', title:'Cable tray gap at IDF-2',      assignee_email:ME, status:'In Progress', severity:'Low',    due: iso(addDays(-1)) },
+        { id:'PL-03', title:'Missing cover plate B-204',    assignee_email:ME, status:'Open',        severity:'Low',    due: iso(addDays(5)) },
+        { id:'PL-04', title:'Reader LED wiring reversed',   assignee_email:ME, status:'Open',        severity:'Medium', due: iso(addDays(8)) }
+      ],
+      observationsJson: [
+        { id:'OB-01', text:'Conduit run above ceiling not supported per spec', observed_by:ME, status:'Open',      severity:'Medium', observed_at: iso(addDays(-2)) },
+        { id:'OB-02', text:'Camera 7 has glare from overhead light',           observed_by:ME, status:'In Review', severity:'Low',    observed_at: iso(addDays(-5)) }
+      ],
+      rfiJson: [
+        { id:'RFI-01', question:'Confirm panel location in IDF-2',          asked_by:ME, status:'Open',     asked_at: iso(addDays(-4)) },
+        { id:'RFI-02', question:'Which card format for retrofit readers?',  asked_by:ME, status:'Answered', asked_at: iso(addDays(-8)) }
+      ],
+      meetings: [
+        { id:'MTG-01', title:'Weekly OAC',            datetime: isoFull(addHours(4)),   attendees:[ME,'client@acme.com'] },
+        { id:'MTG-02', title:'Commissioning walk-through', datetime: isoFull(addDays(1)), attendees:[ME, OTHER] },
+        { id:'MTG-03', title:'Close-out review',      datetime: isoFull(addDays(3)),    attendees:[ME,'client@acme.com'] }
+      ],
+      time_entries: [
+        { id:'TE-01', user_email:ME, task_id:'TSK-101', date: iso(today), hours:1.5, billable:true,  notes:'Client meeting' },
+        { id:'TE-02', user_email:ME, task_id:'TSK-102', date: iso(today), hours:0.5, billable:true,  notes:'CAD design work' },
+        { id:'TE-03', user_email:ME, task_id:'TSK-104', date: iso(today), hours:0.5, billable:false, notes:'Procurement call' },
+        { id:'TE-04', user_email:ME, task_id:'TSK-101', date: iso(addDays(-1)), hours:3.0, billable:true, notes:'Install supervision' },
+        { id:'TE-05', user_email:ME, task_id:'TSK-102', date: iso(addDays(-2)), hours:2.0, billable:true, notes:'Network config' }
+      ],
+      deployment_items: [
+        { id:'DI-01', asset_tag:'CR-LOBBY-01', location:'Lobby North',
+          steps_snapshot:[{id:'S1',order:1},{id:'S2',order:2},{id:'S3',order:3},{id:'S4',order:4}],
+          responsesJson:[
+            { step_id:'S1', status:'Complete', by:ME, at: isoFull(addDays(-5)) },
+            { step_id:'S2', status:'Complete', by:ME, at: isoFull(addDays(-4)) },
+            { step_id:'S3', status:'In Progress', by:ME }
+          ] },
+        { id:'DI-02', asset_tag:'CR-LOBBY-02', location:'Lobby South',
+          steps_snapshot:[{id:'S1',order:1},{id:'S2',order:2},{id:'S3',order:3},{id:'S4',order:4}],
+          responsesJson:[
+            { step_id:'S1', status:'Complete', by:ME, at: isoFull(addDays(-3)) }
+          ] }
+      ],
+      activity: [
+        { id:'A-01', entity:'task', entity_id:'TSK-101', type:'comment', actor_email:OTHER, actor_name:'Louis Feula', at: isoFull(addHours(-2)), text:'@Matt see your email from today' },
+        { id:'A-02', entity:'task', entity_id:'TSK-102', type:'comment', actor_email:'jcarter@adrm-security.com', actor_name:'Jane Carter', at: isoFull(addDays(-1)), text:'@Matt Isgur codes sent' },
+        { id:'A-03', entity:'risk', entity_id:'RK-01', type:'status_change', actor_email:OTHER, actor_name:'Louis Feula', at: isoFull(addDays(-1)) },
+        { id:'A-04', entity:'punch', entity_id:'PL-01', type:'update', actor_email:OTHER, actor_name:'Louis Feula', at: isoFull(addDays(-2)) }
+      ],
+      attachments: {
+        'observation:OB-01': [
+          { id:'ATT-01', filename:'conduit_ceiling.jpg', uploaded_at: isoFull(addDays(-2)), uploaded_by:ME }
+        ],
+        'task:TSK-101': [
+          { id:'ATT-02', filename:'door3_commissioning_checklist.pdf', uploaded_at: isoFull(addDays(-3)), uploaded_by:ME }
+        ],
+        'punch:PL-01': [
+          { id:'ATT-03', filename:'door3_strike.jpg', uploaded_at: isoFull(addDays(-4)), uploaded_by:ME }
+        ]
+      },
+      contacts: [
+        { id:'CON-01', name:'Matt Isgur',    email:ME,    company:'ADRM Security', role:'PM',        is_internal:true },
+        { id:'CON-02', name:'Louis Feula',   email:OTHER, company:'ADRM Security', role:'Sr Tech',   is_internal:true },
+        { id:'CON-03', name:'Jane Carter',   email:'jcarter@adrm-security.com', company:'ADRM Security', role:'Lead Tech', is_internal:true }
+      ]
+    };
+    console.warn('[' + SECTION_NAME + '] using demo payload seed (no live payload detected)');
+  })();
+
+  // ─── Session accessors (fall through to demo so standalone view works) ───
+  function currentUserEmail() {
+    return normalizeEmail(
+      window.__USER__?.email
+      || window.__PAYLOAD__?.loggedin_user_email
+      || window.__PAYLOAD__?.project?.pm_email
+      || 'misgur@adrm-security.com'
+    );
+  }
+  function currentUserName() {
+    const raw = window.__USER__?.name
+      || window.__PAYLOAD__?.loggedin_user_name
+      || '';
+    if (raw) return String(raw);
+    // Derive first name from email as last resort
+    const em = currentUserEmail();
+    const local = em.split('@')[0] || '';
+    if (!local) return 'there';
+    // misgur → Matt (contact resolve if possible)
+    const contacts = getContacts();
+    const byEmail = contacts.find(c => emailEq(c?.email, em));
+    if (byEmail?.name) return String(byEmail.name).split(' ')[0];
+    return local.charAt(0).toUpperCase() + local.slice(1);
+  }
+
+  // ─── Cross-section global accessors (defensive — each may be absent if
+  //     the owning section hasn't ingested yet, or chat ran out of order) ───
+  function getTasks()           { return arr(window.__PAYLOAD__?.tasks); }
+  function getMilestones()      { return pickArr(window.__MILESTONES__,             window.__PAYLOAD__?.milestones); }
+  function getPunch()           { return pickArr(window.__PAYLOAD__?.punch_list,    window.__PAYLOAD__?.punchListJson); }
+  function getObservations()    { return pickArr(window.__PAYLOAD__?.observations,  window.__PAYLOAD__?.observationsJson); }
+  function getRisks()           { return pickArr(window.__PAYLOAD__?.risks,         window.__PAYLOAD__?.riskTrackerJson); }
+  function getRfi()              { return pickArr(window.__PAYLOAD__?.rfi,          window.__PAYLOAD__?.rfiJson); }
+  function getMaterials()       { return pickArr(window.__PAYLOAD__?.materials,     window.__PAYLOAD__?.materialTrackerJson); }
+  function getMeetings()        { return arr(window.__PAYLOAD__?.meetings); }
+  function getTimeEntries()     { return pickArr(window.__TIME_ENTRIES__,           window.__PAYLOAD__?.time_entries); }
+  function getFiles()           { return pickArr(window.__FILES__,                  window.__PAYLOAD__?.files); }
+  function getActivity()        { return pickArr(window.__ACTIVITY__,               window.__PAYLOAD__?.activity); }
+  function getDeployedAssets()  { return pickArr(window.__DEPLOYED_ASSETS__,        window.__PAYLOAD__?.deployed_assets); }
+  function getDeploymentItems() { return pickArr(window.__DEPLOYMENT_ITEMS__,       window.__PAYLOAD__?.deployment_items); }
+  function getAttachments()     { return window.__ATTACHMENTS__ || window.__PAYLOAD__?.attachments || {}; }
+  function getContacts()        { return pickArr(window.__CONTACTS__,               window.__PAYLOAD__?.contacts); }
+
+  // ─── Per-domain filters (owned / assigned to current user) ───
+  const CLOSED_TASK   = new Set(['Done','Closed','Cancelled']);
+  const CLOSED_RISK   = new Set(['Closed']);
+  const CLOSED_PUNCH  = new Set(['Closed']);
+  const CLOSED_OBS    = new Set(['Resolved','Dismissed']);
+  const CLOSED_RFI    = new Set(['Closed']);
+  const CLOSED_MS     = new Set(['Complete']);
+
+  function myTasks(email, opts) {
+    const includeClosed = opts && opts.includeClosed;
+    return getTasks().filter(t => emailEq(t?.assignee_email, email) && (includeClosed || !CLOSED_TASK.has(t?.status)));
+  }
+  function myMilestones(email) {
+    return getMilestones().filter(m => emailEq(m?.owner_email, email) && !CLOSED_MS.has(m?.status));
+  }
+  function myRisks(email) {
+    return getRisks().filter(r => emailEq(r?.owner_email, email) && !CLOSED_RISK.has(r?.status));
+  }
+  function myPunch(email) {
+    return getPunch().filter(p => emailEq(p?.assignee_email, email) && !CLOSED_PUNCH.has(p?.status));
+  }
+  function myObservations(email) {
+    return getObservations().filter(o => emailEq(o?.observed_by, email) && !CLOSED_OBS.has(o?.status));
+  }
+  function myRfi(email) {
+    return getRfi().filter(r => emailEq(r?.asked_by, email) && !CLOSED_RFI.has(r?.status));
+  }
+  function myMeetings(email, nowMs) {
+    const now = typeof nowMs === 'number' ? nowMs : Date.now();
+    const cutoff = now - 3600000; // include meetings that started within last hour
+    return getMeetings().filter(m => {
+      const atts = arr(m?.attendees);
+      if (!atts.some(a => emailEq(a, email))) return false;
+      const dt = m?.datetime ? new Date(m.datetime).getTime() : NaN;
+      if (!isFinite(dt)) return false;
+      return dt >= cutoff;
+    }).sort((a,b) => new Date(a.datetime) - new Date(b.datetime));
+  }
+  function myDeploymentItems(email) {
+    return getDeploymentItems().filter(di => {
+      const responses = arr(di?.responsesJson);
+      return responses.some(r => emailEq(r?.by, email));
+    });
+  }
+
+  // ─── Time math ───
+  function isSameLocalDay(d1, d2) {
+    try {
+      const a = new Date(d1), b = new Date(d2);
+      if (isNaN(a) || isNaN(b)) return false;
+      return a.getFullYear() === b.getFullYear()
+        && a.getMonth() === b.getMonth()
+        && a.getDate() === b.getDate();
+    } catch(_) { return false; }
+  }
+  function startOfWeek(d) {
+    const x = new Date(d);
+    x.setHours(0,0,0,0);
+    const dow = x.getDay(); // Sun=0 ... Sat=6
+    x.setDate(x.getDate() - dow);
+    return x;
+  }
+  function todayHours(email, nowArg) {
+    const today = nowArg ? new Date(nowArg) : new Date();
+    return getTimeEntries()
+      .filter(e => emailEq(e?.user_email, email))
+      .filter(e => e?.date && isSameLocalDay(e.date, today))
+      .reduce((s, e) => s + (Number(e?.hours) || 0), 0);
+  }
+  function weekHours(email, nowArg) {
+    const now = nowArg ? new Date(nowArg) : new Date();
+    const sow = startOfWeek(now).getTime();
+    const eow = sow + 7 * 86400000;
+    const entries = getTimeEntries()
+      .filter(e => emailEq(e?.user_email, email))
+      .filter(e => {
+        const t = e?.date ? new Date(e.date).getTime() : NaN;
+        return isFinite(t) && t >= sow && t < eow;
+      });
+    const total = entries.reduce((s, e) => s + (Number(e?.hours) || 0), 0);
+    const billable = entries.filter(e => e?.billable).reduce((s, e) => s + (Number(e?.hours) || 0), 0);
+    return { total: +total.toFixed(2), billable: +billable.toFixed(2), nonBillable: +(total - billable).toFixed(2), count: entries.length, entries };
+  }
+
+  // ─── Cross-entity attachment / activity resolution ───
+  function buildMyEntityKeys(email) {
+    const keys = new Set();
+    myTasks(email, {includeClosed:true}).forEach(t => t?.id != null && keys.add('task:' + String(t.id)));
+    myPunch(email).forEach(p => p?.id != null && keys.add('punch:' + String(p.id)));
+    myRisks(email).forEach(r => r?.id != null && keys.add('risk:' + String(r.id)));
+    myObservations(email).forEach(o => o?.id != null && keys.add('observation:' + String(o.id)));
+    myRfi(email).forEach(r => r?.id != null && keys.add('rfi:' + String(r.id)));
+    return keys;
+  }
+  function attachmentsForMyItems(email) {
+    const attachments = getAttachments();
+    const myKeys = buildMyEntityKeys(email);
+    const out = [];
+    Object.keys(attachments || {}).forEach(key => {
+      if (myKeys.has(key)) {
+        arr(attachments[key]).forEach(a => {
+          if (a) out.push({ ...a, entityKey: key });
+        });
+      }
+    });
+    return out.sort((a, b) => {
+      const at = a?.uploaded_at ? new Date(a.uploaded_at).getTime() : 0;
+      const bt = b?.uploaded_at ? new Date(b.uploaded_at).getTime() : 0;
+      return bt - at;
+    });
+  }
+  function activityForMyItems(email, limit) {
+    const events = getActivity();
+    const myKeys = buildMyEntityKeys(email);
+    const out = events.filter(ev => {
+      const ent = ev?.entity;
+      const eid = ev?.entity_id;
+      if (!ent || eid == null) return false;
+      return myKeys.has(`${String(ent).toLowerCase()}:${String(eid)}`);
+    });
+    out.sort((a, b) => {
+      const at = a?.at ? new Date(a.at).getTime() : 0;
+      const bt = b?.at ? new Date(b.at).getTime() : 0;
+      return bt - at;
+    });
+    return out.slice(0, typeof limit === 'number' ? limit : 10);
+  }
+
+  // ─── Deep-link navigation (Pattern: postMessage to shell) ───
+  // My Work is read-only aggregation — editing happens in the owning
+  // section. Clicks navigate with a string entityId so the owning section
+  // can pre-select / scroll-to / open-drawer.
+  function navigate(section, entityId, filter) {
+    try {
+      const msg = { type: 'navigate', section };
+      if (entityId != null) msg.entityId = String(entityId);
+      if (filter) msg.filter = filter;
+      parent.postMessage(msg, '*');
+    } catch(_) {}
+  }
+  // Expose for inline onclick + smoke tests
+  window.__myworkNavigate = navigate;
+
+  // ─── Status / priority dots (🔴🟡🟢 convention, handoff rule) ───
+  function statusDot(status) {
+    const s = String(status || '').toLowerCase();
+    if (!s) return '#6a6a6a';
+    if (/(overdue|high|critical|urgent|blocked|at risk|identified)/.test(s)) return '#EF4444';
+    if (/(mitigating|monitoring|medium|in progress|partial|ordered|open|in review)/.test(s)) return '#F59E0B';
+    if (/(complete|done|closed|resolved|received|installed|answered|ready for review)/.test(s)) return '#22C55E';
+    return '#6a6a6a';
+  }
+  function priorityDot(p) {
+    const pp = String(p || '').toLowerCase();
+    if (['high','critical','urgent'].includes(pp)) return '#EF4444';
+    if (['normal','medium'].includes(pp)) return '#F59E0B';
+    return '#22C55E';
+  }
+  function severityDot(sev) {
+    const s = String(sev || '').toLowerCase();
+    if (['high','critical'].includes(s)) return '#EF4444';
+    if (['medium'].includes(s)) return '#F59E0B';
+    return '#22C55E';
+  }
+
+  // ─── Date helpers ───
+  function fmtDate(d) {
+    if (!d) return '';
+    try {
+      const x = new Date(d);
+      if (isNaN(x)) return '';
+      return x.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    } catch(_) { return ''; }
+  }
+  function fmtDateTime(d) {
+    if (!d) return '';
+    try {
+      const x = new Date(d);
+      if (isNaN(x)) return '';
+      return x.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    } catch(_) { return ''; }
+  }
+  function fmtRel(d) {
+    if (!d) return '';
+    try {
+      const x = new Date(d);
+      if (isNaN(x)) return '';
+      const diffMs = Date.now() - x.getTime();
+      const diffMin = Math.round(diffMs / 60000);
+      if (diffMin < 1 && diffMin > -1) return 'just now';
+      if (diffMin < 60 && diffMin > 0) return diffMin + 'm ago';
+      const diffH = Math.round(diffMin / 60);
+      if (diffH < 24 && diffH > 0) return diffH + 'h ago';
+      const diffD = Math.round(diffH / 24);
+      if (diffD < 7 && diffD > 0) return diffD + 'd ago';
+      return fmtDate(d);
+    } catch(_) { return ''; }
+  }
+  function isOverdue(dueDate, status, nowArg) {
+    if (!dueDate) return false;
+    if (CLOSED_TASK.has(status) || CLOSED_PUNCH.has(status) || CLOSED_OBS.has(status)) return false;
+    try {
+      const d = new Date(dueDate);
+      if (isNaN(d)) return false;
+      const today = nowArg ? new Date(nowArg) : new Date();
+      today.setHours(0, 0, 0, 0);
+      return d < today;
+    } catch(_) { return false; }
+  }
+  function isThisWeek(dueDate, nowArg) {
+    if (!dueDate) return false;
+    try {
+      const d = new Date(dueDate);
+      if (isNaN(d)) return false;
+      const now = nowArg ? new Date(nowArg) : new Date();
+      const sow = startOfWeek(now).getTime();
+      const eow = sow + 7 * 86400000;
+      const t = d.getTime();
+      return t >= sow && t < eow;
+    } catch(_) { return false; }
+  }
+
+  // ─── Item renderer ───
+  function renderItem(opts) {
+    const { dotColor, name, meta, clickHandler, key } = opts;
+    const click = clickHandler ? ` onclick="${esc(clickHandler)}"` : '';
+    const keyAttr = key ? ` data-key="${esc(key)}"` : '';
+    return `<div class="item"${keyAttr}${click}><span class="dot" style="background:${esc(dotColor)}"></span><div class="item-nm">${esc(name)}</div><span class="item-meta">${esc(meta)}</span></div>`;
+  }
+  function renderEmpty(msg) {
+    return `<div class="empty">${esc(msg || 'Nothing here')}</div>`;
+  }
+
+  // ─── Per-card renderers ───
+  function renderTasksBody(email) {
+    const items = myTasks(email).sort((a,b) => {
+      const ad = a?.end || a?.due || '9999'; const bd = b?.end || b?.due || '9999';
+      return String(ad).localeCompare(String(bd));
+    });
+    if (!items.length) return renderEmpty('No open tasks assigned to you');
+    return items.slice(0, 12).map(t => {
+      const overdue = isOverdue(t?.end || t?.due, t?.status);
+      const dot = overdue ? '#EF4444' : (String(t?.priority||'').toLowerCase()==='high' ? '#F59E0B' : statusDot(t?.status));
+      const metaBits = [overdue ? 'Overdue' : (t?.status || 'Open')];
+      const due = fmtDate(t?.end || t?.due);
+      if (due) metaBits.push(due);
+      const click = `window.__myworkNavigate('actions', ${JSON.stringify(String(t?.id))})`;
+      return renderItem({ dotColor: dot, name: t?.title || '(untitled)', meta: metaBits.join(' · '), clickHandler: click, key: 'task:' + String(t?.id) });
+    }).join('');
+  }
+  function renderRisksBody(email) {
+    const items = myRisks(email).sort((a,b) => (Number(b?.score)||0) - (Number(a?.score)||0));
+    if (!items.length) return renderEmpty('No open risks you own');
+    return items.slice(0, 12).map(r => {
+      const dot = severityDot(r?.impact) === '#22C55E' && severityDot(r?.likelihood) === '#22C55E' ? '#22C55E' : severityDot(r?.impact);
+      const metaBits = [];
+      if (r?.likelihood || r?.impact) metaBits.push(`${r?.likelihood||''}/${r?.impact||''}`.replace(/^\/|\/$/g,''));
+      if (r?.status) metaBits.push(r.status);
+      const click = `window.__myworkNavigate('risks', ${JSON.stringify(String(r?.id))})`;
+      return renderItem({ dotColor: dot, name: r?.title || '(untitled)', meta: metaBits.filter(Boolean).join(' · '), clickHandler: click, key: 'risk:' + String(r?.id) });
+    }).join('');
+  }
+  function renderPunchBody(email) {
+    const items = myPunch(email).sort((a,b) => String(a?.due||'9999').localeCompare(String(b?.due||'9999')));
+    if (!items.length) return renderEmpty('No open punch items');
+    return items.slice(0, 12).map(p => {
+      const overdue = isOverdue(p?.due, p?.status);
+      const dot = overdue ? '#EF4444' : severityDot(p?.severity);
+      const metaBits = [];
+      if (p?.severity) metaBits.push(p.severity);
+      metaBits.push(overdue ? 'Overdue' : (p?.status || 'Open'));
+      if (p?.due) metaBits.push(fmtDate(p.due));
+      const click = `window.__myworkNavigate('punch', ${JSON.stringify(String(p?.id))})`;
+      return renderItem({ dotColor: dot, name: p?.title || '(untitled)', meta: metaBits.join(' · '), clickHandler: click, key: 'punch:' + String(p?.id) });
+    }).join('');
+  }
+  function renderObservationsBody(email) {
+    const items = myObservations(email);
+    if (!items.length) return renderEmpty('No observations to review');
+    return items.slice(0, 12).map(o => {
+      const dot = severityDot(o?.severity);
+      const metaBits = [];
+      if (o?.severity) metaBits.push(o.severity);
+      if (o?.status) metaBits.push(o.status);
+      if (o?.observed_at) metaBits.push(fmtDate(o.observed_at));
+      const click = `window.__myworkNavigate('observations', ${JSON.stringify(String(o?.id))})`;
+      return renderItem({ dotColor: dot, name: o?.text || '(no text)', meta: metaBits.join(' · '), clickHandler: click, key: 'observation:' + String(o?.id) });
+    }).join('');
+  }
+  function renderRfiBody(email) {
+    const items = myRfi(email);
+    if (!items.length) return renderEmpty('No open RFI');
+    return items.slice(0, 12).map(r => {
+      const dot = statusDot(r?.status);
+      const metaBits = [];
+      if (r?.status) metaBits.push(r.status);
+      if (r?.asked_at) metaBits.push('asked ' + fmtDate(r.asked_at));
+      const click = `window.__myworkNavigate('rfi', ${JSON.stringify(String(r?.id))})`;
+      return renderItem({ dotColor: dot, name: r?.question || '(no question)', meta: metaBits.join(' · '), clickHandler: click, key: 'rfi:' + String(r?.id) });
+    }).join('');
+  }
+  function renderMeetingsBody(email) {
+    const items = myMeetings(email);
+    if (!items.length) return renderEmpty('No upcoming meetings');
+    return items.slice(0, 8).map(m => {
+      const dot = '#4286f4';
+      const meta = fmtDateTime(m?.datetime);
+      const click = `window.__myworkNavigate('meetings', ${JSON.stringify(String(m?.id))})`;
+      return renderItem({ dotColor: dot, name: m?.title || '(untitled)', meta, clickHandler: click, key: 'meeting:' + String(m?.id) });
+    }).join('');
+  }
+  function renderTodayTimeBody(email) {
+    const today = new Date();
+    const entries = getTimeEntries()
+      .filter(e => emailEq(e?.user_email, email))
+      .filter(e => e?.date && isSameLocalDay(e.date, today))
+      .sort((a,b) => String(a?.date).localeCompare(String(b?.date)));
+    if (!entries.length) return renderEmpty('No time logged today');
+    return entries.slice(0, 12).map(e => {
+      const dot = e?.billable ? '#22C55E' : '#6a6a6a';
+      const hrs = (Number(e?.hours) || 0).toFixed(1) + 'h';
+      const label = e?.notes || (e?.task_id ? 'Task ' + e.task_id : 'Time entry');
+      const click = `window.__myworkNavigate('time', ${JSON.stringify(String(e?.id))})`;
+      return renderItem({ dotColor: dot, name: label, meta: hrs + (e?.billable ? ' · billable' : ''), clickHandler: click, key: 'time:' + String(e?.id) });
+    }).join('');
+  }
+  function renderWeekTimeBody(email) {
+    const wh = weekHours(email);
+    if (!wh.count) return renderEmpty('No time logged this week');
+    return `<div class="hrs-grid">
+      <div class="hrs-cell"><div class="hrs-v">${esc(wh.billable.toFixed(1))}h</div><div class="hrs-l">Billable</div><div class="hrs-sub">${esc(wh.count)} entr${wh.count===1?'y':'ies'}</div></div>
+      <div class="hrs-cell"><div class="hrs-v" style="color:#9CA3AF">${esc(wh.nonBillable.toFixed(1))}h</div><div class="hrs-l">Non-billable</div><div class="hrs-sub">Week of ${esc(fmtDate(startOfWeek(new Date())))}</div></div>
+    </div>`;
+  }
+  function renderActivityBody(email) {
+    const items = activityForMyItems(email, 10);
+    if (!items.length) return renderEmpty('No recent activity on your items');
+    return items.map(ev => {
+      const dot = '#8B5CF6';
+      const who = ev?.actor_email || ev?.actor_name || 'Someone';
+      const verb = String(ev?.type || 'updated').replace(/_/g, ' ');
+      const name = `${who}: ${verb}`;
+      const meta = [ev?.entity && ev?.entity_id ? `${ev.entity} #${ev.entity_id}` : '', fmtRel(ev?.at)].filter(Boolean).join(' · ');
+      const click = ev?.entity ? `window.__myworkNavigate(${JSON.stringify(String(ev.entity).toLowerCase())}, ${JSON.stringify(String(ev?.entity_id||''))})` : '';
+      return renderItem({ dotColor: dot, name, meta, clickHandler: click, key: (ev?.entity||'act') + ':' + String(ev?.entity_id||ev?.id||'') });
+    }).join('');
+  }
+  function renderAttachmentsBody(email) {
+    const items = attachmentsForMyItems(email);
+    if (!items.length) return renderEmpty('No attachments on your items');
+    return items.slice(0, 10).map(a => {
+      const dot = '#4286f4';
+      const meta = [a?.entityKey || '', fmtRel(a?.uploaded_at)].filter(Boolean).join(' · ');
+      // Deep-link to the owning section — parse entityKey "task:TSK-1" → section + id
+      const [etype, eid] = String(a?.entityKey || '').split(':');
+      const section = etype === 'task' ? 'actions' : etype === 'punch' ? 'punch' : etype === 'risk' ? 'risks' : etype === 'observation' ? 'observations' : etype === 'rfi' ? 'rfi' : 'files';
+      const click = `window.__myworkNavigate(${JSON.stringify(section)}, ${JSON.stringify(String(eid||''))})`;
+      return renderItem({ dotColor: dot, name: a?.filename || '(unnamed file)', meta, clickHandler: click, key: 'att:' + String(a?.id||'') });
+    }).join('');
+  }
+  function renderCommissioningBody(email) {
+    const items = myDeploymentItems(email);
+    if (!items.length) return renderEmpty('No commissioning work assigned to you');
+    return items.slice(0, 12).map(di => {
+      const responses = arr(di?.responsesJson);
+      const complete = responses.filter(r => String(r?.status).toLowerCase() === 'complete').length;
+      const total = arr(di?.steps_snapshot).length || responses.length;
+      const pct = total ? Math.round((complete / total) * 100) : 0;
+      const dot = pct === 100 ? '#22C55E' : pct > 0 ? '#F59E0B' : '#6a6a6a';
+      const name = di?.asset_tag || di?.location || di?.id || '(asset)';
+      const meta = `${complete}/${total} steps · ${pct}%`;
+      const click = `window.__myworkNavigate('deployment', ${JSON.stringify(String(di?.id))})`;
+      return renderItem({ dotColor: dot, name, meta, clickHandler: click, key: 'deploy:' + String(di?.id) });
+    }).join('');
+  }
+
+  // ─── Banner copy ───
+  function buildBannerCopy(email) {
+    const tasks = myTasks(email);
+    const weekTasks = tasks.filter(t => isThisWeek(t?.end || t?.due));
+    const overduePunch = myPunch(email).filter(p => isOverdue(p?.due, p?.status));
+    const highRisks = myRisks(email).filter(r => (Number(r?.score)||0) >= 12 || String(r?.impact).toLowerCase() === 'high');
+
+    const parts = [];
+    if (weekTasks.length) parts.push(`<strong>${weekTasks.length} task${weekTasks.length===1?'':'s'} due this week</strong>`);
+    if (highRisks.length) parts.push(`<strong>${highRisks.length} high-priority risk${highRisks.length===1?'':'s'}</strong>`);
+    if (overduePunch.length) parts.push(`<strong>${overduePunch.length} overdue punch item${overduePunch.length===1?'':'s'}</strong>`);
+
+    if (!parts.length) return `You're all caught up. No urgent items need your attention right now.`;
+
+    const intro = 'You have ';
+    const list = parts.length === 1 ? parts[0]
+                : parts.length === 2 ? parts.join(' and ')
+                : parts.slice(0, -1).join(', ') + ', and ' + parts[parts.length - 1];
+    let suggest = '';
+    if (highRisks.length) suggest = ' Focus suggestion: tackle the risk first.';
+    else if (overduePunch.length) suggest = ' Focus suggestion: close out the overdue punch.';
+    else if (weekTasks.length) suggest = ' Focus suggestion: knock out this week\'s tasks.';
+    return intro + list + '.' + suggest;
+  }
+  function buildGreeting() {
+    const h = new Date().getHours();
+    const part = h < 5 ? 'Working late' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+    return `👋 ${part}, ${currentUserName()}`;
+  }
+
+  // ─── KPI renderers ───
+  function renderKpis(email) {
+    const tasks = myTasks(email);
+    const risks = myRisks(email);
+    const punch = myPunch(email);
+    const hrs = todayHours(email);
+    const hrsEntries = getTimeEntries().filter(e => emailEq(e?.user_email, email) && e?.date && isSameLocalDay(e.date, new Date())).length;
+    const weekTasks = tasks.filter(t => isThisWeek(t?.end || t?.due)).length;
+    const highRisks = risks.filter(r => (Number(r?.score)||0) >= 12 || String(r?.impact).toLowerCase() === 'high').length;
+    const overduePunch = punch.filter(p => isOverdue(p?.due, p?.status)).length;
+
+    return `
+      <div class="kpi" style="border-left-color:#F59E0B" onclick="window.__myworkNavigate('actions')">
+        <div class="kl">My Open Tasks</div>
+        <div class="kv" style="color:#F59E0B">${esc(tasks.length)}</div>
+        <div class="kc">${esc(weekTasks)} due this week</div>
+      </div>
+      <div class="kpi" style="border-left-color:#EF4444" onclick="window.__myworkNavigate('risks')">
+        <div class="kl">Risks I Own</div>
+        <div class="kv" style="color:#EF4444">${esc(risks.length)}</div>
+        <div class="kc">${esc(highRisks)} high priority</div>
+      </div>
+      <div class="kpi" style="border-left-color:#8B5CF6" onclick="window.__myworkNavigate('punch')">
+        <div class="kl">My Punch Items</div>
+        <div class="kv" style="color:#8B5CF6">${esc(punch.length)}</div>
+        <div class="kc">${esc(overduePunch)} overdue</div>
+      </div>
+      <div class="kpi" style="border-left-color:#22C55E" onclick="window.__myworkNavigate('time')">
+        <div class="kl">Today's Hours</div>
+        <div class="kv" style="color:#22C55E">${esc(hrs.toFixed(1))}h</div>
+        <div class="kc">${esc(hrsEntries)} entr${hrsEntries===1?'y':'ies'}</div>
+      </div>
+    `;
+  }
+
+  // ─── Card definitions (drives grid render) ───
+  const CARDS = [
+    { title: 'Tasks Assigned to Me', subtitle: 'Open or in progress',      section: 'actions',      body: renderTasksBody },
+    { title: 'Risks I Own',          subtitle: 'Needs mitigation action', section: 'risks',        body: renderRisksBody },
+    { title: 'My Punch Items',       subtitle: 'Open items',              section: 'punch',        body: renderPunchBody },
+    { title: 'My Observations',      subtitle: 'Not yet resolved',        section: 'observations', body: renderObservationsBody },
+    { title: 'My Open RFI',          subtitle: 'Awaiting answers',        section: 'rfi',          body: renderRfiBody },
+    { title: 'Upcoming Meetings',    subtitle: 'You are on the invite',   section: 'meetings',     body: renderMeetingsBody },
+    { title: "Today's Time Log",     subtitle: 'Logged entries',          section: 'time',         body: renderTodayTimeBody },
+    { title: 'This Week Hours',      subtitle: 'Billable vs non-billable',section: 'time',         body: renderWeekTimeBody },
+    { title: 'Recent Activity',      subtitle: 'On your items',           section: 'activity',     body: renderActivityBody },
+    { title: 'Attachments',          subtitle: 'Files on your items',     section: 'files',        body: renderAttachmentsBody },
+    { title: 'Commissioning',        subtitle: 'Steps you\'ve responded to', section: 'deployment',body: renderCommissioningBody, wide: true }
+  ];
+
+  function renderCards(email) {
+    return CARDS.map(c => {
+      let body = '';
+      try { body = c.body(email); }
+      catch(err) {
+        console.warn(`[${SECTION_NAME}] ${c.title} render failed:`, err);
+        body = renderEmpty('Data loading…');
+      }
+      const openHref = `window.__myworkNavigate(${JSON.stringify(c.section)})`;
+      return `<div class="card${c.wide?' wide':''}">
+        <div class="ch">
+          <div class="ch-l"><div class="ct">${esc(c.title)}</div><div class="cs">${esc(c.subtitle)}</div></div>
+          <div class="ch-a" onclick="${esc(openHref)}">Open →</div>
+        </div>
+        <div class="cbody">${body}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ─── Main render ───
+  let __highlightKey = null;
+  function renderAll() {
+    const email = currentUserEmail();
+    document.getElementById('greeting').textContent = buildGreeting();
+    document.getElementById('subtitle').textContent = 'Here\'s what needs your attention today';
+    document.getElementById('banner').innerHTML = buildBannerCopy(email);
+    document.getElementById('kpis').innerHTML = renderKpis(email);
+    document.getElementById('cards').innerHTML = renderCards(email);
+
+    if (__highlightKey) {
+      try {
+        const safeKey = String(__highlightKey).replace(/["\\]/g, '\\$&');
+        const el = document.querySelector(`.item[data-key="${safeKey}"]`);
+        if (el) {
+          el.classList.add('highlight');
+          el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+      } catch(_) {}
+    }
+  }
+
+  // ─── Highlight-on-navigate receiver ───
+  // Format: { type:'mywork-highlight', entityKey:'task:TSK-104' }
+  window.addEventListener('message', function(e) {
+    const d = e?.data;
+    if (!d || typeof d !== 'object') return;
+    if (d.type === 'mywork-highlight' && typeof d.entityKey === 'string') {
+      __highlightKey = d.entityKey;
+      renderAll();
+      setTimeout(() => { __highlightKey = null; }, 4000);
+    }
+    if (d.type === 'mywork-refresh') {
+      renderAll();
+    }
+  });
+
+  // ─── Expose helpers for smoke tests & cross-section consumers ───
+  window.__myworkRender         = renderAll;
+  window.__myworkCurrentEmail   = currentUserEmail;
+  window.__myworkEmailEq        = emailEq;
+  window.__myworkFilters        = {
+    myTasks, myMilestones, myRisks, myPunch, myObservations, myRfi,
+    myMeetings, myDeploymentItems, todayHours, weekHours,
+    attachmentsForMyItems, activityForMyItems, buildMyEntityKeys
+  };
+  window.__myworkBanner         = buildBannerCopy;
+  window.__myworkRenderKpis     = renderKpis;
+
+  // First paint
+  renderAll();
+
+  // ═══ SMOKE TESTS ═══
+  window.__MYWORK_SMOKE__ = function() {
+    const results = [];
+    const test = (name, fn) => {
+      try { fn(); results.push({ name, pass: true }); }
+      catch (e) { results.push({ name, pass: false, err: String(e?.message || e) }); }
+    };
+    const ok  = (cond, msg) => { if (!cond) throw new Error(msg || 'assert failed'); };
+    const eq  = (a, b, msg) => { if (String(a) !== String(b)) throw new Error(`${msg||''} expected ${JSON.stringify(b)} got ${JSON.stringify(a)}`); };
+    const neq = (a, b, msg) => { if (String(a) === String(b)) throw new Error(`${msg||''} expected ≠ ${JSON.stringify(b)}`); };
+
+    const ME = 'misgur@adrm-security.com';
+    const OTHER = 'jcarter@adrm-security.com';
+
+    // Save + restore globals around each block
+    const savedPayload = window.__PAYLOAD__;
+    const savedUser = window.__USER__;
+    const savedGlobals = {
+      TIME_ENTRIES: window.__TIME_ENTRIES__,
+      MILESTONES:   window.__MILESTONES__,
+      ACTIVITY:     window.__ACTIVITY__,
+      ATTACHMENTS:  window.__ATTACHMENTS__,
+      FILES:        window.__FILES__,
+      CONTACTS:     window.__CONTACTS__,
+      DEPLOYED_ASSETS:   window.__DEPLOYED_ASSETS__,
+      DEPLOYMENT_ITEMS:  window.__DEPLOYMENT_ITEMS__
+    };
+    function reset() {
+      window.__PAYLOAD__ = null;
+      window.__USER__ = { email: ME, name: 'Matt' };
+      ['TIME_ENTRIES','MILESTONES','ACTIVITY','ATTACHMENTS','FILES','CONTACTS','DEPLOYED_ASSETS','DEPLOYMENT_ITEMS'].forEach(k => delete window['__'+k+'__']);
+    }
+
+    try {
+
+    // ─── Email comparator (Pattern #4) ──────────────────────────────
+    test('emailEq: exact match', () => ok(emailEq(ME, ME)));
+    test('emailEq: case-insensitive', () => ok(emailEq('MISGUR@ADRM-Security.com', ME)));
+    test('emailEq: trims whitespace', () => ok(emailEq('  misgur@adrm-security.com  ', ME)));
+    test('emailEq: null → false', () => ok(!emailEq(null, ME)));
+    test('emailEq: undefined → false', () => ok(!emailEq(undefined, ME)));
+    test('emailEq: empty string → false', () => ok(!emailEq('', '')));
+    test('emailEq: mismatch', () => ok(!emailEq(ME, OTHER)));
+
+    // ─── Session accessors ─────────────────────────────────────────
+    test('currentUserEmail: reads __USER__', () => {
+      reset(); window.__USER__ = { email: 'user@x.com' };
+      eq(currentUserEmail(), 'user@x.com');
+    });
+    test('currentUserEmail: normalizes case', () => {
+      reset(); window.__USER__ = { email: 'USER@X.COM' };
+      eq(currentUserEmail(), 'user@x.com');
+    });
+    test('currentUserEmail: falls back to payload', () => {
+      reset(); delete window.__USER__;
+      window.__PAYLOAD__ = { loggedin_user_email: 'fallback@x.com' };
+      eq(currentUserEmail(), 'fallback@x.com');
+    });
+    test('currentUserEmail: final fallback to demo', () => {
+      reset(); delete window.__USER__;
+      eq(currentUserEmail(), 'misgur@adrm-security.com');
+    });
+    test('currentUserName: prefers payload name', () => {
+      reset(); window.__USER__ = { name: 'Alice' };
+      eq(currentUserName(), 'Alice');
+    });
+    test('currentUserName: resolves via contacts roster', () => {
+      reset(); delete window.__USER__;
+      window.__CONTACTS__ = [{ email: 'x@y.z', name: 'Xavier Yates' }];
+      window.__PAYLOAD__ = { loggedin_user_email: 'x@y.z' };
+      eq(currentUserName(), 'Xavier');
+    });
+    test('currentUserName: fallback derives from email local part', () => {
+      reset(); delete window.__USER__;
+      window.__PAYLOAD__ = { loggedin_user_email: 'zzzsomeone@x.com' };
+      eq(currentUserName(), 'Zzzsomeone');
+    });
+
+    // ─── Cross-section global accessors (defensive reads) ───────────
+    test('getTasks: no payload → []', () => {
+      reset(); eq(getTasks().length, 0);
+    });
+    test('getTasks: malformed payload (non-array) → []', () => {
+      reset(); window.__PAYLOAD__ = { tasks: 'not an array' };
+      eq(getTasks().length, 0);
+    });
+    test('getTasks: valid array passes through', () => {
+      reset(); window.__PAYLOAD__ = { tasks: [{id:'T1'}] };
+      eq(getTasks().length, 1); eq(getTasks()[0].id, 'T1');
+    });
+    test('getPunch: prefers top-level punch_list', () => {
+      reset(); window.__PAYLOAD__ = { punch_list:[{id:'P1'}], punchListJson:[{id:'P2'}] };
+      eq(getPunch()[0].id, 'P1');
+    });
+    test('getPunch: falls back to punchListJson (Pattern #6)', () => {
+      reset(); window.__PAYLOAD__ = { punchListJson:[{id:'P2'}] };
+      eq(getPunch()[0].id, 'P2');
+    });
+    test('getPunch: both absent → []', () => {
+      reset(); window.__PAYLOAD__ = {};
+      eq(getPunch().length, 0);
+    });
+    test('getRisks: riskTrackerJson fallback', () => {
+      reset(); window.__PAYLOAD__ = { riskTrackerJson:[{id:'R1'}] };
+      eq(getRisks()[0].id, 'R1');
+    });
+    test('getObservations: observationsJson fallback', () => {
+      reset(); window.__PAYLOAD__ = { observationsJson:[{id:'O1'}] };
+      eq(getObservations()[0].id, 'O1');
+    });
+    test('getRfi: rfiJson fallback', () => {
+      reset(); window.__PAYLOAD__ = { rfiJson:[{id:'F1'}] };
+      eq(getRfi()[0].id, 'F1');
+    });
+    test('getTimeEntries: prefers __TIME_ENTRIES__ global', () => {
+      reset(); window.__TIME_ENTRIES__ = [{id:'A'}];
+      window.__PAYLOAD__ = { time_entries: [{id:'B'}] };
+      eq(getTimeEntries()[0].id, 'A');
+    });
+    test('getTimeEntries: falls back to payload when global empty', () => {
+      reset(); window.__TIME_ENTRIES__ = [];
+      window.__PAYLOAD__ = { time_entries: [{id:'B'}] };
+      eq(getTimeEntries()[0].id, 'B');
+    });
+    test('getActivity: __ACTIVITY__ global wins', () => {
+      reset(); window.__ACTIVITY__ = [{id:'E1'}];
+      eq(getActivity().length, 1);
+    });
+    test('getMilestones: __MILESTONES__ global wins over payload', () => {
+      reset(); window.__MILESTONES__ = [{id:'M1'}];
+      window.__PAYLOAD__ = { milestones:[{id:'M2'},{id:'M3'}] };
+      eq(getMilestones().length, 1); eq(getMilestones()[0].id, 'M1');
+    });
+    test('getContacts: cascades properly', () => {
+      reset(); window.__CONTACTS__ = [{name:'A'}]; eq(getContacts().length, 1);
+    });
+    test('getAttachments: defaults to {}', () => {
+      reset(); ok(typeof getAttachments() === 'object');
+    });
+
+    // ─── Filter: tasks ──────────────────────────────────────────────
+    test('myTasks: filters by assignee_email', () => {
+      reset(); window.__PAYLOAD__ = { tasks:[
+        {id:'T1',assignee_email:ME,status:'Open'},
+        {id:'T2',assignee_email:OTHER,status:'Open'}
+      ]};
+      const r = myTasks(ME); eq(r.length, 1); eq(r[0].id, 'T1');
+    });
+    test('myTasks: excludes Done', () => {
+      reset(); window.__PAYLOAD__ = { tasks:[
+        {id:'T1',assignee_email:ME,status:'Open'},
+        {id:'T2',assignee_email:ME,status:'Done'}
+      ]};
+      eq(myTasks(ME).length, 1);
+    });
+    test('myTasks: case-insensitive email match', () => {
+      reset(); window.__PAYLOAD__ = { tasks:[{id:'T1',assignee_email:'MISGUR@ADRM-security.com',status:'Open'}]};
+      eq(myTasks(ME).length, 1);
+    });
+    test('myTasks: includeClosed opt returns all', () => {
+      reset(); window.__PAYLOAD__ = { tasks:[
+        {id:'T1',assignee_email:ME,status:'Done'}
+      ]};
+      eq(myTasks(ME, {includeClosed:true}).length, 1);
+    });
+    test('myTasks: handles missing assignee_email gracefully', () => {
+      reset(); window.__PAYLOAD__ = { tasks:[{id:'T1',status:'Open'}]};
+      eq(myTasks(ME).length, 0);
+    });
+
+    // ─── Filter: milestones ────────────────────────────────────────
+    test('myMilestones: owner_email filter', () => {
+      reset(); window.__PAYLOAD__ = { milestones:[
+        {id:'M1',owner_email:ME,status:'In Progress'},
+        {id:'M2',owner_email:OTHER,status:'In Progress'}
+      ]};
+      eq(myMilestones(ME).length, 1);
+    });
+    test('myMilestones: excludes Complete', () => {
+      reset(); window.__PAYLOAD__ = { milestones:[
+        {id:'M1',owner_email:ME,status:'Complete'}
+      ]};
+      eq(myMilestones(ME).length, 0);
+    });
+
+    // ─── Filter: risks ──────────────────────────────────────────────
+    test('myRisks: owner_email + excludes Closed', () => {
+      reset(); window.__PAYLOAD__ = { riskTrackerJson:[
+        {id:'R1',owner_email:ME,status:'Open'},
+        {id:'R2',owner_email:ME,status:'Closed'},
+        {id:'R3',owner_email:OTHER,status:'Open'}
+      ]};
+      eq(myRisks(ME).length, 1); eq(myRisks(ME)[0].id, 'R1');
+    });
+
+    // ─── Filter: punch ──────────────────────────────────────────────
+    test('myPunch: assignee_email + excludes Closed', () => {
+      reset(); window.__PAYLOAD__ = { punchListJson:[
+        {id:'P1',assignee_email:ME,status:'Open'},
+        {id:'P2',assignee_email:ME,status:'Closed'}
+      ]};
+      eq(myPunch(ME).length, 1); eq(myPunch(ME)[0].id, 'P1');
+    });
+    test('myPunch: top-level vs json produce identical results', () => {
+      reset();
+      window.__PAYLOAD__ = { punch_list:[{id:'P1',assignee_email:ME,status:'Open'}]};
+      const a = myPunch(ME).length;
+      window.__PAYLOAD__ = { punchListJson:[{id:'P1',assignee_email:ME,status:'Open'}]};
+      const b = myPunch(ME).length;
+      eq(a, b);
+    });
+
+    // ─── Filter: observations ──────────────────────────────────────
+    test('myObservations: observed_by + excludes Resolved/Dismissed', () => {
+      reset(); window.__PAYLOAD__ = { observationsJson:[
+        {id:'O1',observed_by:ME,status:'Open'},
+        {id:'O2',observed_by:ME,status:'Resolved'},
+        {id:'O3',observed_by:ME,status:'Dismissed'}
+      ]};
+      eq(myObservations(ME).length, 1);
+    });
+
+    // ─── Filter: RFI ────────────────────────────────────────────────
+    test('myRfi: asked_by + excludes Closed', () => {
+      reset(); window.__PAYLOAD__ = { rfiJson:[
+        {id:'F1',asked_by:ME,status:'Open'},
+        {id:'F2',asked_by:ME,status:'Closed'}
+      ]};
+      eq(myRfi(ME).length, 1);
+    });
+
+    // ─── Filter: meetings ──────────────────────────────────────────
+    test('myMeetings: attendee match + future', () => {
+      reset();
+      const future = new Date(Date.now() + 86400000).toISOString();
+      const past   = new Date(Date.now() - 86400000).toISOString();
+      window.__PAYLOAD__ = { meetings:[
+        {id:'M1',datetime:future,attendees:[ME]},
+        {id:'M2',datetime:past,attendees:[ME]},
+        {id:'M3',datetime:future,attendees:[OTHER]}
+      ]};
+      const r = myMeetings(ME); eq(r.length, 1); eq(r[0].id, 'M1');
+    });
+    test('myMeetings: sorted ascending by datetime', () => {
+      reset();
+      const t1 = new Date(Date.now() + 3*86400000).toISOString();
+      const t2 = new Date(Date.now() + 86400000).toISOString();
+      window.__PAYLOAD__ = { meetings:[
+        {id:'A',datetime:t1,attendees:[ME]},
+        {id:'B',datetime:t2,attendees:[ME]}
+      ]};
+      const r = myMeetings(ME);
+      eq(r[0].id, 'B'); eq(r[1].id, 'A');
+    });
+    test('myMeetings: includes meeting starting within last hour', () => {
+      reset();
+      const recent = new Date(Date.now() - 15*60000).toISOString();
+      window.__PAYLOAD__ = { meetings:[{id:'A',datetime:recent,attendees:[ME]}]};
+      eq(myMeetings(ME).length, 1);
+    });
+    test('myMeetings: case-insensitive attendee match', () => {
+      reset();
+      const future = new Date(Date.now() + 86400000).toISOString();
+      window.__PAYLOAD__ = { meetings:[{id:'A',datetime:future,attendees:['MISGUR@ADRM-Security.com']}]};
+      eq(myMeetings(ME).length, 1);
+    });
+    test('myMeetings: skips invalid datetime', () => {
+      reset();
+      window.__PAYLOAD__ = { meetings:[{id:'A',datetime:'not-a-date',attendees:[ME]}]};
+      eq(myMeetings(ME).length, 0);
+    });
+
+    // ─── Filter: deployment items ──────────────────────────────────
+    test('myDeploymentItems: matches when user has a response', () => {
+      reset(); window.__PAYLOAD__ = { deployment_items:[
+        {id:'DI1',responsesJson:[{step_id:'S1',status:'Complete',by:ME}]},
+        {id:'DI2',responsesJson:[{step_id:'S1',status:'Complete',by:OTHER}]}
+      ]};
+      eq(myDeploymentItems(ME).length, 1);
+    });
+    test('myDeploymentItems: case-insensitive by-match', () => {
+      reset(); window.__PAYLOAD__ = { deployment_items:[
+        {id:'DI1',responsesJson:[{by:'MISGUR@ADRM-security.com'}]}
+      ]};
+      eq(myDeploymentItems(ME).length, 1);
+    });
+
+    // ─── Empty / missing globals ───────────────────────────────────
+    test('empty globals: all filters return []', () => {
+      reset();
+      eq(myTasks(ME).length, 0);
+      eq(myRisks(ME).length, 0);
+      eq(myPunch(ME).length, 0);
+      eq(myObservations(ME).length, 0);
+      eq(myRfi(ME).length, 0);
+      eq(myMeetings(ME).length, 0);
+      eq(myDeploymentItems(ME).length, 0);
+    });
+    test('filters handle null payload fields safely', () => {
+      reset(); window.__PAYLOAD__ = { tasks: null, risks: null, punch_list: null };
+      eq(myTasks(ME).length, 0); eq(myRisks(ME).length, 0); eq(myPunch(ME).length, 0);
+    });
+
+    // ─── Time math ──────────────────────────────────────────────────
+    test('isSameLocalDay: same date', () => ok(isSameLocalDay('2026-04-14T09:00:00Z', '2026-04-14T23:00:00Z')));
+    test('isSameLocalDay: different dates', () => ok(!isSameLocalDay('2026-04-14', '2026-04-15')));
+    test('isSameLocalDay: invalid inputs → false', () => ok(!isSameLocalDay('xxx', 'yyy')));
+    test('startOfWeek: returns Sunday', () => {
+      // 2026-04-15 is a Wednesday; Sunday before is 2026-04-12
+      const sow = startOfWeek(new Date('2026-04-15T12:00:00'));
+      eq(sow.getDay(), 0);
+    });
+    test('todayHours: sums matching entries', () => {
+      reset();
+      const iso = new Date().toISOString().slice(0,10);
+      window.__TIME_ENTRIES__ = [
+        { id:'E1', user_email:ME, date:iso, hours:2.5 },
+        { id:'E2', user_email:ME, date:iso, hours:1.5 }
+      ];
+      eq(todayHours(ME), 4);
+    });
+    test('todayHours: ignores other users', () => {
+      reset();
+      const iso = new Date().toISOString().slice(0,10);
+      window.__TIME_ENTRIES__ = [
+        { id:'E1', user_email:ME, date:iso, hours:2 },
+        { id:'E2', user_email:OTHER, date:iso, hours:5 }
+      ];
+      eq(todayHours(ME), 2);
+    });
+    test('todayHours: ignores entries on other dates', () => {
+      reset();
+      window.__TIME_ENTRIES__ = [
+        { id:'E1', user_email:ME, date:'2020-01-01', hours:10 }
+      ];
+      eq(todayHours(ME), 0);
+    });
+    test('todayHours: handles missing hours → 0', () => {
+      reset();
+      const iso = new Date().toISOString().slice(0,10);
+      window.__TIME_ENTRIES__ = [{ id:'E1', user_email:ME, date:iso }];
+      eq(todayHours(ME), 0);
+    });
+    test('weekHours: splits billable vs non-billable', () => {
+      reset();
+      const iso = new Date().toISOString().slice(0,10);
+      window.__TIME_ENTRIES__ = [
+        { id:'E1', user_email:ME, date:iso, hours:3, billable:true },
+        { id:'E2', user_email:ME, date:iso, hours:1, billable:false }
+      ];
+      const wh = weekHours(ME);
+      eq(wh.total, 4); eq(wh.billable, 3); eq(wh.nonBillable, 1); eq(wh.count, 2);
+    });
+    test('weekHours: excludes entries outside current week', () => {
+      reset();
+      window.__TIME_ENTRIES__ = [
+        { id:'E1', user_email:ME, date:'1999-01-01', hours:100 }
+      ];
+      eq(weekHours(ME).total, 0);
+    });
+    test('weekHours: empty state returns zero counts', () => {
+      reset();
+      eq(weekHours(ME).total, 0); eq(weekHours(ME).count, 0);
+    });
+
+    // ─── Entity key building ───────────────────────────────────────
+    test('buildMyEntityKeys: includes each domain prefix', () => {
+      reset(); window.__PAYLOAD__ = {
+        tasks:[{id:'T1',assignee_email:ME,status:'Open'}],
+        punchListJson:[{id:'P1',assignee_email:ME,status:'Open'}],
+        riskTrackerJson:[{id:'R1',owner_email:ME,status:'Open'}],
+        observationsJson:[{id:'O1',observed_by:ME,status:'Open'}],
+        rfiJson:[{id:'F1',asked_by:ME,status:'Open'}]
+      };
+      const keys = buildMyEntityKeys(ME);
+      ok(keys.has('task:T1'));
+      ok(keys.has('punch:P1'));
+      ok(keys.has('risk:R1'));
+      ok(keys.has('observation:O1'));
+      ok(keys.has('rfi:F1'));
+    });
+    test('buildMyEntityKeys: preserves string IDs verbatim (Pattern #2)', () => {
+      reset(); window.__PAYLOAD__ = { tasks:[{id:'TSK-104',assignee_email:ME,status:'Open'}]};
+      const keys = buildMyEntityKeys(ME);
+      ok(keys.has('task:TSK-104'));
+    });
+
+    // ─── Attachments cross-resolve ─────────────────────────────────
+    test('attachmentsForMyItems: finds attachment for user task', () => {
+      reset(); window.__PAYLOAD__ = {
+        tasks:[{id:'T1',assignee_email:ME,status:'Open'}],
+        attachments:{ 'task:T1':[{id:'A1',filename:'x.pdf',uploaded_at:'2026-04-01'}] }
+      };
+      const r = attachmentsForMyItems(ME); eq(r.length, 1); eq(r[0].id, 'A1');
+    });
+    test('attachmentsForMyItems: ignores other users items', () => {
+      reset(); window.__PAYLOAD__ = {
+        tasks:[{id:'T1',assignee_email:OTHER,status:'Open'}],
+        attachments:{ 'task:T1':[{id:'A1'}] }
+      };
+      eq(attachmentsForMyItems(ME).length, 0);
+    });
+    test('attachmentsForMyItems: sorted desc by uploaded_at', () => {
+      reset(); window.__PAYLOAD__ = {
+        tasks:[{id:'T1',assignee_email:ME,status:'Open'}],
+        attachments:{ 'task:T1':[
+          {id:'A1',uploaded_at:'2026-04-01'},
+          {id:'A2',uploaded_at:'2026-04-10'}
+        ]}
+      };
+      const r = attachmentsForMyItems(ME); eq(r[0].id, 'A2');
+    });
+    test('attachmentsForMyItems: no attachments object → []', () => {
+      reset(); window.__PAYLOAD__ = { tasks:[{id:'T1',assignee_email:ME,status:'Open'}] };
+      eq(attachmentsForMyItems(ME).length, 0);
+    });
+
+    // ─── Activity cross-resolve ────────────────────────────────────
+    test('activityForMyItems: finds events on user items', () => {
+      reset(); window.__PAYLOAD__ = {
+        tasks:[{id:'T1',assignee_email:ME,status:'Open'}],
+        activity:[{id:'A1',entity:'task',entity_id:'T1',at:'2026-04-01'}]
+      };
+      eq(activityForMyItems(ME).length, 1);
+    });
+    test('activityForMyItems: ignores events on non-user items', () => {
+      reset(); window.__PAYLOAD__ = {
+        tasks:[{id:'T1',assignee_email:OTHER,status:'Open'}],
+        activity:[{id:'A1',entity:'task',entity_id:'T1',at:'2026-04-01'}]
+      };
+      eq(activityForMyItems(ME).length, 0);
+    });
+    test('activityForMyItems: respects limit arg', () => {
+      reset();
+      const tasks = []; const events = [];
+      for (let i = 0; i < 25; i++) {
+        tasks.push({ id:'T'+i, assignee_email:ME, status:'Open' });
+        events.push({ id:'E'+i, entity:'task', entity_id:'T'+i, at:'2026-04-0'+(i%9+1) });
+      }
+      window.__PAYLOAD__ = { tasks, activity:events };
+      eq(activityForMyItems(ME, 5).length, 5);
+    });
+    test('activityForMyItems: case-insensitive entity type', () => {
+      reset(); window.__PAYLOAD__ = {
+        tasks:[{id:'T1',assignee_email:ME,status:'Open'}],
+        activity:[{id:'A1',entity:'Task',entity_id:'T1',at:'2026-04-01'}]
+      };
+      eq(activityForMyItems(ME).length, 1);
+    });
+
+    // ─── Payload version / malformed handling ──────────────────────
+    test('no payload: filters return []', () => {
+      reset(); eq(myTasks(ME).length, 0);
+    });
+    test('version mismatch: filters still work', () => {
+      reset(); window.__PAYLOAD__ = {
+        meta:{payload_version:99},
+        tasks:[{id:'T1',assignee_email:ME,status:'Open'}]
+      };
+      eq(myTasks(ME).length, 1);
+    });
+    test('malformed tasks (string): safe empty', () => {
+      reset(); window.__PAYLOAD__ = { tasks:'not-an-array' };
+      eq(myTasks(ME).length, 0);
+    });
+
+    // ─── esc() / XSS invariants (Pattern #3) ───────────────────────
+    test('esc: escapes script tags', () => {
+      const raw = '<' + 'script>x</' + 'script>';
+      const want = '&lt;' + 'script&gt;x&lt;/' + 'script&gt;';
+      eq(esc(raw), want);
+    });
+    test('esc: escapes quotes', () => eq(esc('"a\'b"'), '&quot;a&#39;b&quot;'));
+    test('esc: null → empty', () => eq(esc(null), ''));
+    test('esc: applied in rendered task names', () => {
+      reset(); window.__PAYLOAD__ = { tasks:[{id:'T1',assignee_email:ME,status:'Open',title:'<img onerror=1>'}]};
+      renderAll();
+      const html = document.getElementById('cards').innerHTML;
+      ok(!html.includes('<img onerror'), 'raw script tag escaped out of markup');
+      ok(html.includes('&lt;img'), 'encoded form present');
+    });
+
+    // ─── String-ID safety (Pattern #2) ─────────────────────────────
+    test('Task with string ID passes through filter/find', () => {
+      reset(); window.__PAYLOAD__ = { tasks:[{id:'TSK-104',assignee_email:ME,status:'Open'}]};
+      const r = myTasks(ME); eq(r[0].id, 'TSK-104');
+    });
+    test('Punch with string ID renders without coercion', () => {
+      reset(); window.__PAYLOAD__ = { punchListJson:[{id:'PL-07',assignee_email:ME,status:'Open',title:'Aligned'}]};
+      renderAll();
+      ok(document.getElementById('cards').innerHTML.includes('PL-07') || document.getElementById('cards').innerHTML.includes('Aligned'));
+    });
+
+    // ─── Deep-link navigate shape ──────────────────────────────────
+    test('navigate: posts message with section', () => {
+      let captured = null;
+      const orig = parent.postMessage;
+      parent.postMessage = (m) => { captured = m; };
+      try { navigate('actions', 'TSK-104'); }
+      finally { parent.postMessage = orig; }
+      eq(captured && captured.type, 'navigate');
+      eq(captured && captured.section, 'actions');
+      eq(captured && captured.entityId, 'TSK-104');
+    });
+    test('navigate: string-coerces non-string entityId', () => {
+      let captured = null;
+      const orig = parent.postMessage;
+      parent.postMessage = (m) => { captured = m; };
+      try { navigate('actions', 42); }
+      finally { parent.postMessage = orig; }
+      eq(typeof captured.entityId, 'string');
+      eq(captured.entityId, '42');
+    });
+    test('navigate: no entityId omits field', () => {
+      let captured = null;
+      const orig = parent.postMessage;
+      parent.postMessage = (m) => { captured = m; };
+      try { navigate('risks'); }
+      finally { parent.postMessage = orig; }
+      ok(!('entityId' in captured));
+    });
+    test('navigate: filter param included when passed', () => {
+      let captured = null;
+      const orig = parent.postMessage;
+      parent.postMessage = (m) => { captured = m; };
+      try { navigate('actions', null, { status:'Open' }); }
+      finally { parent.postMessage = orig; }
+      ok(captured.filter && captured.filter.status === 'Open');
+    });
+
+    // ─── Banner / KPI copy ─────────────────────────────────────────
+    test('banner: "all caught up" on zero work', () => {
+      reset();
+      const s = buildBannerCopy(ME);
+      ok(/caught up/i.test(s));
+    });
+    test('banner: mentions overdue punch count', () => {
+      reset(); window.__PAYLOAD__ = {
+        punchListJson:[{id:'P1',assignee_email:ME,status:'Open',due:'2020-01-01'}]
+      };
+      const s = buildBannerCopy(ME);
+      ok(/overdue/i.test(s));
+    });
+    test('banner: high-risk singular grammar', () => {
+      reset(); window.__PAYLOAD__ = {
+        riskTrackerJson:[{id:'R1',owner_email:ME,status:'Open',impact:'High',score:16}]
+      };
+      const s = buildBannerCopy(ME);
+      ok(/high-priority risk(?!s)/i.test(s));
+    });
+    test('KPI html includes task count', () => {
+      reset(); window.__PAYLOAD__ = { tasks:[{id:'T1',assignee_email:ME,status:'Open'}]};
+      const html = renderKpis(ME);
+      ok(html.includes('>1<') || html.includes('>1 <'));
+    });
+
+    // ─── End-to-end render ─────────────────────────────────────────
+    test('renderAll: idempotent — two calls produce same markup', () => {
+      reset(); window.__PAYLOAD__ = { tasks:[{id:'T1',assignee_email:ME,status:'Open',title:'A'}]};
+      renderAll();
+      const a = document.getElementById('cards').innerHTML;
+      renderAll();
+      const b = document.getElementById('cards').innerHTML;
+      eq(a.length, b.length);
+    });
+    test('renderAll: reflects global mutation between calls (reactivity)', () => {
+      reset(); window.__PAYLOAD__ = { tasks:[{id:'T1',assignee_email:ME,status:'Open',title:'first'}]};
+      renderAll();
+      const before = document.getElementById('cards').innerHTML;
+      window.__PAYLOAD__.tasks.push({id:'T2',assignee_email:ME,status:'Open',title:'second'});
+      renderAll();
+      const after = document.getElementById('cards').innerHTML;
+      ok(after.length > before.length);
+      ok(after.includes('second'));
+    });
+    test('renderAll: empty state renders when user has nothing', () => {
+      reset(); window.__PAYLOAD__ = { tasks:[{id:'T1',assignee_email:OTHER,status:'Open'}]};
+      renderAll();
+      ok(document.getElementById('cards').innerHTML.includes('No open tasks'));
+    });
+    test('renderAll: user not in contacts roster still renders', () => {
+      reset(); window.__PAYLOAD__ = {
+        contacts:[{email:'other@x.com',name:'Other'}],
+        tasks:[{id:'T1',assignee_email:ME,status:'Open',title:'mine'}]
+      };
+      renderAll();
+      ok(document.getElementById('cards').innerHTML.includes('mine'));
+    });
+
+    // ─── Performance sanity ────────────────────────────────────────
+    test('perf: 500+ cross-domain items render under 300ms', () => {
+      reset();
+      const tasks=[], risks=[], punch=[], obs=[], rfi=[], events=[];
+      for (let i=0;i<100;i++) {
+        tasks.push({id:'T'+i,assignee_email:ME,status:'Open',title:'t'+i,end:'2026-05-01'});
+        risks.push({id:'R'+i,owner_email:ME,status:'Open',title:'r'+i,impact:'Medium',score:6});
+        punch.push({id:'P'+i,assignee_email:ME,status:'Open',title:'p'+i,severity:'Low'});
+        obs.push({id:'O'+i,observed_by:ME,status:'Open',text:'o'+i});
+        rfi.push({id:'F'+i,asked_by:ME,status:'Open',question:'f'+i});
+        events.push({id:'E'+i,entity:'task',entity_id:'T'+i,at:'2026-04-01',actor_email:OTHER,type:'update'});
+      }
+      window.__PAYLOAD__ = {
+        tasks, riskTrackerJson:risks, punchListJson:punch,
+        observationsJson:obs, rfiJson:rfi, activity:events
+      };
+      const t0 = Date.now(); renderAll(); const t1 = Date.now();
+      ok((t1 - t0) < 300, `renderAll took ${t1-t0}ms`);
+    });
+
+    // ─── Highlight receiver ────────────────────────────────────────
+    test('message: unrelated types ignored (no throw)', () => {
+      reset();
+      window.dispatchEvent(new MessageEvent('message', { data: { type:'nonsense' }}));
+      ok(true);
+    });
+    test('message: mywork-highlight sets key and recovers', () => {
+      reset(); window.__PAYLOAD__ = { tasks:[{id:'T1',assignee_email:ME,status:'Open',title:'x'}]};
+      renderAll();
+      window.dispatchEvent(new MessageEvent('message', { data: { type:'mywork-highlight', entityKey:'task:T1' }}));
+      // After handler runs, highlight class should have been applied to a row
+      const el = document.querySelector('.item[data-key="task:T1"]');
+      ok(el && el.classList.contains('highlight'));
+    });
+
+    } finally {
+      // Restore
+      window.__PAYLOAD__ = savedPayload;
+      window.__USER__ = savedUser;
+      Object.keys(savedGlobals).forEach(k => {
+        if (savedGlobals[k] === undefined) delete window['__'+k+'__'];
+        else window['__'+k+'__'] = savedGlobals[k];
+      });
+      try { renderAll(); } catch(_) {}
+    }
+
+    const pass = results.filter(r => r.pass).length;
+    const fail = results.filter(r => !r.pass).length;
+    console.log(`[${SECTION_NAME}] smoke: ${pass}/${results.length} pass${fail?`, ${fail} fail`:''}`);
+    if (fail) console.table(results.filter(r => !r.pass));
+    return { total: results.length, pass, fail, results };
+  };
+})();
+</script></body></html>

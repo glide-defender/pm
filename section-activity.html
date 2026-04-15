@@ -1,0 +1,659 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Activity</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;padding:20px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.ti{font-size:18px;font-weight:700;color:#fff}
+.sb{font-size:12px;color:#9CA3AF;margin-top:3px}
+.ctr{display:flex;gap:8px;align-items:center}
+.srch{background:#1f1f1f;border:1px solid #303030;border-radius:6px;padding:7px 11px;color:#E5E7EB;font-size:12.5px;outline:none;width:220px;font-family:inherit}
+.srch:focus{border-color:#F59E0B}
+.fbar{display:flex;gap:6px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.flab{font-size:11px;color:#6a6a6a;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-right:4px}
+.sep{display:inline-block;width:1px;height:16px;background:#303030;margin:0 6px}
+.fchip{padding:5px 11px;border-radius:16px;font-size:11.5px;font-weight:600;background:#1f1f1f;border:1px solid #303030;color:#9CA3AF;cursor:pointer;font-family:inherit;user-select:none}
+.fchip:hover{border-color:#F59E0B;color:#E5E7EB}
+.fchip.on{background:#3c4756;color:#fff;border-color:#4a5666}
+.composer{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.cp-top{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+.cp-av{width:32px;height:32px;border-radius:50%;background:#F59E0B;color:#111;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cp-in{flex:1;background:#161616;border:1px solid #303030;border-radius:7px;padding:8px 11px;color:#E5E7EB;font-size:13px;font-family:inherit;outline:none;resize:vertical;min-height:38px}
+.cp-in:focus{border-color:#F59E0B}
+.cp-btm{display:flex;justify-content:flex-end;gap:6px}
+.btn{padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #303030;background:#1f1f1f;color:#E5E7EB;cursor:pointer;font-family:inherit}
+.bp{background:#3c4756;color:#fff;border-color:#4a5666}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.feed{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;overflow:hidden}
+.grp-h{padding:10px 16px;background:#181818;border-bottom:1px solid #252525;font-size:10.5px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:.6px}
+.grp:last-child .evt:last-child{border-bottom:none}
+.evt{display:flex;gap:12px;padding:14px 16px;border-bottom:1px solid #252525;position:relative}
+.evt-av{width:32px;height:32px;border-radius:50%;color:#111;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.evt-sys{background:#252525;color:#9CA3AF;font-size:14px;font-weight:400}
+.evt-body{flex:1;min-width:0}
+.evt-head{display:flex;align-items:baseline;gap:8px;margin-bottom:3px;flex-wrap:wrap}
+.evt-who{font-size:12.5px;font-weight:700;color:#fff}
+.evt-act{font-size:11.5px;color:#9CA3AF}
+.evt-when{font-size:11px;color:#6a6a6a;margin-left:auto;white-space:nowrap}
+.evt-txt{font-size:12.5px;color:#E5E7EB;line-height:1.5;margin-top:4px;word-break:break-word}
+.evt-sub{font-size:12px;color:#9CA3AF;line-height:1.45;margin-top:2px;word-break:break-word}
+.evt-ref{display:inline-block;padding:2px 7px;border-radius:4px;background:#252525;color:#9CA3AF;font-size:10.5px;font-weight:600;font-family:ui-monospace,monospace;margin-left:0}
+.evt-ref[role="link"]{cursor:pointer;transition:background .12s,color .12s,border-color .12s;border:1px solid transparent}
+.evt-ref[role="link"]:hover{background:#2a2f38;color:#F59E0B;border-color:#3c4756}
+.evt-ref[role="link"]:focus{outline:none;border-color:#F59E0B}
+.evt.comment .evt-txt{background:#1a1a1a;border:1px solid #262626;border-radius:7px;padding:9px 12px;margin-top:6px}
+.empty{padding:40px;text-align:center;color:#9CA3AF;font-size:12.5px}
+</style></head><body>
+<div class="hd"><div><div class="ti">Activity</div><div class="sb" id="sub">—</div></div>
+<div class="ctr"><input class="srch" id="srch" placeholder="Search activity…" aria-label="Search activity"/></div></div>
+<div class="fbar" id="fbar"></div>
+<div class="composer"><div class="cp-top"><div class="cp-av" id="cp-av">MI</div><textarea class="cp-in" id="cp-txt" placeholder="Leave a comment on this project…"></textarea></div><div class="cp-btm"><button class="btn bp" id="cp-btn" onclick="postComment()">Post Comment</button></div></div>
+<div class="feed" id="feed"></div>
+<script>
+(function(){
+  'use strict';
+  const SECTION_NAME = 'activity';
+
+  // ─── esc: XSS-safe text interpolation ───
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  // ─── Avatar helpers ───
+  const COLORS = ['#4286f4','#22C55E','#F59E0B','#8B5CF6','#06B6D4','#EF4444','#EC4899'];
+  const whoColor = n => {
+    const s = String(n || '');
+    if (!s) return '#252525';
+    const h = s.split('').reduce((a,c) => a + c.charCodeAt(0), 0);
+    return COLORS[h % COLORS.length];
+  };
+  const initials = n => {
+    const s = String(n || '?').trim();
+    if (!s) return '?';
+    return s.split(/\s+/).map(w => w[0]).filter(Boolean).slice(0,2).join('').toUpperCase() || '?';
+  };
+
+  // ─── Entity → section mapping for cross-section deep links ───
+  const ENTITY_TO_SECTION = {
+    task:'actions', action:'actions', milestone:'schedule', schedule:'schedule',
+    risk:'risks', observation:'observations', rfi:'rfi', punch:'punch',
+    material:'materials', contact:'contacts', meeting:'meetings', raci:'raci',
+    finance:'finance', file:'files', deployment:'deployment', asset:'assets',
+    time:'time', scorecard:'scorecards'
+  };
+
+  // ─── Type → action verb fallback (when event text is empty) ───
+  const TYPE_VERBS = {
+    comment:'commented', create:'created', update:'updated', delete:'deleted',
+    assign:'assigned', mention:'mentioned', status_change:'changed status',
+    convert:'converted', upload:'uploaded', share:'shared', close:'closed', open:'reopened'
+  };
+  const actionVerb = t => TYPE_VERBS[String(t||'').toLowerCase()] || String(t||'updated').replace(/_/g,' ');
+
+  // ─── Contact name resolver (email → display name) ───
+  function resolveName(email) {
+    if (!email) return null;
+    try {
+      if (typeof parent !== 'undefined' && parent && typeof parent.__contactByEmail === 'function') {
+        const n = parent.__contactByEmail(email);
+        if (n) return n;
+      }
+    } catch(_) {}
+    const P = window.__PAYLOAD__;
+    try {
+      const c = (P?.contacts || []).find(x => x?.email === email)
+             || (P?.lookups?.all_contacts || []).find(x => x?.email === email);
+      if (c?.name) return c.name;
+    } catch(_) {}
+    const local = String(email).split('@')[0] || '';
+    if (!local) return null;
+    return local.replace(/[._-]+/g,' ').replace(/\b\w/g, s => s.toUpperCase());
+  }
+
+  // ─── Normalize-in: schema event → internal shape ───
+  function normalizeEvent(raw, idx) {
+    const safe = (raw && typeof raw === 'object') ? raw : {};
+    const id = String(safe.id != null ? safe.id : `ACT-${String((idx||0)+1).padStart(3,'0')}`);
+    const type = String(safe.type || 'update').toLowerCase();
+    const actor_email = safe.actor_email || null;
+    const actor_name = resolveName(actor_email) || safe.actor_name || 'System';
+    const at = safe.at || new Date().toISOString();
+    const entity = safe.entity ? String(safe.entity).toLowerCase() : null;
+    const entity_id = safe.entity_id != null && safe.entity_id !== '' ? String(safe.entity_id) : null;
+    const text = safe.text != null ? String(safe.text) : '';
+    const read = !!safe.read;
+    return { id, type, actor_email, actor_name, at, entity, entity_id, text, read };
+  }
+
+  // ─── Demo data (internal shape, mirrors schema fields) ───
+  let events = [
+    {id:'ACT-001',type:'comment',actor_email:'misgur@adrm-security.com',actor_name:'Matt Isgur',text:'Comment about final report',at:'2026-03-18T10:30',entity:null,entity_id:null,read:false},
+    {id:'ACT-002',type:'status_change',actor_email:'lfeula@adrm-security.com',actor_name:'Louis Feula',text:'closed punch item Label patch panel ports',at:'2026-03-15T14:22',entity:'punch',entity_id:'PL-04',read:false},
+    {id:'ACT-003',type:'comment',actor_email:'misgur@adrm-security.com',actor_name:'Matt Isgur',text:'Stakeholders have been updated',at:'2026-03-08T21:51',entity:null,entity_id:null,read:false},
+    {id:'ACT-004',type:'convert',actor_email:'misgur@adrm-security.com',actor_name:'Matt Isgur',text:'converted observation to risk: Conduit not routed to correct tray',at:'2026-03-01T09:12',entity:'risk',entity_id:'RK-03',read:false},
+    {id:'ACT-005',type:'comment',actor_email:'misgur@adrm-security.com',actor_name:'Matt Isgur',text:'Parts have been shipped, waiting on tracking info.',at:'2026-02-19T19:38',entity:null,entity_id:null,read:false},
+    {id:'ACT-006',type:'comment',actor_email:'misgur@adrm-security.com',actor_name:'Matt Isgur',text:"Running behind on this action item because the parts are delayed. They won't be delivered to site for at least another 30 days.",at:'2026-02-19T15:58',entity:'task',entity_id:'TSK-104',read:false},
+    {id:'ACT-007',type:'status_change',actor_email:'jdoe@adrm-security.com',actor_name:'John Doe',text:'marked action item complete: Test Action Item',at:'2026-02-11T08:15',entity:'task',entity_id:'TSK-088',read:false},
+    {id:'ACT-008',type:'comment',actor_email:'jdoe@adrm-security.com',actor_name:'John Doe',text:'I have completed the commissioning for this install',at:'2026-01-30T14:10',entity:null,entity_id:null,read:false},
+    {id:'ACT-009',type:'create',actor_email:'lfeula@adrm-security.com',actor_name:'Louis Feula',text:'created risk: Network delayed going live',at:'2026-01-28T16:40',entity:'risk',entity_id:'RK-02',read:false},
+    {id:'ACT-010',type:'comment',actor_email:'lfeula@adrm-security.com',actor_name:'Louis Feula',text:'Integrator had to come out multiple times for testing.',at:'2026-01-02T09:27',entity:null,entity_id:null,read:false},
+    {id:'ACT-011',type:'comment',actor_email:'lfeula@adrm-security.com',actor_name:'Louis Feula',text:'Project is going to close under budget',at:'2026-01-02T09:26',entity:null,entity_id:null,read:false},
+    {id:'ACT-012',type:'create',actor_email:'misgur@adrm-security.com',actor_name:'Matt Isgur',text:'created project: Corporate HQ Security Upgrade',at:'2025-12-01T10:00',entity:'project',entity_id:'PRJ-0042',read:false}
+  ];
+
+  let filter = 'all';        // all | comments | system
+  let entityFilter = 'all';  // all | task | risk | ...
+
+  // ─── Expose global for cross-section consumers (My Work "Recent activity") ───
+  window.__ACTIVITY__ = events;
+
+  // ═══ PAYLOAD INGESTION ═══
+  (function ingestPayload(){
+    try {
+      const P = window.__PAYLOAD__;
+      if (!P) return; // no payload → keep demo data
+
+      const expectedVersion = 1;
+      const actualVersion = P?.meta?.payload_version;
+      if (actualVersion != null && actualVersion !== expectedVersion) {
+        console.warn(`[${SECTION_NAME}] payload v${expectedVersion} expected, got v${actualVersion} — rendering best-effort`);
+      }
+
+      // Activity is relational — no consolidated *Json fallback (Pattern #6 N/A).
+      const raw = P.activity;
+      if (raw === undefined || raw === null) return;
+      if (!Array.isArray(raw)) {
+        console.warn(`[${SECTION_NAME}] P.activity is not an array, ignoring`);
+        return;
+      }
+      if (!raw.length) return; // empty array → keep demo (per "only overwrite on presence")
+
+      const mapped = [];
+      raw.forEach((e, i) => {
+        try { mapped.push(normalizeEvent(e, i)); }
+        catch(err) { console.warn(`[${SECTION_NAME}] skipped malformed event at index ${i}:`, err); }
+      });
+      if (mapped.length) {
+        events = mapped;
+        window.__ACTIVITY__ = events;
+      }
+
+      console.warn('Payload ingestion active:', SECTION_NAME);
+    } catch (err) {
+      console.warn(`[${SECTION_NAME}] payload ingestion failed, falling back to demo data:`, err);
+    }
+  })();
+
+  // ─── Time formatting + grouping ───
+  function fmtT(t) {
+    try {
+      const d = new Date(t); if (isNaN(d)) return '';
+      const now = new Date(), diff = (now - d) / 86400000;
+      if (diff < 0) return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+      if (diff < 1) return d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+      if (diff < 7) return Math.floor(diff) + 'd ago';
+      return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    } catch(_) { return ''; }
+  }
+  function groupLabel(at) {
+    const d = new Date(at); if (isNaN(d)) return 'Earlier';
+    const now = new Date();
+    const sToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const sYesterday = new Date(sToday); sYesterday.setDate(sYesterday.getDate() - 1);
+    const sWeek = new Date(sToday); sWeek.setDate(sWeek.getDate() - 7);
+    if (d >= sToday) return 'Today';
+    if (d >= sYesterday) return 'Yesterday';
+    if (d >= sWeek) return 'This Week';
+    return 'Earlier';
+  }
+
+  // ─── Filter ───
+  function filtered() {
+    const q = (document.getElementById('srch')?.value || '').toLowerCase();
+    return events.filter(e => {
+      if (filter === 'comments' && e.type !== 'comment') return false;
+      if (filter === 'system' && e.type === 'comment') return false;
+      if (entityFilter !== 'all' && e.entity !== entityFilter) return false;
+      if (q) {
+        const blob = `${e.actor_name||''} ${e.text||''} ${e.entity||''} ${e.entity_id||''} ${e.type||''}`.toLowerCase();
+        if (!blob.includes(q)) return false;
+      }
+      return true;
+    });
+  }
+
+  // ─── Deep link dispatcher ───
+  window.__activityNavigate = function(entity, entityId) {
+    if (!entity || !entityId) return false;
+    const section = ENTITY_TO_SECTION[String(entity).toLowerCase()];
+    if (!section) return false;
+    try {
+      parent.postMessage({ type:'navigate', section, entityId, entity, entity_id: entityId, open_id: entityId }, '*');
+    } catch(_) {}
+    return true;
+  };
+
+  // ─── Row renderer (fully esc-wrapped) ───
+  function renderEventRow(e) {
+    const avBg = whoColor(e.actor_name);
+    const ini = initials(e.actor_name);
+    const who = esc(e.actor_name);
+    const when = esc(fmtT(e.at));
+    const hasPill = !!(e.entity && e.entity_id);
+    const pill = hasPill
+      ? `<span class="evt-ref" role="link" tabindex="0" data-entity="${esc(e.entity)}" data-eid="${esc(e.entity_id)}" title="Open ${esc(e.entity)} ${esc(e.entity_id)}">${esc(e.entity_id)}</span>`
+      : '';
+
+    if (e.type === 'comment') {
+      return `<div class="evt comment" data-id="${esc(e.id)}">`
+           + `<div class="evt-av" style="background:${esc(avBg)}">${esc(ini)}</div>`
+           + `<div class="evt-body">`
+           +   `<div class="evt-head">`
+           +     `<span class="evt-who">${who}</span>`
+           +     `<span class="evt-act">commented${hasPill?' on':''}</span>`
+           +     pill
+           +     `<span class="evt-when">${when}</span>`
+           +   `</div>`
+           +   `<div class="evt-txt">${esc(e.text)}</div>`
+           + `</div></div>`;
+    }
+
+    // Non-comment events: text is the verb phrase if present, else fall back to type-derived verb
+    const verbText = e.text ? esc(e.text) : esc(actionVerb(e.type));
+    return `<div class="evt" data-id="${esc(e.id)}">`
+         + `<div class="evt-av evt-sys" aria-hidden="true">\u26A1</div>`
+         + `<div class="evt-body">`
+         +   `<div class="evt-head">`
+         +     `<span class="evt-who">${who}</span>`
+         +     `<span class="evt-act">${verbText}</span>`
+         +     pill
+         +     `<span class="evt-when">${when}</span>`
+         +   `</div>`
+         + `</div></div>`;
+  }
+
+  // ─── Render ───
+  function renderAll() {
+    const counts = {
+      all: events.length,
+      comments: events.filter(e => e.type === 'comment').length,
+      system: events.filter(e => e.type !== 'comment').length
+    };
+
+    const typeChips = [['all','All'],['comments','Comments'],['system','Activity']]
+      .map(([k,l]) => `<span class="fchip${filter===k?' on':''}" data-f="${esc(k)}">${esc(l)} (${counts[k]})</span>`)
+      .join('');
+
+    const entityTypes = [...new Set(events.map(e => e.entity).filter(Boolean))].sort();
+    let entityChips = '';
+    if (entityTypes.length) {
+      entityChips = `<span class="sep"></span><span class="flab">Entity</span>`
+        + `<span class="fchip${entityFilter==='all'?' on':''}" data-e="all">All</span>`
+        + entityTypes.map(t => `<span class="fchip${entityFilter===t?' on':''}" data-e="${esc(t)}">${esc(t.charAt(0).toUpperCase()+t.slice(1))}</span>`).join('');
+    }
+
+    const fbar = document.getElementById('fbar');
+    if (fbar) {
+      fbar.innerHTML = `<span class="flab">Filter</span>${typeChips}${entityChips}`;
+      fbar.querySelectorAll('.fchip[data-f]').forEach(c => c.onclick = () => { filter = c.dataset.f; renderAll(); });
+      fbar.querySelectorAll('.fchip[data-e]').forEach(c => c.onclick = () => { entityFilter = c.dataset.e; renderAll(); });
+    }
+
+    const sub = document.getElementById('sub');
+    if (sub) sub.textContent = `${events.length} events \u00B7 ${counts.comments} comments \u00B7 ${counts.system} activity`;
+
+    const rows = filtered();
+    const feed = document.getElementById('feed');
+    if (!feed) return;
+
+    if (!rows.length) {
+      feed.innerHTML = `<div class="empty">${events.length ? 'No activity matches your filters.' : 'No recent activity.'}</div>`;
+      return;
+    }
+
+    const sorted = rows.slice().sort((a,b) => new Date(b.at) - new Date(a.at));
+    const groups = [];
+    let cur = null;
+    sorted.forEach(e => {
+      const g = groupLabel(e.at);
+      if (!cur || cur.label !== g) { cur = { label: g, items: [] }; groups.push(cur); }
+      cur.items.push(e);
+    });
+
+    feed.innerHTML = groups.map(g =>
+      `<div class="grp"><div class="grp-h">${esc(g.label)}</div>${g.items.map(renderEventRow).join('')}</div>`
+    ).join('');
+
+    feed.querySelectorAll('.evt-ref[role="link"]').forEach(p => {
+      p.onclick = (ev) => { ev.stopPropagation(); window.__activityNavigate(p.dataset.entity, p.dataset.eid); };
+      p.onkeydown = (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); window.__activityNavigate(p.dataset.entity, p.dataset.eid); } };
+    });
+  }
+
+  // ─── Outbound: build schema-shape comment payload ───
+  function buildCommentPayload(text) {
+    const user = (typeof window !== 'undefined' && window.__USER__) || {};
+    return {
+      id: `tmp-${Date.now()}`,
+      type: 'comment',
+      actor_email: user.email || 'misgur@adrm-security.com',
+      at: new Date().toISOString(),
+      entity: null,
+      entity_id: null,
+      text: String(text || ''),
+      read: false
+    };
+  }
+
+  window.postComment = function() {
+    const el = document.getElementById('cp-txt');
+    const t = (el?.value || '').trim();
+    if (!t) return;
+    const payload = buildCommentPayload(t);
+    const user = (window.__USER__) || {};
+    const internal = {
+      ...payload,
+      actor_name: resolveName(payload.actor_email) || user.name || 'You'
+    };
+    events.unshift(internal);
+    window.__ACTIVITY__ = events;
+    console.log('Make payload (activity.comment):', payload);
+    try { parent.postMessage({ type:'activity-comment', payload }, '*'); } catch(_) {}
+    try { parent.postMessage({ type:'toast', msg:'Comment posted', kind:'success' }, '*'); } catch(_) {}
+    if (el) el.value = '';
+    renderAll();
+  };
+
+  // ─── Wire user avatar in composer ───
+  (function wireComposerAvatar(){
+    try {
+      const u = window.__USER__ || {};
+      const name = u.name || 'Matt Isgur';
+      const av = document.getElementById('cp-av');
+      if (av) { av.textContent = initials(name); av.style.background = whoColor(name); av.style.color = '#111'; }
+    } catch(_) {}
+  })();
+
+  // ─── Wire search ───
+  const srch = document.getElementById('srch');
+  if (srch) srch.oninput = renderAll;
+
+  // ─── Expose helpers for smoke tests & cross-section consumers ───
+  window.__activityNormalize = normalizeEvent;
+  window.__activityBuildComment = buildCommentPayload;
+  window.__activityGroupLabel = groupLabel;
+  window.__activityResolveName = resolveName;
+  window.__activityRenderRow = renderEventRow;
+  window.__activityEntityMap = ENTITY_TO_SECTION;
+
+  renderAll();
+
+  // ═══ SMOKE TESTS ═══
+  window.__ACTIVITY_SMOKE__ = function() {
+    const results = [];
+    const test = (name, fn) => {
+      try { fn(); results.push({ name, pass: true }); }
+      catch(e) { results.push({ name, pass: false, err: String(e?.message || e) }); }
+    };
+    const ok = (cond, msg) => { if (!cond) throw new Error(msg || 'assert failed'); };
+    const eq = (a, b, msg) => { if (String(a) !== String(b)) throw new Error(`${msg||''} expected ${JSON.stringify(b)} got ${JSON.stringify(a)}`); };
+
+    // ── Normalize / ingestion ──
+    test('normalize: valid schema event preserves fields', () => {
+      const n = normalizeEvent({id:'X-1',type:'comment',actor_email:'a@b.c',at:'2026-04-01T00:00:00Z',entity:'task',entity_id:'TSK-1',text:'hi',read:true}, 0);
+      eq(n.id,'X-1'); eq(n.type,'comment'); eq(n.actor_email,'a@b.c'); eq(n.entity,'task'); eq(n.entity_id,'TSK-1'); eq(n.text,'hi'); eq(n.read,true);
+    });
+    test('normalize: missing id generates ACT-NNN fallback', () => {
+      const n = normalizeEvent({}, 4); ok(/^ACT-\d{3}$/.test(n.id), 'id is ACT-NNN');
+    });
+    test('normalize: missing type defaults to update', () => { eq(normalizeEvent({}, 0).type, 'update'); });
+    test('normalize: missing actor_email → actor_name System', () => { eq(normalizeEvent({}, 0).actor_name, 'System'); });
+    test('normalize: missing at falls back to now ISO', () => { ok(!isNaN(new Date(normalizeEvent({}, 0).at))); });
+    test('normalize: numeric entity_id coerced to string', () => {
+      const n = normalizeEvent({entity:'task',entity_id:104}, 0); eq(typeof n.entity_id, 'string'); eq(n.entity_id, '104');
+    });
+    test('normalize: empty entity_id string → null', () => { eq(normalizeEvent({entity:'task',entity_id:''}, 0).entity_id, 'null'); });
+    test('normalize: read default false', () => { eq(normalizeEvent({}, 0).read, 'false'); });
+    test('normalize: type lowercased', () => { eq(normalizeEvent({type:'STATUS_CHANGE'}, 0).type, 'status_change'); });
+    test('normalize: entity lowercased', () => { eq(normalizeEvent({entity:'Task',entity_id:'T1'}, 0).entity, 'task'); });
+    test('normalize: non-object raw → safe defaults', () => {
+      const n = normalizeEvent(null, 0); ok(n.id); eq(n.type,'update'); eq(n.actor_name,'System');
+    });
+    test('normalize: string id preserved verbatim', () => { eq(normalizeEvent({id:'ACT-555'}, 0).id, 'ACT-555'); });
+    test('normalize: numeric id coerced to string', () => { eq(normalizeEvent({id:42}, 0).id, '42'); });
+
+    // ── XSS / esc ──
+    test('esc: script tag escaped', () => { eq(esc('<script>alert(1)<\/script>'), '&lt;script&gt;alert(1)&lt;/script&gt;'); });
+    test('esc: img onerror escaped', () => { ok(!esc('<img onerror=x>').includes('<img')); });
+    test('esc: quotes escaped', () => { eq(esc('he said "hi" it\'s'), 'he said &quot;hi&quot; it&#39;s'); });
+    test('esc: ampersand escaped', () => { eq(esc('a & b'), 'a &amp; b'); });
+    test('esc: null/undefined → empty', () => { eq(esc(null),''); eq(esc(undefined),''); });
+    test('esc: numbers coerced', () => { eq(esc(42),'42'); });
+    test('renderEventRow: no raw <script> in output when text contains one', () => {
+      const out = renderEventRow(normalizeEvent({id:'X',type:'comment',actor_email:'a@b.c',actor_name:'Bad Actor',text:'<script>alert(1)<\/script>',at:'2026-04-01T00:00:00Z'}, 0));
+      ok(!/<script>/.test(out), 'no raw script tag'); ok(out.includes('&lt;script&gt;'), 'escaped form present');
+    });
+    test('renderEventRow: actor_name XSS escaped', () => {
+      const out = renderEventRow(normalizeEvent({id:'X',type:'comment',actor_name:'<img src=x onerror=alert(1)>',text:'ok',at:'2026-04-01T00:00:00Z'}, 0));
+      ok(!/<img/.test(out));
+    });
+    test('renderEventRow: entity_id XSS escaped in data-eid attr', () => {
+      const out = renderEventRow(normalizeEvent({id:'X',type:'update',entity:'task',entity_id:'" onclick=alert(1) x="',at:'2026-04-01T00:00:00Z',actor_name:'A'}, 0));
+      // Parse output and verify no onclick attribute was smuggled onto the pill element.
+      const parser = new window.DOMParser();
+      const frag = parser.parseFromString('<div>' + out + '</div>', 'text/html');
+      const pill = frag.querySelector('.evt-ref');
+      ok(pill, 'pill rendered');
+      ok(!pill.hasAttribute('onclick'), 'no onclick attribute smuggled in');
+      ok(out.includes('&quot;'), 'raw quote escaped to &quot;');
+    });
+    test('renderEventRow: entity XSS escaped in data-entity attr', () => {
+      const out = renderEventRow(normalizeEvent({id:'X',type:'update',entity:'task"><script>x<\/script>',entity_id:'T1',at:'2026-04-01T00:00:00Z',actor_name:'A'}, 0));
+      ok(!/<script>/.test(out));
+    });
+    test('renderEventRow: text in title attribute of pill escaped', () => {
+      const out = renderEventRow(normalizeEvent({id:'X',type:'update',entity:'task',entity_id:'"><img>',at:'2026-04-01T00:00:00Z',actor_name:'A'}, 0));
+      ok(!/<img>/.test(out));
+    });
+    test('renderEventRow: id attr escaped', () => {
+      const out = renderEventRow(normalizeEvent({id:'"><script>x<\/script>',type:'comment',text:'t',at:'2026-04-01T00:00:00Z',actor_name:'A'}, 0));
+      ok(!/<script>/.test(out));
+    });
+
+    // ── Filtering ──
+    test('filter: all includes everything', () => {
+      filter='all'; entityFilter='all'; const s=document.getElementById('srch'); if(s) s.value='';
+      ok(filtered().length === events.length);
+    });
+    test('filter: comments includes only comments', () => {
+      filter='comments'; entityFilter='all'; const s=document.getElementById('srch'); if(s) s.value='';
+      ok(filtered().every(e => e.type === 'comment'));
+      filter='all';
+    });
+    test('filter: system excludes comments', () => {
+      filter='system'; entityFilter='all'; const s=document.getElementById('srch'); if(s) s.value='';
+      ok(filtered().every(e => e.type !== 'comment'));
+      filter='all';
+    });
+    test('filter: entity filter scopes to entity', () => {
+      filter='all'; entityFilter='task'; const s=document.getElementById('srch'); if(s) s.value='';
+      const r = filtered(); ok(r.every(e => e.entity === 'task'), 'all match task');
+      entityFilter='all';
+    });
+    test('filter: search matches actor_name case-insensitively', () => {
+      filter='all'; entityFilter='all'; const s=document.getElementById('srch'); if(s) s.value='LOUIS';
+      const r = filtered(); ok(r.length > 0, 'louis search returns rows'); ok(r.every(e => (e.actor_name||'').toLowerCase().includes('louis')));
+      if(s) s.value='';
+    });
+    test('filter: search matches text content', () => {
+      filter='all'; entityFilter='all'; const s=document.getElementById('srch'); if(s) s.value='budget';
+      const r = filtered(); ok(r.length > 0); ok(r.some(e => e.text.toLowerCase().includes('budget')));
+      if(s) s.value='';
+    });
+    test('filter: search matches entity_id', () => {
+      filter='all'; entityFilter='all'; const s=document.getElementById('srch'); if(s) s.value='rk-02';
+      ok(filtered().length > 0);
+      if(s) s.value='';
+    });
+    test('filter: search with no matches returns empty', () => {
+      const s=document.getElementById('srch'); if(s) s.value='zzz-no-match-xxx';
+      ok(filtered().length === 0);
+      if(s) s.value='';
+    });
+
+    // ── Grouping ──
+    test('groupLabel: now → Today', () => { eq(groupLabel(new Date().toISOString()), 'Today'); });
+    test('groupLabel: 25h ago → Yesterday', () => {
+      const d = new Date(Date.now() - 25*3600*1000); eq(groupLabel(d.toISOString()), 'Yesterday');
+    });
+    test('groupLabel: 3d ago → This Week', () => {
+      const d = new Date(Date.now() - 3*86400*1000); eq(groupLabel(d.toISOString()), 'This Week');
+    });
+    test('groupLabel: 30d ago → Earlier', () => {
+      const d = new Date(Date.now() - 30*86400*1000); eq(groupLabel(d.toISOString()), 'Earlier');
+    });
+    test('groupLabel: invalid date → Earlier', () => { eq(groupLabel('not-a-date'), 'Earlier'); });
+
+    // ── String ID safety ──
+    test('string IDs: find by ACT-NN works', () => { ok(events.some(e => e.id === 'ACT-001')); });
+    test('string IDs: no numeric coercion in filter', () => {
+      const saved = events.slice();
+      events.push({id:'ACT-999',type:'comment',actor_email:'x@y.z',actor_name:'X',at:new Date().toISOString(),entity:null,entity_id:null,text:'probe string id',read:false});
+      const s=document.getElementById('srch'); if(s) s.value='probe';
+      ok(filtered().some(e => e.id === 'ACT-999'));
+      if(s) s.value=''; events.length = 0; saved.forEach(e => events.push(e));
+    });
+
+    // ── Outbound comment payload ──
+    test('buildComment: emits tmp- id', () => { ok(/^tmp-\d+/.test(buildCommentPayload('hi').id)); });
+    test('buildComment: type=comment', () => { eq(buildCommentPayload('hi').type, 'comment'); });
+    test('buildComment: reads __USER__.email', () => {
+      const prev = window.__USER__; window.__USER__ = { email:'probe@x.com', name:'Probe' };
+      eq(buildCommentPayload('hi').actor_email, 'probe@x.com');
+      window.__USER__ = prev;
+    });
+    test('buildComment: fallback actor_email when no user', () => {
+      const prev = window.__USER__; window.__USER__ = undefined;
+      ok(buildCommentPayload('hi').actor_email);
+      window.__USER__ = prev;
+    });
+    test('buildComment: text preserved', () => { eq(buildCommentPayload('hello world').text, 'hello world'); });
+    test('buildComment: entity and entity_id null', () => {
+      const p = buildCommentPayload('hi'); eq(p.entity,'null'); eq(p.entity_id,'null');
+    });
+    test('buildComment: read=false', () => { eq(buildCommentPayload('hi').read, 'false'); });
+    test('buildComment: at is valid ISO', () => { ok(!isNaN(new Date(buildCommentPayload('hi').at))); });
+    test('buildComment: only expected keys (no UI-only fields)', () => {
+      const keys = Object.keys(buildCommentPayload('hi')).sort().join(',');
+      eq(keys, ['actor_email','at','entity','entity_id','id','read','text','type'].sort().join(','));
+    });
+
+    // ── Deep link dispatch ──
+    test('navigate: returns false for missing entity', () => { ok(window.__activityNavigate(null, 'X') === false); });
+    test('navigate: returns false for missing entity_id', () => { ok(window.__activityNavigate('task', null) === false); });
+    test('navigate: returns false for unknown entity', () => { ok(window.__activityNavigate('nonsense', 'X') === false); });
+    test('navigate: posts message for task', () => {
+      let captured = null;
+      const orig = parent.postMessage;
+      try {
+        parent.postMessage = function(msg){ captured = msg; };
+        window.__activityNavigate('task', 'TSK-1');
+      } finally { parent.postMessage = orig; }
+      ok(captured && captured.type === 'navigate'); eq(captured.section, 'actions'); eq(captured.entityId, 'TSK-1');
+    });
+    test('navigate: milestone maps to schedule', () => {
+      let captured = null; const orig = parent.postMessage;
+      try { parent.postMessage = function(msg){ captured = msg; }; window.__activityNavigate('milestone', 'MS-01'); }
+      finally { parent.postMessage = orig; }
+      eq(captured.section, 'schedule');
+    });
+    test('navigate: risk maps to risks', () => {
+      let captured = null; const orig = parent.postMessage;
+      try { parent.postMessage = function(msg){ captured = msg; }; window.__activityNavigate('risk', 'RK-02'); }
+      finally { parent.postMessage = orig; }
+      eq(captured.section, 'risks');
+    });
+
+    // ── Pill rendering / click wiring (jsdom-equivalent via real DOM) ──
+    test('pill: renders when entity+entity_id present', () => {
+      const out = renderEventRow(normalizeEvent({id:'X',type:'update',entity:'task',entity_id:'TSK-9',at:'2026-04-01T00:00:00Z',actor_name:'A',text:'did thing'}, 0));
+      ok(out.includes('data-entity="task"')); ok(out.includes('data-eid="TSK-9"'));
+    });
+    test('pill: absent when entity missing', () => {
+      const out = renderEventRow(normalizeEvent({id:'X',type:'comment',at:'2026-04-01T00:00:00Z',actor_name:'A',text:'hi'}, 0));
+      ok(!out.includes('data-entity='));
+    });
+    test('pill: click posts navigate (live DOM)', () => {
+      filter='all'; entityFilter='all'; const s=document.getElementById('srch'); if(s) s.value='';
+      renderAll();
+      let captured = null; const orig = parent.postMessage;
+      try {
+        parent.postMessage = function(msg){ captured = msg; };
+        const pill = document.querySelector('.evt-ref[role="link"]');
+        ok(pill, 'at least one pill rendered');
+        pill.click();
+      } finally { parent.postMessage = orig; }
+      ok(captured && captured.type === 'navigate', 'navigate posted');
+    });
+
+    // ── Empty / edge states ──
+    test('empty: events=[] renders no-activity message', () => {
+      const saved = events.slice();
+      events.length = 0;
+      renderAll();
+      const feed = document.getElementById('feed');
+      ok(feed.innerHTML.includes('No recent activity'));
+      saved.forEach(e => events.push(e)); renderAll();
+    });
+    test('empty: filter misses renders "No activity matches"', () => {
+      const s=document.getElementById('srch'); if(s) s.value='zzzzzzz-nothing-matches';
+      renderAll();
+      const feed = document.getElementById('feed');
+      ok(feed.innerHTML.includes('No activity matches'));
+      if(s) s.value=''; renderAll();
+    });
+    test('render: reverse-chronological order within group', () => {
+      filter='all'; entityFilter='all'; const s=document.getElementById('srch'); if(s) s.value='';
+      renderAll();
+      const nodes = document.querySelectorAll('.evt[data-id]');
+      ok(nodes.length > 1);
+      // pull dates in render order
+      const ids = Array.from(nodes).map(n => n.dataset.id);
+      const evMap = Object.fromEntries(events.map(e => [e.id, e.at]));
+      for (let i = 1; i < ids.length; i++) {
+        const a = new Date(evMap[ids[i-1]]), b = new Date(evMap[ids[i]]);
+        ok(a >= b, `render order ${ids[i-1]} (${a.toISOString()}) >= ${ids[i]} (${b.toISOString()})`);
+      }
+    });
+
+    // ── Round-trip stability ──
+    test('round-trip: normalize→stringify→normalize stable', () => {
+      const raw = {id:'X',type:'create',actor_email:'a@b.c',at:'2026-04-01T00:00:00Z',entity:'risk',entity_id:'RK-1',text:'t',read:false};
+      const n1 = normalizeEvent(raw, 0);
+      const n2 = normalizeEvent(JSON.parse(JSON.stringify(n1)), 0);
+      eq(JSON.stringify(n1), JSON.stringify(n2));
+    });
+
+    // ── Stale entity graceful degrade ──
+    test('stale entity_id: renders without error', () => {
+      const out = renderEventRow(normalizeEvent({id:'X',type:'update',entity:'task',entity_id:'TSK-DELETED',at:'2026-04-01T00:00:00Z',actor_name:'A',text:'ref to stale'}, 0));
+      ok(out.includes('TSK-DELETED'));
+    });
+
+    // ── resolveName fallback ──
+    test('resolveName: prettifies local-part on unknown email', () => {
+      const n = resolveName('jane.doe@x.com'); eq(n, 'Jane Doe');
+    });
+    test('resolveName: null for empty email', () => { ok(resolveName(null) === null); });
+
+    // ── Global expose ──
+    test('window.__ACTIVITY__ exposed', () => { ok(Array.isArray(window.__ACTIVITY__)); });
+
+    // ── Action verb mapping ──
+    test('actionVerb: known type maps', () => { eq(actionVerb('status_change'), 'changed status'); });
+    test('actionVerb: unknown type humanized', () => { eq(actionVerb('foo_bar'), 'foo bar'); });
+    test('actionVerb: empty defaults to updated', () => { eq(actionVerb(''), 'updated'); });
+
+    const pass = results.filter(r => r.pass).length, fail = results.filter(r => !r.pass).length;
+    console.log(`[${SECTION_NAME}] smoke: ${pass}/${results.length} pass${fail?`, ${fail} fail`:''}`);
+    if (fail) console.table(results.filter(r => !r.pass));
+    return { total: results.length, pass, fail, results };
+  };
+})();
+</script></body></html>

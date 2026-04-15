@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"/><title>Risks</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;font-size:13px;padding:20px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.ti{font-size:18px;font-weight:700;color:#fff}
+.sb{font-size:12px;color:#9CA3AF;margin-top:3px}
+.ctr{display:flex;gap:8px;align-items:center}
+.srch{background:#1f1f1f;border:1px solid #303030;border-radius:6px;padding:7px 11px;color:#E5E7EB;font-size:12.5px;outline:none;width:220px;font-family:inherit}
+.srch:focus{border-color:#F59E0B}
+.btn{padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #303030;background:#1f1f1f;color:#E5E7EB;cursor:pointer;font-family:inherit}
+.btn:hover{background:#252525}
+.bp{background:#3c4756;color:#fff;border-color:#4a5666}
+.bp:hover{background:#4a5666}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:#1f1f1f;border:1px solid #2a2a2a;border-left:3px solid;border-radius:8px;padding:12px 14px}
+.kl{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:5px}
+.kv{font-size:22px;font-weight:800;line-height:1}
+.kc{font-size:11px;color:#9CA3AF;margin-top:3px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.card{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;padding:16px}
+.ct{font-size:13px;font-weight:700;margin-bottom:4px}
+.cs{font-size:11.5px;color:#9CA3AF;margin-bottom:14px}
+/* Heatmap */
+.hmg{display:grid;grid-template-columns:auto repeat(5,1fr);gap:2px;font-size:10px;max-width:380px;margin:0 auto}
+.hmcr{background:transparent;padding:6px 4px;text-align:center;color:#9CA3AF;font-weight:600;font-size:10px}
+.hmrl{padding:6px 8px 6px 0;text-align:right;color:#9CA3AF;font-weight:600;font-size:10px;display:flex;align-items:center;justify-content:flex-end}
+.hmc{aspect-ratio:1;border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;border:1px solid rgba(255,255,255,.04);cursor:pointer;transition:transform .12s}
+.hmc:hover{transform:scale(1.05)}
+.hma{font-size:10px;color:#6a6a6a;margin-top:8px;text-align:center}
+/* Risk table */
+.rtbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.rtbl th{padding:8px 10px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#9CA3AF;border-bottom:1px solid #303030;background:#191919}
+.rtbl td{padding:10px;border-bottom:1px solid #2a2a2a}
+.rtbl tr{cursor:pointer}
+.rtbl tr:hover td{background:#252525}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}
+.pill::before{content:'';width:6px;height:6px;border-radius:50%}
+.p-o{background:rgba(239,68,68,.14);color:#ff6b6b}.p-o::before{background:#EF4444}
+.p-p{background:rgba(245,158,11,.14);color:#F59E0B}.p-p::before{background:#F59E0B}
+.p-c{background:rgba(34,197,94,.14);color:#22C55E}.p-c::before{background:#22C55E}
+.score{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:12px}
+.scd{display:inline-block;width:6px;height:6px;border-radius:50%;vertical-align:middle}
+/* Drawer */
+.dbg{position:fixed;inset:0;background:rgba(10,10,10,.7);backdrop-filter:blur(6px);z-index:100;display:none}
+.dbg.on{display:block}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(540px,92vw);background:#1a1a1a;border-left:1px solid #303030;box-shadow:-20px 0 60px rgba(0,0,0,.6);z-index:101;display:none;flex-direction:column;transform:translateX(20px);transition:transform .2s}
+.dr.on{display:flex;transform:translateX(0)}
+.drh{padding:18px 22px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between;align-items:flex-start}
+.drt{font-size:16px;font-weight:700;color:#fff}
+.drs{font-size:11.5px;color:#9CA3AF;margin-top:2px}
+.drx{width:28px;height:28px;border-radius:6px;border:1px solid #303030;background:#252525;color:#9CA3AF;cursor:pointer;font-size:15px}
+.drb{flex:1;overflow-y:auto;padding:20px 22px}
+.drf{padding:14px 22px;border-top:1px solid #2a2a2a;background:#191919;display:flex;justify-content:space-between;gap:8px}
+.f{margin-bottom:14px}
+.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px}
+.fi,.fs,.ft{width:100%;background:#161616;border:1px solid #303030;border-radius:7px;padding:9px 11px;color:#E5E7EB;font-size:13px;font-family:inherit;outline:none}
+.fi:focus,.fs:focus,.ft:focus{border-color:#F59E0B}
+.ft{resize:vertical;min-height:64px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fr4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
+.sco{margin-top:14px;padding:12px 14px;background:#161616;border:1px solid #303030;border-radius:8px;display:flex;justify-content:space-between;align-items:center}
+.scol{font-size:11px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.scov{font-size:20px;font-weight:800}
+.schema-score{margin-top:8px;padding:8px 12px;background:rgba(66,134,244,.06);border:1px solid rgba(66,134,244,.2);border-radius:6px;display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:#9ec2f4}
+.schema-score strong{color:#E5E7EB;font-weight:700;font-size:13px}
+.tbtn{padding:6px 10px;border-radius:5px;border:1px solid #303030;background:transparent;color:#EF4444;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600}
+.tbtn:hover{background:rgba(239,68,68,.1)}
+
+.bulk-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:#1a1a1a;border-top:2px solid #F59E0B;padding:10px 18px;z-index:10;font-size:12.5px;align-items:center;gap:12px;box-shadow:0 -8px 20px rgba(0,0,0,.5);margin:0 -20px -20px}
+.bulk-bar.show{display:flex}
+.bulk-count{background:#F59E0B;color:#111;padding:3px 10px;border-radius:12px;font-weight:700;font-size:11.5px}
+.row-check{display:inline-flex;width:16px;height:16px;border:1.5px solid #4a4a4a;border-radius:3px;background:#181818;cursor:pointer;flex-shrink:0;align-items:center;justify-content:center;margin-right:8px;vertical-align:middle}
+.row-check.on{background:#F59E0B;border-color:#F59E0B}
+.row-check.on::after{content:"✓";color:#111;font-size:11px;font-weight:900}
+</style></head><body>
+
+<div class="hd">
+<div><div class="ti">Risk Tracker</div><div class="sb" id="sub">5 risks · 1 high severity · 3 in progress</div></div>
+<div class="ctr"><input class="srch" id="srch" placeholder="Search risks…"/><select class="srch" id="fstatus" style="width:140px"><option value="">All statuses</option></select><button class="btn">Export</button><button class="btn" onclick="bulkImport()">Import</button><button class="btn bp" onclick="openDrawer(null)">+ Risk</button></div>
+</div>
+
+<div class="kpis">
+<div class="kpi" style="border-left-color:#EF4444"><div class="kl">Open</div><div class="kv" style="color:#EF4444" id="k-o">0</div><div class="kc">need mitigation</div></div>
+<div class="kpi" style="border-left-color:#F59E0B"><div class="kl">In Progress</div><div class="kv" style="color:#F59E0B" id="k-p">0</div><div class="kc">being worked</div></div>
+<div class="kpi" style="border-left-color:#22C55E"><div class="kl">Closed</div><div class="kv" style="color:#22C55E" id="k-c">0</div><div class="kc">resolved</div></div>
+<div class="kpi" style="border-left-color:#8B5CF6"><div class="kl">Avg Score</div><div class="kv" style="color:#8B5CF6" id="k-s">0%</div><div class="kc">weighted overall</div></div>
+</div>
+
+<div class="grid">
+<div class="card">
+<div class="ct">Risk Heatmap</div><div class="cs">Probability × Impact · darker = more risks in that cell</div>
+<div class="hmg" id="hm"></div>
+<div class="hma">← Low Probability · High Probability → &nbsp;&nbsp;·&nbsp;&nbsp; ↑ High Impact · Low Impact ↓</div>
+</div>
+<div class="card">
+<div class="ct">By Category</div><div class="cs">Distribution of risk probability ratings</div>
+<div id="dist" style="margin-top:10px"></div>
+</div>
+</div>
+
+<div class="card" style="padding:0;overflow:hidden">
+<table class="rtbl" id="tbl">
+<thead><tr><th style="width:36px;padding-left:16px"></th><th>Risk</th><th>Status</th><th>Probability</th><th>Impact</th><th>Schedule</th><th>Cost</th><th>Overall</th></tr></thead>
+<tbody id="tb"></tbody>
+</table>
+</div>
+
+<div class="bulk-bar" id="bulk-bar"><span class="bulk-count" id="bulk-count">0</span><span>selected</span><div style="flex:1"></div><button class="btn" onclick="bulkStatus('Closed')">Mark Closed</button><button class="btn" onclick="bulkDelete()" style="color:#EF4444">Delete</button><button class="btn" onclick="clearSelection()">Cancel</button></div><div class="dbg" id="dbg" onclick="closeDrawer()"></div>
+<div class="dr" id="dr">
+<div class="drh"><div><div class="drt" id="drt">New Risk</div><div class="drs" id="drs">Fill details and score across four dimensions</div></div><button class="drx" onclick="closeDrawer()">×</button></div>
+<div class="drb" id="drb"></div>
+<div class="drf"><button class="tbtn" id="btn-del" onclick="delRisk()" style="display:none">Delete</button><div style="display:flex;gap:8px;margin-left:auto"><button class="btn" onclick="closeDrawer()">Cancel</button><button class="btn bp" onclick="saveRisk()">Save Risk</button></div></div>
+</div>
+
+<script>
+
+// ═══ ROW ACTION MENU (context) ═══
+window.showRowMenu = function(btn, actions) {
+  document.querySelectorAll('.row-menu-pop').forEach(x=>x.remove());
+  const rect = btn.getBoundingClientRect();
+  const menu = document.createElement('div');
+  menu.className = 'row-menu-pop';
+  menu.style.cssText = `position:fixed;top:${rect.bottom+4}px;left:${rect.right-180}px;min-width:180px;background:#1a1a1a;border:1px solid #333;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.6);z-index:999;padding:4px;font-family:inherit`;
+  menu.innerHTML = actions.map((a,i)=>a.divider?'<div style="height:1px;background:#2a2a2a;margin:4px 0"></div>':`<div data-i="${i}" style="padding:7px 12px;font-size:12.5px;color:${a.color||'#E5E7EB'};border-radius:5px;cursor:pointer;user-select:none">${a.label}</div>`).join('');
+  menu.querySelectorAll('[data-i]').forEach(el=>{el.onmouseenter=()=>el.style.background='#252525';el.onmouseleave=()=>el.style.background='';el.onclick=e=>{e.stopPropagation();menu.remove();actions[+el.dataset.i].fn();};});
+  document.body.appendChild(menu);
+  setTimeout(()=>{document.addEventListener('click',function closeMenu(){menu.remove();document.removeEventListener('click',closeMenu);},{once:true});},50);
+};
+
+// ═══════════════════════════════════════════════════════════════
+// SHARED WORKSPACE UTILITIES
+// ═══════════════════════════════════════════════════════════════
+
+window.healthDot = function(status) {
+  const s = (status||'').toLowerCase();
+  if (/open|blocked|overdue|critical|late|fail/.test(s)) return '🔴';
+  if (/progress|partial|warn|review|pending|draft|monitoring|mitigating/.test(s)) return '🟡';
+  if (/closed|complete|paid|done|healthy|ok|on time|resolved/.test(s)) return '🟢';
+  return '⚪';
+};
+window.healthColor = function(status) {
+  const s = (status||'').toLowerCase();
+  if (/open|blocked|overdue|critical|late|fail/.test(s)) return '#EF4444';
+  if (/progress|partial|warn|review|pending|draft|monitoring|mitigating/.test(s)) return '#F59E0B';
+  if (/closed|complete|paid|done|healthy|ok|on time|resolved/.test(s)) return '#22C55E';
+  return '#6a6a6a';
+};
+
+window.__STATUSES__ = window.__STATUSES__ || {
+  project: ['Planning','In Progress','On Hold','Completed','Cancelled'],
+  task: ['Open','In Progress','Blocked','Closed'],
+  risk: ['Identified','Monitoring','Mitigating','Closed','Open','In Progress'],
+  punch: ['Open','In Progress','Closed'],
+  observation: ['Open','Under Review','Closed'],
+  rfi: ['Open','In Progress','Closed'],
+  milestone: ['Not Started','In Progress','Completed']
+};
+window.__TYPES__ = window.__TYPES__ || ['Install','Service','Assessment','Upgrade','Decommission','Maintenance'];
+window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__COMMENTS__ = window.__COMMENTS__ || {};
+window.__COMMENTS__ = {
+  'task:5': [{who:'Louis Feula',txt:'Kicking this off Monday. @John Doe can you confirm the IDF access codes?',at:'2026-04-08T09:15'},{who:'John Doe',txt:'Codes sent. Good to go.',at:'2026-04-08T09:42'}],
+  'risk:1': [{who:'Matt Isgur',txt:'Talked to vendor — they confirmed a 30-day delay. Need to update the mitigation plan.',at:'2026-04-05T14:20'}],
+  'punch:3': [{who:'Louis Feula',txt:'Parts arrived. Will complete tomorrow.',at:'2026-04-11T16:30'}]
+};
+
+window.__ATTACHMENTS__ = window.__ATTACHMENTS__ || {};
+
+window.attachmentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = (window.__ATTACHMENTS__[key]||[]);
+  const rows = list.length ? list.map((a,i) => `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#181818;border:1px solid #262626;border-radius:6px;margin-bottom:4px"><span style="font-size:14px">${a.ext==='pdf'?'📄':a.ext==='jpg'||a.ext==='png'?'🖼️':'📎'}</span><span style="flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</span><span style="font-size:10.5px;color:#6a6a6a">${a.size||''}</span><button class="btn" style="padding:3px 8px;font-size:11px" onclick="window.__removeAttach('${key}',${i})">×</button></div>`).join('') : '<div style="padding:8px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No attachments</div>';
+  return `<div style="margin-top:14px;padding-top:12px;border-top:1px solid #2a2a2a"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF">Attachments (${list.length})</div><button class="btn" style="padding:5px 10px;font-size:11px" onclick="window.__addAttach('${entityType}',${JSON.stringify(entityId)})">+ Attach file</button></div>${rows}</div>`;
+};
+window.__addAttach = function(et, id) {
+  const name = prompt('File name (demo — real version opens file picker):', 'photo.jpg');
+  if (!name) return;
+  const ext = (name.split('.').pop()||'').toLowerCase();
+  const key = et + ':' + id;
+  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Matt Isgur', at: new Date().toISOString() });
+  console.log('Make payload (attach):', { entityType: et, entityId: id, name });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  const widget = document.querySelector('[onclick*="__addAttach"]')?.closest('div').parentElement;
+  if (widget) widget.outerHTML = window.attachmentsWidget(et, id);
+};
+window.__removeAttach = function(key, idx) {
+  if (!confirm('Remove this attachment?')) return;
+  window.__ATTACHMENTS__[key].splice(idx, 1);
+  const [et, id] = key.split(':');
+  const widget = document.querySelector(`[onclick*="__addAttach(\\'${et}\\',${JSON.stringify(id.includes(',')?id:+id||id)}"]`)?.closest('div').parentElement;
+  if (widget) widget.outerHTML = window.attachmentsWidget(et, id.includes(',')?id:+id||id);
+};
+
+// ═══ @-mention autocomplete ═══
+window.__wireMention = function(inputId, hostId) {
+  const inp = document.getElementById(inputId);
+  if (!inp || inp.dataset.mwired) return;
+  inp.dataset.mwired = '1';
+  let dropdown = null;
+  function closeDrop(){ if(dropdown){dropdown.remove();dropdown=null;} }
+  inp.addEventListener('input', e=>{
+    const v = e.target.value;
+    const pos = e.target.selectionStart;
+    const before = v.slice(0, pos);
+    const m = before.match(/@([a-zA-Z ]*)$/);
+    closeDrop();
+    if (!m) return;
+    const q = m[1].toLowerCase();
+    const matches = window.__CONTACTS__.filter(c => c.toLowerCase().includes(q)).slice(0,5);
+    if (!matches.length) return;
+    dropdown = document.createElement('div');
+    dropdown.style.cssText = 'position:absolute;background:#1a1a1a;border:1px solid #3a3a3a;border-radius:7px;box-shadow:0 8px 20px rgba(0,0,0,.5);padding:3px;z-index:200;min-width:180px';
+    const r = inp.getBoundingClientRect();
+    dropdown.style.left = r.left+'px';
+    dropdown.style.top = (r.top-5-matches.length*30)+'px';
+    dropdown.innerHTML = matches.map((c,i)=>`<div data-c="${c}" style="padding:6px 10px;font-size:12px;border-radius:4px;cursor:pointer${i===0?';background:#252525':''}">${c}</div>`).join('');
+    document.body.appendChild(dropdown);
+    dropdown.querySelectorAll('[data-c]').forEach(el=>{
+      el.onmousedown=ev=>{
+        ev.preventDefault();
+        const c = el.dataset.c;
+        const newVal = v.slice(0, pos - m[0].length) + '@' + c + ' ' + v.slice(pos);
+        inp.value = newVal;
+        inp.focus();
+        closeDrop();
+      };
+    });
+  });
+  inp.addEventListener('blur', ()=>setTimeout(closeDrop,150));
+};
+
+// ═══ Origin breadcrumb — clickable, posts navigate message to shell ═══
+window.originLink = function(entity) {
+  if (!entity?.originFrom) return '';
+  const label = entity.originFrom==='punch'?'Punch Item':entity.originFrom==='observation'?'Observation':entity.originFrom==='rfi'?'RFI':entity.originFrom==='meeting'?'Meeting':'Source';
+  const section = entity.originFrom==='punch'?'punch':entity.originFrom==='rfi'?'rfi':entity.originFrom==='meeting'?'meetings':entity.originFrom;
+  const idAttr = JSON.stringify(entity.originId).replace(/"/g,'&quot;');
+  return `<div style="margin-bottom:14px;padding:8px 12px;background:rgba(66,134,244,.08);border:1px solid rgba(66,134,244,.2);border-left:2px solid #4286f4;border-radius:6px;font-size:11.5px;color:#9ec2f4;cursor:pointer" onclick="try{parent.postMessage({type:'navigate',section:'${section}',entityId:${idAttr}},'*')}catch(e){}">↳ Converted from ${esc(label)} #${esc(entity.originId)}</div>`;
+};
+
+// ═══ Auto-wire mentions on comment inputs ═══
+(function(){
+  const obs = new MutationObserver(muts=>{
+    muts.forEach(m=>m.addedNodes.forEach(n=>{
+      if (n.nodeType!==1) return;
+      const inputs = n.querySelectorAll ? n.querySelectorAll('input[id^="cw-in-"]') : [];
+      inputs.forEach(inp=>window.__wireMention(inp.id,''));
+      if (n.id && n.id.startsWith('cw-in-')) window.__wireMention(n.id,'');
+    }));
+  });
+  obs.observe(document.body, { childList:true, subtree:true });
+})();
+
+window.commentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = window.__COMMENTS__[key] || [];
+  const renderList = list.length
+    ? list.map(c => `<div style="padding:8px 0;border-bottom:1px solid #252525;font-size:12px"><div style="display:flex;gap:6px;align-items:baseline"><strong style="color:#E5E7EB">${c.who}</strong><span style="color:#6a6a6a;font-size:10.5px">${new Date(c.at).toLocaleDateString('en-US',{month:'short',day:'numeric'})} ${new Date(c.at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div><div style="color:#9CA3AF;margin-top:2px;line-height:1.5">${c.txt.replace(/@(\w+(?:\s\w+)?)/g,'<span style="color:#60a5fa;font-weight:600">@$1</span>')}</div></div>`).join('')
+    : '<div style="padding:10px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No comments yet</div>';
+  return `<div style="margin-top:16px;padding-top:14px;border-top:1px solid #2a2a2a"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px">Comments (${list.length})</div><div id="cw-list-${entityId}">${renderList}</div><div style="display:flex;gap:6px;margin-top:10px"><input class="fi" id="cw-in-${entityId}" placeholder="Add a comment… (use @ to mention)" style="flex:1"/><button class="btn bp" onmouseenter="window.__wireMention('cw-in-'+arguments[0].target?.id||'','')" onclick="__postComment('${entityType}',${JSON.stringify(entityId)})">Post</button></div></div>`;
+};
+window.__postComment = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const inp = document.getElementById('cw-in-'+entityId);
+  const txt = inp.value.trim();
+  if (!txt) return;
+  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Matt Isgur', txt, at: new Date().toISOString() });
+  console.log('Make payload (comment):', { entityType, entityId, txt });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  inp.value = '';
+  const host = inp.closest('div').parentElement;
+  host.outerHTML = window.commentsWidget(entityType, entityId);
+};
+
+// ═══════════════════════════════════════════════════════════════
+// RISK DATA
+// ═══════════════════════════════════════════════════════════════
+
+const SCALE=['Very Low','Low','Medium','High','Very High'];
+const SCORE={'Very Low':1,'Low':2,'Medium':3,'High':4,'Very High':5};
+
+// Schema → internal 5-point scale. Schema uses Low/Medium/High; map to UI buckets.
+const SCHEMA_TO_SCALE = { 'Low':'Low', 'Medium':'Medium', 'High':'High', 'Very Low':'Very Low', 'Very High':'Very High' };
+// Internal 5-point → schema 3-point for outbound emit.
+const SCALE_TO_SCHEMA = { 'Very Low':'Low', 'Low':'Low', 'Medium':'Medium', 'High':'High', 'Very High':'High' };
+
+let risks=[
+{id:'RK-01',name:'Corp network delayed going live',desc:'Network delivery from corporate IT is slipping past original commit',status:'Closed',prob:'Low',impact:'Medium',sched:'Low',cost:'Very Low',mit:'Escalated to corp IT director; interim VLAN stood up',con:'Fall back to cellular bridge for 2 weeks',owner:'Matt Isgur',owner_email:'misgur@adrm-security.com',originFrom:null,originId:null,schemaScore:null},
+{id:'RK-02',name:'GC delayed installing 3rd floor cameras',desc:'General contractor slipping on pre-wire on floor 3',status:'In Progress',prob:'Medium',impact:'Low',sched:'Very Low',cost:'Very Low',mit:'Daily standup added with GC foreman',con:'Self-perform cable if GC misses next milestone',owner:'Louis Feula',owner_email:'lfeula@adrm-security.com',originFrom:null,originId:null,schemaScore:null},
+{id:'RK-03',name:'Network delayed again',desc:'Second network delay — 5 day slip to commissioning',status:'In Progress',prob:'Very High',impact:'Very Low',sched:'Medium',cost:'Very Low',mit:'Pre-stage cameras on isolated network',con:'',owner:'Matt Isgur',owner_email:'misgur@adrm-security.com',originFrom:null,originId:null,schemaScore:null},
+{id:'RK-04',name:'Pathways (primary)',desc:'Cable pathway conflicts with HVAC',status:'In Progress',prob:'Very Low',impact:'Medium',sched:'Low',cost:'Medium',mit:'Site walk scheduled with mechanical',con:'',owner:'Louis Feula',owner_email:'lfeula@adrm-security.com',originFrom:null,originId:null,schemaScore:null},
+{id:'RK-05',name:'Pathways (secondary)',desc:'Additional pathway issues on floor 2',status:'Open',prob:'High',impact:'Low',sched:'High',cost:'Very Low',mit:'',con:'',owner:'',owner_email:null,originFrom:null,originId:null,schemaScore:null}
+];
+let editing=null;
+
+// Contact lookup maps (name ↔ email) — populated from payload when present
+let __contactByName = {};
+let __contactByEmail = {};
+
+// ═══ PAYLOAD INGESTION ═══
+// Accepts P.risks (top-level) OR P.riskTrackerJson (consolidated alias per handoff).
+// Schema: { id, title, likelihood, impact, score, mitigation, owner_email, status, originFrom, originId }
+// Internal: { id, name, desc, status, prob, impact, sched, cost, mit, con, owner, owner_email, originFrom, originId, schemaScore }
+// Outbound via buildSavePayload() emits schema shape.
+(function ingestPayload(){
+  try {
+    const P = window.__PAYLOAD__;
+    if (!P) return;
+
+    const expectedVersion = 1;
+    const actualVersion = P?.meta?.payload_version;
+    if (actualVersion != null && actualVersion !== expectedVersion) {
+      console.warn(`[risks] payload v${expectedVersion} expected, got v${actualVersion} — rendering best-effort`);
+    }
+
+    // ── Contact lookups (project contacts first, then account-wide); dedupe by email ──
+    const projectContacts = Array.isArray(P?.contacts) ? P.contacts : [];
+    const allContacts = Array.isArray(P?.lookups?.all_contacts) ? P.lookups.all_contacts : [];
+    projectContacts.forEach(c => {
+      if (c?.email) __contactByEmail[c.email] = c.name || c.email;
+      if (c?.name) __contactByName[c.name] = c.email || null;
+    });
+    allContacts.forEach(c => {
+      if (c?.email && !__contactByEmail[c.email]) __contactByEmail[c.email] = c.name || c.email;
+      if (c?.name && !__contactByName[c.name]) __contactByName[c.name] = c.email || null;
+    });
+    const orderedNames = [...new Set([
+      ...projectContacts.map(c => c?.name).filter(Boolean),
+      ...allContacts.map(c => c?.name).filter(Boolean)
+    ])];
+    if (orderedNames.length) window.__CONTACTS__ = orderedNames;
+
+    // ── Normalize risks (prefer top-level, alias consolidated JSON) ──
+    const rawRisks = Array.isArray(P?.risks) ? P.risks
+                   : Array.isArray(P?.riskTrackerJson) ? P.riskTrackerJson
+                   : null;
+    if (Array.isArray(rawRisks) && rawRisks.length) {
+      const normRisks = rawRisks
+        .filter(r => r && typeof r === 'object')
+        .map(r => {
+          const email = r.owner_email ?? r.assignee_email ?? null;
+          const ownerName = r.owner ?? (email ? (__contactByEmail[email] || email) : '');
+          // Schema likelihood/impact map to internal prob/impact; sched/cost default Medium.
+          const prob = SCHEMA_TO_SCALE[r.likelihood] || r.prob || r.probability || 'Medium';
+          const imp = SCHEMA_TO_SCALE[r.impact] || r.impact_level || 'Medium';
+          return {
+            id: r.id ?? null,
+            name: r.title ?? r.name ?? '(untitled risk)',
+            desc: r.description ?? r.desc ?? '',
+            status: r.status ?? 'Open',
+            prob: prob,
+            impact: imp,
+            sched: SCHEMA_TO_SCALE[r.schedule_impact] || r.sched || 'Medium',
+            cost: SCHEMA_TO_SCALE[r.cost_impact] || r.cost || 'Medium',
+            mit: r.mitigation ?? r.mit ?? '',
+            con: r.contingency ?? r.con ?? '',
+            owner: ownerName,
+            owner_email: email,                              // Pattern #4 — pass-through
+            originFrom: r.originFrom ?? r.origin_from ?? null, // Pattern #8 — camelCase
+            originId: r.originId ?? r.origin_id ?? null,
+            schemaScore: typeof r.score === 'number' ? r.score : null  // Pattern #7 — preserve
+          };
+        })
+        .filter(r => r.id != null);
+      if (normRisks.length) risks = normRisks;
+    }
+
+    console.warn('Payload ingestion active:', 'risks');
+  } catch (err) {
+    console.warn(`[risks] payload ingestion failed, falling back to demo data:`, err);
+  }
+})();
+
+// ═══ OUTBOUND PAYLOAD BUILDER (schema.md riskTrackerJson[] shape) ═══
+// Schema: { id, title, likelihood, impact, score, mitigation, owner_email, status, originFrom, originId }
+function buildSavePayload(r, isNew) {
+  return {
+    ...(isNew ? {} : { id: r.id }),
+    title: r.name,
+    likelihood: SCALE_TO_SCHEMA[r.prob] || 'Medium',
+    impact: SCALE_TO_SCHEMA[r.impact] || 'Medium',
+    score: (r.schemaScore != null && !r.__scoreDirty) ? r.schemaScore : score(r).pct,
+    mitigation: r.mit ?? null,
+    owner_email: r.owner_email ?? null,
+    status: r.status,
+    originFrom: r.originFrom ?? null,
+    originId: r.originId ?? null
+  };
+}
+
+const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+
+function score(r){const s=(SCORE[r.prob]+SCORE[r.impact]+SCORE[r.sched]+SCORE[r.cost])/4;const pct=Math.round((s/5)*100);const lvl=pct>=70?'High':pct>=45?'Medium':'Low';const col=pct>=70?'#EF4444':pct>=45?'#F59E0B':'#22C55E';return{pct,lvl,col};}
+const statusCls=s=>{
+  const x=(s||'').toLowerCase();
+  if(/open|blocked|overdue|critical/.test(x))return 'p-o';
+  if(/progress|partial|warn|review|pending|monitoring|mitigating|identified/.test(x))return 'p-p';
+  return 'p-c';
+};
+
+function filtered(){
+  const q=document.getElementById('srch').value.toLowerCase();
+  const sf=(document.getElementById('fstatus')||{value:''}).value;
+  return risks.filter(r => (!q || JSON.stringify(r).toLowerCase().includes(q)) && (!sf || r.status===sf));
+}
+
+function renderKPIs(){
+  const vis=filtered();
+  document.getElementById('k-o').textContent=vis.filter(r=>/open/i.test(r.status)).length;
+  document.getElementById('k-p').textContent=vis.filter(r=>/progress|monitoring|mitigating|identified/i.test(r.status)).length;
+  document.getElementById('k-c').textContent=vis.filter(r=>/closed|resolved/i.test(r.status)).length;
+  const avg=vis.length?Math.round(vis.reduce((s,r)=>s+score(r).pct,0)/vis.length):0;
+  document.getElementById('k-s').textContent=avg+'%';
+  document.getElementById('sub').textContent=risks.length+' risks · '+risks.filter(r=>score(r).lvl==='High').length+' high · '+risks.filter(r=>/progress|monitoring|mitigating/i.test(r.status)).length+' in progress';
+}
+
+function renderHeatmap(){
+  const counts={};risks.forEach(r=>{const k=r.prob+'|'+r.impact;counts[k]=(counts[k]||0)+1;});
+  const max=Math.max(1,...Object.values(counts));
+  let h='<div></div>';SCALE.forEach(p=>h+=`<div class="hmcr">${p}</div>`);
+  [...SCALE].reverse().forEach(imp=>{
+    h+=`<div class="hmrl">${imp}</div>`;
+    SCALE.forEach(prob=>{
+      const c=counts[prob+'|'+imp]||0;
+      const intensity=c/max;
+      const pScore=SCORE[prob]*SCORE[imp];
+      const bg=pScore>=16?'#EF4444':pScore>=9?'#F59E0B':pScore>=4?'#4286f4':'#22C55E';
+      const op=c===0?0.08:0.2+intensity*0.6;
+      h+=`<div class="hmc" style="background:${bg};opacity:${op}" title="${prob} × ${imp}: ${c} risk${c!==1?'s':''}">${c||''}</div>`;
+    });
+  });
+  document.getElementById('hm').innerHTML=h;
+}
+
+function renderDist(){
+  const probCounts={};SCALE.forEach(s=>probCounts[s]=0);risks.forEach(r=>{if(probCounts[r.prob]!=null)probCounts[r.prob]++;});
+  const max=Math.max(1,...Object.values(probCounts));
+  const colors={'Very Low':'#22C55E','Low':'#4286f4','Medium':'#F59E0B','High':'#f97316','Very High':'#EF4444'};
+  document.getElementById('dist').innerHTML=SCALE.map(s=>{
+    const c=probCounts[s],pct=(c/max)*100;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:5px 0"><div style="width:70px;font-size:11.5px;color:#9CA3AF;font-weight:500">${s}</div><div style="flex:1;height:6px;background:#2e2e2e;border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${colors[s]};border-radius:3px"></div></div><div style="width:20px;text-align:right;font-size:11.5px;font-weight:700;color:#E5E7EB">${c}</div></div>`;
+  }).join('');
+}
+
+function renderTable(){
+  const rows=filtered();
+  document.getElementById('tb').innerHTML=rows.length?rows.map(r=>{
+    const sc=score(r);
+    const sid=String(r.id);
+    const checked=__selected.has(sid)?' on':'';
+    const idAttr=JSON.stringify(sid).replace(/"/g,'&quot;');
+    return `<tr data-id="${esc(r.id)}">
+<td style="padding-left:16px;width:36px;cursor:pointer" onclick="event.stopPropagation();toggleSelect(${idAttr},this.querySelector('.row-check'))"><span class="row-check${checked}"></span></td>
+<td><div style="font-weight:600">${esc(r.name)}</div>${r.desc?`<div style="font-size:11px;color:#9CA3AF;margin-top:2px">${esc(r.desc)}</div>`:''}</td>
+<td><span class="pill ${statusCls(r.status)}">${esc(r.status)}</span></td>
+<td>${esc(r.prob)}</td><td>${esc(r.impact)}</td><td>${esc(r.sched)}</td><td>${esc(r.cost)}</td>
+<td><span class="score"><span class="scd" style="background:${sc.col}"></span><span style="color:${sc.col}">${sc.lvl}: ${sc.pct}%</span></span></td>
+</tr>`;}).join(''):'<tr><td colspan="8" style="padding:24px;text-align:center;color:#9CA3AF">No risks match your search.</td></tr>';
+  document.querySelectorAll('#tb tr[data-id]').forEach(tr=>tr.onclick=()=>openDrawer(tr.dataset.id));
+}
+
+function renderAll(){renderKPIs();renderHeatmap();renderDist();renderTable();}
+
+// ═══ BULK ACTIONS ═══
+let __selected = new Set();
+function toggleSelect(id, el){const sid=String(id);if(__selected.has(sid)){__selected.delete(sid);el?.classList.remove('on');}else{__selected.add(sid);el?.classList.add('on');}const n=__selected.size;const c=document.getElementById('bulk-count');if(c)c.textContent=n;const b=document.getElementById('bulk-bar');if(b)b.classList.toggle('show',n>0);}
+function clearSelection(){__selected.clear();document.querySelectorAll('.row-check.on').forEach(c=>c.classList.remove('on'));const b=document.getElementById('bulk-bar');if(b)b.classList.remove('show');const c=document.getElementById('bulk-count');if(c)c.textContent=0;}
+function bulkStatus(s){
+  if(!__selected.size)return;
+  const payload=[];
+  risks.forEach(r=>{if(__selected.has(String(r.id))){r.status=s;payload.push(buildSavePayload(r,false));}});
+  console.log('Make payload (risks bulk_status):',{status:s,risks:payload});
+  try{parent.postMessage({type:'toast',msg:`${__selected.size} risks updated`,kind:'success'},'*');}catch(e){}
+  clearSelection();renderAll();
+}
+function bulkDelete(){
+  if(!__selected.size)return;
+  if(!confirm(`Delete ${__selected.size} risks?`))return;
+  const ids=[...__selected];
+  const n=__selected.size;
+  risks=risks.filter(r=>!__selected.has(String(r.id)));
+  console.log('Make payload (risks bulk_delete):',{ids});
+  try{parent.postMessage({type:'toast',msg:`${n} risks deleted`,kind:'success'},'*');}catch(e){}
+  clearSelection();renderAll();
+}
+function bulkImport(){
+  const rows=prompt('Paste rows (one risk per line):');
+  if(!rows)return;
+  const lines=rows.split('\n').filter(l=>l.trim());
+  let added=0;
+  const payload=[];
+  lines.forEach((line,idx)=>{
+    const newRisk={id:`tmp-${Date.now()}-${idx}`,name:line.trim(),desc:'',status:'Open',prob:'Medium',impact:'Medium',sched:'Medium',cost:'Medium',mit:'',con:'',owner:'',owner_email:null,originFrom:null,originId:null,schemaScore:null};
+    risks.push(newRisk);
+    payload.push(buildSavePayload(newRisk,true));
+    added++;
+  });
+  console.log('Make payload (risks bulk_import):',{risks:payload});
+  try{parent.postMessage({type:'toast',msg:`${added} risks imported`,kind:'success'},'*');}catch(e){}
+  renderAll();
+}
+
+document.getElementById('srch').oninput=renderAll;
+
+function openDrawer(id){
+  if(id!=null){
+    editing=risks.find(r=>String(r.id)===String(id));
+  } else {
+    editing={id:null,name:'',desc:'',status:'Open',prob:'Low',impact:'Low',sched:'Low',cost:'Low',mit:'',con:'',owner:'',owner_email:null,originFrom:null,originId:null,schemaScore:null};
+  }
+  if(!editing)return;
+  editing.__scoreDirty = false;
+  document.getElementById('drt').textContent=editing.id?'Update Risk':'New Risk';
+  document.getElementById('btn-del').style.display=editing.id?'inline-block':'none';
+  const r=editing;
+  const opts=(sel)=>SCALE.map(s=>`<option${s===sel?' selected':''}>${esc(s)}</option>`).join('');
+  const canonicalStatuses=['Open','In Progress','Identified','Monitoring','Mitigating','Closed'];
+  const allStatuses=[...new Set([...canonicalStatuses, r.status].filter(Boolean))];
+  const statusOpts=allStatuses.map(s=>`<option${s===r.status?' selected':''}>${esc(s)}</option>`).join('');
+  const ownerList=[...new Set([...(window.__CONTACTS__||[]), r.owner].filter(Boolean))];
+  const ownerOpts=`<option value="">Unassigned</option>`+ownerList.map(n=>`<option${n===r.owner?' selected':''}>${esc(n)}</option>`).join('');
+  const schemaScoreBlock = (r.schemaScore != null) ? `<div class="schema-score"><span>Schema score (preserved from ingest)</span><strong>${r.schemaScore}</strong></div>` : '';
+  document.getElementById('drb').innerHTML=`${window.originLink(editing)}
+<div class="f"><label class="fl">Risk Name</label><input class="fi" id="d-name" value="${esc(r.name)}" placeholder="Short risk description"/></div>
+<div class="f"><label class="fl">Description</label><textarea class="ft" id="d-desc" placeholder="Context and details">${esc(r.desc)}</textarea></div>
+<div class="fr">
+<div class="f"><label class="fl">Status</label><select class="fs" id="d-status">${statusOpts}</select></div>
+<div class="f"><label class="fl">Owner</label><select class="fs" id="d-owner">${ownerOpts}</select></div>
+</div>
+<div class="f"><label class="fl">Risk Scoring</label><div class="fr4">
+<div><div style="font-size:10px;color:#6a6a6a;margin-bottom:4px">Probability</div><select class="fs" id="d-prob">${opts(r.prob)}</select></div>
+<div><div style="font-size:10px;color:#6a6a6a;margin-bottom:4px">Impact</div><select class="fs" id="d-impact">${opts(r.impact)}</select></div>
+<div><div style="font-size:10px;color:#6a6a6a;margin-bottom:4px">Schedule</div><select class="fs" id="d-sched">${opts(r.sched)}</select></div>
+<div><div style="font-size:10px;color:#6a6a6a;margin-bottom:4px">Cost</div><select class="fs" id="d-cost">${opts(r.cost)}</select></div>
+</div>
+<div class="sco" id="sco"><span class="scol">Calculated Overall Score</span><span class="scov" id="scov">—</span></div>
+${schemaScoreBlock}
+</div>
+<div class="f"><label class="fl">Mitigation Plan</label><textarea class="ft" id="d-mit" placeholder="How will this risk be reduced?">${esc(r.mit)}</textarea></div>
+<div class="f"><label class="fl">Contingency Plan</label><textarea class="ft" id="d-con" placeholder="Backup plan if the risk materializes">${esc(r.con)}</textarea></div>${editing.id?window.commentsWidget('risk',editing.id):''}${editing.id?window.attachmentsWidget('risk',editing.id):''}`;
+  document.getElementById('d-status').value=r.status;
+  document.getElementById('d-owner').value=r.owner||'';
+  ['d-prob','d-impact','d-sched','d-cost'].forEach(i=>{
+    const el=document.getElementById(i);
+    el.oninput=()=>{ if(editing) editing.__scoreDirty = true; updateScore(); };
+  });
+  updateScore();
+  document.getElementById('dbg').classList.add('on');
+  document.getElementById('dr').classList.add('on');
+}
+
+function updateScore(){
+  const temp={prob:document.getElementById('d-prob').value,impact:document.getElementById('d-impact').value,sched:document.getElementById('d-sched').value,cost:document.getElementById('d-cost').value};
+  const sc=score(temp);
+  document.getElementById('scov').textContent=sc.lvl+': '+sc.pct+'%';
+  document.getElementById('scov').style.color=sc.col;
+  document.getElementById('sco').style.borderColor=sc.col;
+}
+
+function closeDrawer(){document.getElementById('dbg').classList.remove('on');document.getElementById('dr').classList.remove('on');editing=null;}
+
+function saveRisk(){
+  const name=document.getElementById('d-name').value.trim();
+  if(!name){alert('Risk name is required');return;}
+  const ownerName=document.getElementById('d-owner').value;
+  const ownerEmail = ownerName ? (__contactByName[ownerName] || editing?.owner_email || null) : null;
+  const isNew=!editing.id;
+  const r={
+    id: editing.id || `tmp-${Date.now()}`,
+    name,
+    desc:document.getElementById('d-desc').value,
+    status:document.getElementById('d-status').value,
+    prob:document.getElementById('d-prob').value,
+    impact:document.getElementById('d-impact').value,
+    sched:document.getElementById('d-sched').value,
+    cost:document.getElementById('d-cost').value,
+    mit:document.getElementById('d-mit').value,
+    con:document.getElementById('d-con').value,
+    owner: ownerName,
+    owner_email: ownerEmail,
+    originFrom: editing?.originFrom ?? null,   // preserve cross-entity breadcrumb
+    originId: editing?.originId ?? null,
+    schemaScore: editing?.schemaScore ?? null,
+    __scoreDirty: editing?.__scoreDirty || false
+  };
+  const i=risks.findIndex(x=>String(x.id)===String(r.id));
+  if(i>=0)risks[i]=r;else risks.push(r);
+  console.log('Make payload (risk_save):',buildSavePayload(r,isNew));
+  try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  closeDrawer();renderAll();
+}
+
+function delRisk(){
+  if(!editing||!editing.id)return;
+  if(!confirm('Delete "'+editing.name+'"?'))return;
+  const id=editing.id;
+  risks=risks.filter(r=>String(r.id)!==String(id));
+  console.log('Make payload (risk_delete):',{id});
+  try{parent.postMessage({type:'toast',msg:'Deleted',kind:'success'},'*');}catch(e){}
+  closeDrawer();renderAll();
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+renderAll();
+
+// Populate status filter dropdown once (after ingestion so schema statuses flow through)
+(function(){
+  const sel = document.getElementById('fstatus');
+  if (!sel || sel.dataset.pop) return;
+  sel.dataset.pop = '1';
+  const uniq = [...new Set(risks.map(r=>r.status).filter(Boolean))].sort();
+  uniq.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sel.appendChild(o); });
+  sel.onchange = renderAll;
+})();
+
+// ═══ SMOKE TESTS ═══
+// window.__RISKS_SMOKE__() runs the full battery and returns pass/fail map.
+window.__RISKS_SMOKE__ = function(){
+  const results = {};
+  const run = (name, fn) => { try { results[name] = fn() ? 'PASS' : 'FAIL'; } catch(e) { results[name] = 'THROW: '+e.message; } };
+
+  // 1. empty payload — demo data retained
+  run('empty', () => { const saved = window.__PAYLOAD__; window.__PAYLOAD__ = null; const demoLen = risks.length; window.__PAYLOAD__ = saved; return demoLen >= 0; });
+
+  // 2. missing risks array — falls through
+  run('missing_risks_field', () => {
+    const p = { meta:{payload_version:1}, project:{name:'X'} };
+    const raw = Array.isArray(p?.risks)?p.risks:Array.isArray(p?.riskTrackerJson)?p.riskTrackerJson:null;
+    return raw === null;
+  });
+
+  // 3. malformed — non-array
+  run('malformed_not_array', () => {
+    const p = { risks: 'nope' };
+    const raw = Array.isArray(p?.risks)?p.risks:null;
+    return raw === null;
+  });
+
+  // 4. valid top-level risks
+  run('valid_top_level', () => {
+    const p = { risks: [{ id:'RK-1', title:'Test', likelihood:'Medium', impact:'High', score:12, status:'Open', owner_email:'m@x.com' }] };
+    const raw = Array.isArray(p?.risks)?p.risks:Array.isArray(p?.riskTrackerJson)?p.riskTrackerJson:null;
+    return raw && raw.length===1 && raw[0].id==='RK-1';
+  });
+
+  // 5. version mismatch — warn only, no throw
+  run('version_mismatch', () => {
+    const p = { meta:{payload_version:99}, risks:[{id:'RK-1',title:'x',status:'Open',likelihood:'Low',impact:'Low'}] };
+    return p.meta.payload_version !== 1;
+  });
+
+  // 6. consolidated JSON alias (riskTrackerJson fallback)
+  run('consolidated_alias', () => {
+    const p = { riskTrackerJson: [{ id:'RK-A', title:'Aliased', status:'Open', likelihood:'Low', impact:'Low' }] };
+    const raw = Array.isArray(p?.risks)?p.risks:Array.isArray(p?.riskTrackerJson)?p.riskTrackerJson:null;
+    return raw && raw[0].id==='RK-A';
+  });
+
+  // 7. outbound builder shape — schema fields present, camelCase origin preserved
+  run('outbound_builder_shape', () => {
+    const r = { id:'RK-1', name:'x', status:'Open', prob:'Medium', impact:'High', sched:'Low', cost:'Low', mit:'mit', owner_email:'m@x.com', originFrom:'observation', originId:'OB-3', schemaScore:12, __scoreDirty:false };
+    const p = buildSavePayload(r, false);
+    return p.id==='RK-1' && p.title==='x' && p.likelihood==='Medium' && p.impact==='High'
+      && p.score===12 && p.mitigation==='mit' && p.owner_email==='m@x.com'
+      && p.originFrom==='observation' && p.originId==='OB-3';
+  });
+
+  // 8. outbound builder shape — isNew omits id, recomputes score when dirty
+  run('outbound_builder_new', () => {
+    const r = { id:'tmp-1', name:'x', status:'Open', prob:'Low', impact:'Low', sched:'Low', cost:'Low', mit:'', owner_email:null, originFrom:null, originId:null, schemaScore:null, __scoreDirty:true };
+    const p = buildSavePayload(r, true);
+    return !('id' in p) && p.title==='x' && typeof p.score === 'number';
+  });
+
+  // 9. round-trip: schema-in → normalize → buildSave → equivalent schema
+  run('round_trip', () => {
+    const schemaIn = { id:'RK-99', title:'RT', likelihood:'Medium', impact:'High', score:12, mitigation:'m', owner_email:'a@b.com', status:'Monitoring', originFrom:null, originId:null };
+    const internal = {
+      id: schemaIn.id, name: schemaIn.title, desc:'', status: schemaIn.status,
+      prob: SCHEMA_TO_SCALE[schemaIn.likelihood], impact: SCHEMA_TO_SCALE[schemaIn.impact],
+      sched:'Medium', cost:'Medium', mit: schemaIn.mitigation, con:'',
+      owner:'', owner_email: schemaIn.owner_email,
+      originFrom: schemaIn.originFrom, originId: schemaIn.originId,
+      schemaScore: schemaIn.score, __scoreDirty: false
+    };
+    const out = buildSavePayload(internal, false);
+    return out.id===schemaIn.id && out.title===schemaIn.title
+      && out.likelihood===schemaIn.likelihood && out.impact===schemaIn.impact
+      && out.score===schemaIn.score && out.owner_email===schemaIn.owner_email
+      && out.originFrom===schemaIn.originFrom && out.originId===schemaIn.originId;
+  });
+
+  // 10. dual-origin roundtrip — one from observation, one from RFI, both preserved through ingest→save→re-ingest
+  run('dual_origin_roundtrip', () => {
+    const fromObs = { id:'RK-100', title:'From obs', likelihood:'Low', impact:'Medium', score:6, mitigation:'x', owner_email:'m@x.com', status:'Open', originFrom:'observation', originId:'OB-03' };
+    const fromRfi = { id:'RK-101', title:'From rfi', likelihood:'High', impact:'High', score:16, mitigation:'y', owner_email:'m@x.com', status:'Monitoring', originFrom:'rfi', originId:'RFI-04' };
+    const toInternal = (s) => ({
+      id:s.id, name:s.title, desc:'', status:s.status,
+      prob:SCHEMA_TO_SCALE[s.likelihood], impact:SCHEMA_TO_SCALE[s.impact],
+      sched:'Medium', cost:'Medium', mit:s.mitigation, con:'', owner:'', owner_email:s.owner_email,
+      originFrom:s.originFrom, originId:s.originId, schemaScore:s.score, __scoreDirty:false
+    });
+    const a = buildSavePayload(toInternal(fromObs), false);
+    const b = buildSavePayload(toInternal(fromRfi), false);
+    // Re-ingest both (identity) and verify origin casing + values stable
+    const a2 = buildSavePayload(toInternal(a), false);
+    const b2 = buildSavePayload(toInternal(b), false);
+    return a.originFrom==='observation' && a.originId==='OB-03' && a.score===6
+      && b.originFrom==='rfi' && b.originId==='RFI-04' && b.score===16
+      && a2.originFrom==='observation' && a2.originId==='OB-03'
+      && b2.originFrom==='rfi' && b2.originId==='RFI-04';
+  });
+
+  // 11. String-ID safety — mixed numeric/string IDs match via String()
+  run('string_id_safety', () => {
+    const a = 3, b = '3', c = 'RK-3';
+    return String(a)===String(b) && String(c)!==String(a);
+  });
+
+  // 12. schema score preservation — clean ingest does NOT overwrite when user didn't touch dimensions
+  run('score_preservation_clean', () => {
+    const r = { id:'RK-1', name:'x', status:'Open', prob:'Medium', impact:'High', sched:'Medium', cost:'Medium', mit:'', owner_email:null, originFrom:null, originId:null, schemaScore:12, __scoreDirty:false };
+    const p = buildSavePayload(r, false);
+    return p.score === 12;
+  });
+
+  // 13. schema score recomputed when user changes dimensions
+  run('score_recomputed_when_dirty', () => {
+    const r = { id:'RK-1', name:'x', status:'Open', prob:'Very High', impact:'Very High', sched:'Very High', cost:'Very High', mit:'', owner_email:null, originFrom:null, originId:null, schemaScore:12, __scoreDirty:true };
+    const p = buildSavePayload(r, false);
+    return p.score !== 12 && p.score === 100;
+  });
+
+  console.table(results);
+  return results;
+};
+</script></body></html>

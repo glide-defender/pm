@@ -1,0 +1,776 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Audit Log</title><style>
+*{box-sizing:border-box;margin:0;padding:0}body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;padding:20px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.ti{font-size:18px;font-weight:700;color:#fff}.sb{font-size:12px;color:#9CA3AF;margin-top:3px}
+.ctr{display:flex;gap:8px;align-items:center}
+.srch{background:#1f1f1f;border:1px solid #303030;border-radius:6px;padding:7px 11px;color:#E5E7EB;font-size:12.5px;outline:none;width:240px;font-family:inherit}
+.btn{padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #303030;background:#1f1f1f;color:#E5E7EB;cursor:pointer;font-family:inherit}
+.warning{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-left:2px solid #F59E0B;padding:10px 14px;border-radius:6px;margin-bottom:14px;font-size:11.5px;color:#fbbf24;line-height:1.5}
+.fbar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.fchip{padding:5px 11px;border-radius:16px;font-size:11.5px;font-weight:600;background:#1f1f1f;border:1px solid #303030;color:#9CA3AF;cursor:pointer;font-family:inherit}
+.fchip:hover{border-color:#F59E0B;color:#E5E7EB}.fchip.on{background:#3c4756;color:#fff;border-color:#4a5666}
+.fsel{background:#1f1f1f;border:1px solid #303030;border-radius:6px;padding:5px 9px;color:#E5E7EB;font-size:11.5px;outline:none;font-family:inherit;cursor:pointer;margin-left:6px}
+.fsel:hover{border-color:#F59E0B}
+.card{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;overflow:hidden}
+.rtbl{width:100%;border-collapse:collapse;font-size:12px}.rtbl th{padding:10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9CA3AF;border-bottom:1px solid #303030;background:#191919}.rtbl td{padding:9px 10px;border-bottom:1px solid #252525;vertical-align:top}
+.ev-row{cursor:default}
+.ev-act-C{color:#22C55E;font-weight:600}.ev-act-U{color:#F59E0B;font-weight:600}.ev-act-D{color:#EF4444;font-weight:600}
+.ev-diff{font-family:ui-monospace,monospace;font-size:11px;color:#9CA3AF;word-break:break-word}
+.ev-old{color:#EF4444;text-decoration:line-through;opacity:.7}
+.ev-new{color:#22C55E}
+.ev-blob{font-family:ui-monospace,monospace;font-size:10.5px;color:#9CA3AF;background:#161616;border:1px solid #262626;border-radius:4px;padding:6px 8px;margin-top:4px;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow:auto}
+.ev-blob-label{font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#6a6a6a;margin-top:4px}
+.tm{font-family:ui-monospace,monospace;font-size:11px;color:#6a6a6a;white-space:nowrap}
+.ent{display:inline-block;padding:2px 7px;border-radius:4px;background:#252525;color:#9CA3AF;font-size:10.5px;font-weight:600;font-family:ui-monospace,monospace}
+.ent.clickable{cursor:pointer}.ent.clickable:hover{background:#303030;color:#E5E7EB}
+.ent-gone{opacity:.55;font-style:italic}
+.act-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.b-c{background:rgba(34,197,94,.12);color:#22C55E}.b-u{background:rgba(245,158,11,.12);color:#F59E0B}.b-d{background:rgba(239,68,68,.12);color:#EF4444}
+.actor{color:#E5E7EB}
+.actor-email{color:#9CA3AF;font-family:ui-monospace,monospace;font-size:11px}
+.meta-toggle{display:inline-block;margin-left:6px;font-size:10px;color:#6a6a6a;cursor:pointer;user-select:none}
+.meta-toggle:hover{color:#F59E0B}
+.meta-row{font-family:ui-monospace,monospace;font-size:10.5px;color:#6a6a6a;background:#161616;border:1px solid #262626;border-radius:4px;padding:6px 10px;margin-top:6px;display:none}
+.meta-row.open{display:block}
+.meta-row .k{color:#9CA3AF;display:inline-block;width:90px}
+.schema-gap{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-left:2px solid #EF4444;padding:8px 12px;border-radius:6px;margin-bottom:10px;font-size:11px;color:#fca5a5;line-height:1.45;display:none}
+.schema-gap.show{display:block}
+</style></head><body>
+<div class="hd"><div><div class="ti">Audit Log</div><div class="sb" id="sub">—</div></div>
+<div class="ctr"><input class="srch" id="srch" placeholder="Search log…"/><button class="btn" onclick="exportCsv()">Export CSV</button></div></div>
+<div class="warning">&#128274; <strong>Append-only</strong> &mdash; entries cannot be edited or deleted. Every data change on this project is recorded for compliance and security review. Retained for 7 years.</div>
+<div class="schema-gap" id="schema-gap"></div>
+<div class="fbar" id="fbar"></div>
+<div class="card"><table class="rtbl"><thead><tr><th style="padding-left:16px;width:140px">Timestamp</th><th style="width:80px">Action</th><th style="width:140px">Entity</th><th style="width:180px">Actor</th><th>Change</th></tr></thead><tbody id="tb"></tbody></table></div>
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// SECTION: Audit Log
+// READ-ONLY, APPEND-ONLY — no outbound, no bulk, no save, no drawer-save.
+// Pattern #1 (normalize-in / emit-out): INGEST ONLY. No outbound shape exists.
+// Pattern #6 (consolidated JSON fallback): N/A — audit log is a relational
+//            table in Glide; there is no `auditLogJson` variant.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// esc() — Pattern #3. Audit entries contain arbitrary user-generated strings
+// including stored before/after snapshots of potentially any other entity's
+// fields. Every interpolation of payload-derived content MUST go through esc().
+function esc(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// ─── Action normalization ───
+// Accept "C"/"U"/"D" codes or full strings ("Created"/"Updated"/"Deleted"/
+// lowercase variants / "create"/"update"/"delete"). Unknown → "U" with warn.
+function normalizeAction(a) {
+  if (a == null) return 'U';
+  const s = String(a).trim().toUpperCase();
+  if (s === 'C' || s === 'CREATE' || s === 'CREATED') return 'C';
+  if (s === 'U' || s === 'UPDATE' || s === 'UPDATED') return 'U';
+  if (s === 'D' || s === 'DELETE' || s === 'DELETED') return 'D';
+  return 'U';
+}
+const actionLbl = { C:'Created', U:'Updated', D:'Deleted' };
+const actionCls = { C:'b-c',    U:'b-u',     D:'b-d' };
+
+// ─── Timestamp formatter (read-only, never mutates payload) ───
+const fmtTs = ts => {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  if (isNaN(d.getTime())) return String(ts); // preserve raw if unparseable
+  const now = new Date();
+  const diff = (now - d) / 86400000;
+  const tm = d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  if (diff < 1) return tm;
+  if (diff < 7) return d.toLocaleDateString('en-US',{weekday:'short'}) + ' ' + tm;
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' ' + tm;
+};
+
+// ─── Filter state + search ───
+let filter = 'all';      // all | C | U | D
+let actorFilter = 'all'; // all | <email>
+const expandedMeta = new Set(); // ids of rows with ip/ua metadata expanded
+
+// ─── Demo data (legacy shape: ts/user/field/old/new).
+// Pattern #1: kept internally as-is for UI continuity. Schema-shape entries
+// from the payload are normalized INTO a superset shape at ingest boundary. ───
+const events = [
+  {id:'AUD-1', ts:'2026-04-12T14:32:18', action:'U', entity:'Action Item',  entity_id:'AI-003',    actor_email:'lfeula@adrm-security.com', actor_name:'Louis Feula', field:'percent',       old:'65',                                     new:'71'},
+  {id:'AUD-2', ts:'2026-04-12T14:30:02', action:'C', entity:'Time Entry',   entity_id:'TE-042',    actor_email:'lfeula@adrm-security.com', actor_name:'Louis Feula', field:'created',       old:null,                                     new:'Camera programming · 2h'},
+  {id:'AUD-3', ts:'2026-04-11T09:45:10', action:'U', entity:'Risk',         entity_id:'RSK-001',   actor_email:'misgur@adrm-security.com', actor_name:'Matt Isgur',  field:'probability',   old:'High',                                   new:'Medium'},
+  {id:'AUD-4', ts:'2026-04-11T09:44:55', action:'U', entity:'Risk',         entity_id:'RSK-001',   actor_email:'misgur@adrm-security.com', actor_name:'Matt Isgur',  field:'status',        old:'Open',                                   new:'In Progress'},
+  {id:'AUD-5', ts:'2026-04-10T16:22:40', action:'C', entity:'Punch Item',   entity_id:'PN-005',    actor_email:'lfeula@adrm-security.com', actor_name:'Louis Feula', field:'created',       old:null,                                     new:'Secure cable tray on west wall'},
+  {id:'AUD-6', ts:'2026-04-10T11:08:12', action:'U', entity:'Deployment',   entity_id:'DA-012',    actor_email:'lfeula@adrm-security.com', actor_name:'Louis Feula', field:'step_complete', old:'false',                                  new:'true'},
+  {id:'AUD-7', ts:'2026-04-09T17:50:00', action:'D', entity:'Observation',  entity_id:'OB-002',    actor_email:'misgur@adrm-security.com', actor_name:'Matt Isgur',  field:'deleted',       old:'Conduit not routed to correct tray',     new:null},
+  {id:'AUD-8', ts:'2026-04-09T14:15:33', action:'U', entity:'Finance',      entity_id:'FI-002',    actor_email:'misgur@adrm-security.com', actor_name:'Matt Isgur',  field:'status',        old:'Draft',                                  new:'Proposal Sent'},
+  {id:'AUD-9', ts:'2026-04-08T10:22:11', action:'C', entity:'Observation',  entity_id:'OB-004',    actor_email:'lfeula@adrm-security.com', actor_name:'Louis Feula', field:'created',       old:null,                                     new:'Camera angle obstructed by tree'},
+  {id:'AUD-10',ts:'2026-04-07T08:14:20', action:'U', entity:'Material',     entity_id:'MT-002',    actor_email:'misgur@adrm-security.com', actor_name:'Matt Isgur',  field:'delivered',     old:'8',                                      new:'10'},
+  {id:'AUD-11',ts:'2026-04-05T16:03:55', action:'C', entity:'RFI',          entity_id:'RFI-001',   actor_email:'lfeula@adrm-security.com', actor_name:'Louis Feula', field:'created',       old:null,                                     new:'Clarify power circuit for rooftop cameras'},
+  {id:'AUD-12',ts:'2026-04-02T11:30:00', action:'U', entity:'Action Item',  entity_id:'AI-006',    actor_email:'misgur@adrm-security.com', actor_name:'Matt Isgur',  field:'percent',       old:'40',                                     new:'55'},
+  {id:'AUD-13',ts:'2026-03-28T14:18:42', action:'U', entity:'Project',      entity_id:'CORP-2025', actor_email:'misgur@adrm-security.com', actor_name:'Matt Isgur',  field:'status',        old:'Planning',                               new:'In Progress'},
+  {id:'AUD-14',ts:'2026-03-15T14:22:08', action:'U', entity:'Punch Item',   entity_id:'PN-004',    actor_email:'lfeula@adrm-security.com', actor_name:'Louis Feula', field:'status',        old:'Open',                                   new:'Closed'}
+];
+
+// ─── Ingest normalizer: turns schema-shape entries into internal superset.
+// Preserves before/after byte-identically when present (compliance fidelity).
+// If legacy field/old/new are present, uses those directly. Never throws. ───
+function normalizeEntry(e, idx) {
+  if (!e || typeof e !== 'object') return null;
+  // Accept both `at` (schema) and `ts` (legacy) for timestamp.
+  const ts    = e.at != null ? e.at : (e.ts != null ? e.ts : null);
+  const id    = String(e.id != null ? e.id : `tmp-aud-${idx}`);
+  const action = normalizeAction(e.action);
+  const entity    = e.entity != null ? String(e.entity) : '';
+  const entity_id = e.entity_id != null ? String(e.entity_id) :
+                    (e.entityRef != null ? String(e.entityRef) : '');
+  // Actor: schema uses actor_email; legacy demo uses `user` (display name).
+  // Pattern #4 pass-through. NEVER collapse missing actor to "System" — audit
+  // compliance requires verbatim attribution of missing data.
+  const actor_email = e.actor_email != null ? String(e.actor_email) : '';
+  const actor_name_raw = e.actor_name != null ? String(e.actor_name)
+                         : (e.user != null ? String(e.user) : '');
+  return {
+    id, ts, action,
+    entity, entity_id,
+    actor_email,
+    actor_name: actor_name_raw,
+    // Legacy field-level diff (preserve if present)
+    field: e.field != null ? String(e.field) : null,
+    old:   e.old   !== undefined ? e.old : null,
+    new:   e.new   !== undefined ? e.new : null,
+    // Schema-level snapshots (preserve BYTE-IDENTICAL per compliance)
+    before: e.before !== undefined ? e.before : undefined,
+    after:  e.after  !== undefined ? e.after  : undefined,
+    // Optional compliance metadata
+    ip_address: e.ip_address != null ? String(e.ip_address) : '',
+    user_agent: e.user_agent != null ? String(e.user_agent) : ''
+  };
+}
+
+// ═══ PAYLOAD INGESTION ═══
+// Reads window.__PAYLOAD__.audit_log if present. No auditLogJson fallback per
+// architecture (Pattern #6 N/A). Falls through to demo on empty/malformed.
+// Logs boot warning. Never throws. Preserves before/after fidelity verbatim.
+let __schemaGapNote = ''; // surfaced to UI banner if payload lacks before/after
+(function ingestPayload(){
+  try {
+    const P = window.__PAYLOAD__;
+    if (!P) return;
+    const expectedVersion = 1;
+    const actualVersion = P && P.meta ? P.meta.payload_version : null;
+    if (actualVersion != null && actualVersion !== expectedVersion) {
+      console.warn('[audit] payload v' + expectedVersion + ' expected, got v' + actualVersion + ' — rendering best-effort');
+    }
+    const raw = Array.isArray(P && P.audit_log) ? P.audit_log : null;
+    if (Array.isArray(raw) && raw.length) {
+      const norm = raw.map(normalizeEntry).filter(Boolean);
+      if (norm.length) {
+        events.length = 0;
+        norm.forEach(n => events.push(n));
+        // Compliance gap detection: schema says before/after snapshots should
+        // be present for updates/deletes, but the top-level payload schema
+        // (PAYLOAD-SCHEMA.md) does NOT currently define audit_log at all.
+        // Warn if not a single entry has before/after — likely a schema gap.
+        const anySnapshots = norm.some(n => n.before !== undefined || n.after !== undefined);
+        if (!anySnapshots) {
+          __schemaGapNote = 'Ingested audit entries do not include before/after state snapshots. Compliance audit logs typically require them for change tracking. Flagged as schema gap.';
+          console.warn('[audit] ' + __schemaGapNote);
+        }
+      }
+    }
+    console.warn('Payload ingestion active:', 'audit');
+  } catch (err) {
+    console.warn('[audit] payload ingestion failed, falling back to demo data:', err);
+  }
+})();
+
+// ═══ CROSS-SECTION EXPOSURE ═══
+// window.__AUDIT_LOG__ is read by future compliance reports and by the
+// "Changes to this entity" drawer tab. Exposed as a defensive copy snapshot.
+function __rebuildAuditLogGlobal() {
+  window.__AUDIT_LOG__ = events.map(e => ({ ...e }));
+}
+__rebuildAuditLogGlobal();
+
+// ─── Actor display resolver ───
+// Preference order:
+//   1. window.__contactByEmail[actor_email].name  (from Contacts section)
+//   2. actor_name (if provided verbatim in the payload)
+//   3. actor_email verbatim (render the email — do NOT collapse to "System")
+//   4. "(unknown actor)" italic — only if literally no identifying info
+function resolveActor(e) {
+  const byEmail = window.__contactByEmail || {};
+  if (e.actor_email) {
+    const key = e.actor_email.toLowerCase();
+    const match = byEmail[key];
+    if (match && match.name) return { name: match.name, email: e.actor_email, resolved: true };
+    if (e.actor_name)        return { name: e.actor_name, email: e.actor_email, resolved: false };
+    return { name: e.actor_email, email: e.actor_email, resolved: false, isEmail: true };
+  }
+  if (e.actor_name) return { name: e.actor_name, email: '', resolved: false };
+  return { name: '(unknown actor)', email: '', resolved: false, unknown: true };
+}
+
+// ─── Entity → section route map for subtle "view current →" deep link.
+// UX consideration: we don't reliably know if the entity still exists in
+// the current project (it may have been deleted, and that's actually a
+// frequent reason the audit entry exists). Target sections handle "unknown
+// entity" gracefully. Clicking is advisory. ───
+const ENTITY_ROUTES = {
+  'Action Item':'actions','Task':'actions','Milestone':'schedule',
+  'Risk':'risks','RFI':'rfi','Punch Item':'punch','Observation':'observations',
+  'Material':'materials','Deployment':'deployment','Finance':'finance',
+  'Contact':'contacts','Meeting':'meetings','Time Entry':'time'
+};
+
+// ─── Diff renderer. Three shapes supported: ───
+//   1. Legacy field-level:  field + old + new  →  inline diff
+//   2. Schema snapshots:    before + after     →  key-diff if both are
+//                                                 objects; otherwise
+//                                                 preserved blobs
+//   3. Create-only:         after (no before)  →  greened "new" blob
+//   4. Delete-only:         before (no after)  →  struck-through "old" blob
+//
+// XSS invariant: EVERY interpolation of payload-derived content is esc()'d,
+// including keys inside before/after objects (attacker may put HTML in a
+// field name).
+function renderDiff(e) {
+  // Case 1: legacy field-level diff
+  if (e.field != null) {
+    if (e.action === 'C') return `<span class="ev-new">${esc(e.new != null ? e.new : '')}</span>`;
+    if (e.action === 'D') return `<span class="ev-old">${esc(e.old != null ? e.old : '')}</span>`;
+    return `<span class="ev-diff"><strong style="color:#9CA3AF">${esc(e.field)}</strong>: <span class="ev-old">${esc(e.old != null ? e.old : '\u2205')}</span> \u2192 <span class="ev-new">${esc(e.new != null ? e.new : '\u2205')}</span></span>`;
+  }
+  // Case 2: schema before/after
+  const hasBefore = e.before !== undefined && e.before !== null;
+  const hasAfter  = e.after  !== undefined && e.after  !== null;
+  if (hasBefore && hasAfter && typeof e.before === 'object' && typeof e.after === 'object'
+      && !Array.isArray(e.before) && !Array.isArray(e.after)) {
+    // Field-level diff synthesized from object snapshots
+    const keys = Array.from(new Set([...Object.keys(e.before), ...Object.keys(e.after)]));
+    const changed = keys.filter(k => JSON.stringify(e.before[k]) !== JSON.stringify(e.after[k]));
+    if (!changed.length) {
+      return `<span class="ev-diff" style="font-style:italic;color:#6a6a6a">(no fields changed)</span>`;
+    }
+    return changed.map(k => {
+      const b = e.before[k], a = e.after[k];
+      const bs = b == null ? '\u2205' : (typeof b === 'object' ? JSON.stringify(b) : String(b));
+      const as = a == null ? '\u2205' : (typeof a === 'object' ? JSON.stringify(a) : String(a));
+      return `<span class="ev-diff"><strong style="color:#9CA3AF">${esc(k)}</strong>: <span class="ev-old">${esc(bs)}</span> \u2192 <span class="ev-new">${esc(as)}</span></span>`;
+    }).join('<br/>');
+  }
+  // Case 3: Create-only
+  if (!hasBefore && hasAfter) {
+    const txt = typeof e.after === 'object' ? JSON.stringify(e.after, null, 2) : String(e.after);
+    return `<div class="ev-blob-label">After</div><div class="ev-blob">${esc(txt)}</div>`;
+  }
+  // Case 4: Delete-only
+  if (hasBefore && !hasAfter) {
+    const txt = typeof e.before === 'object' ? JSON.stringify(e.before, null, 2) : String(e.before);
+    return `<div class="ev-blob-label">Before</div><div class="ev-blob ev-old" style="text-decoration:none">${esc(txt)}</div>`;
+  }
+  // Case 5: both present but one is primitive / array — show raw pair
+  if (hasBefore && hasAfter) {
+    const bs = typeof e.before === 'object' ? JSON.stringify(e.before, null, 2) : String(e.before);
+    const as = typeof e.after  === 'object' ? JSON.stringify(e.after,  null, 2) : String(e.after);
+    return `<div class="ev-blob-label">Before</div><div class="ev-blob">${esc(bs)}</div><div class="ev-blob-label">After</div><div class="ev-blob">${esc(as)}</div>`;
+  }
+  return `<span class="ev-diff" style="color:#6a6a6a;font-style:italic">(no change details recorded)</span>`;
+}
+
+// ─── Unique actor set for filter dropdown ───
+function uniqueActors() {
+  const seen = new Map();
+  events.forEach(e => {
+    const key = e.actor_email || e.actor_name || '';
+    if (!key) return;
+    if (!seen.has(key)) {
+      const info = resolveActor(e);
+      seen.set(key, info.name);
+    }
+  });
+  return Array.from(seen.entries()).sort((a,b) => a[1].localeCompare(b[1]));
+}
+
+function filtered() {
+  const q = (document.getElementById('srch')?.value || '').toLowerCase();
+  return events.filter(e => {
+    if (filter !== 'all' && e.action !== filter) return false;
+    if (actorFilter !== 'all') {
+      const key = e.actor_email || e.actor_name || '';
+      if (key !== actorFilter) return false;
+    }
+    if (!q) return true;
+    // Search across all relevant text (entity, id, actor, field, old, new, before, after stringified)
+    const hay = [
+      e.entity, e.entity_id, e.actor_email, e.actor_name, e.field,
+      e.old, e.new,
+      e.before !== undefined ? JSON.stringify(e.before) : '',
+      e.after  !== undefined ? JSON.stringify(e.after)  : '',
+      e.ip_address, e.ts
+    ].filter(Boolean).join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+}
+
+function renderAll() {
+  // Schema gap banner
+  const gap = document.getElementById('schema-gap');
+  if (gap) {
+    if (__schemaGapNote) { gap.textContent = '\u26a0 ' + __schemaGapNote; gap.classList.add('show'); }
+    else gap.classList.remove('show');
+  }
+
+  // Filter bar
+  const counts = {
+    all: events.length,
+    C: events.filter(e => e.action === 'C').length,
+    U: events.filter(e => e.action === 'U').length,
+    D: events.filter(e => e.action === 'D').length
+  };
+  const actors = uniqueActors();
+  const actorOpts = ['<option value="all">All actors</option>']
+    .concat(actors.map(([k,name]) => `<option value="${esc(k)}"${actorFilter===k?' selected':''}>${esc(name)}</option>`))
+    .join('');
+  document.getElementById('fbar').innerHTML =
+    `<span style="font-size:11px;color:#6a6a6a;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-right:4px">Filter</span>` +
+    [['all','All'],['C','Created'],['U','Updated'],['D','Deleted']].map(([k,l]) =>
+      `<span class="fchip${filter===k?' on':''}" data-f="${esc(k)}">${esc(l)} (${counts[k]})</span>`
+    ).join('') +
+    `<select class="fsel" id="actor-filter">${actorOpts}</select>`;
+  document.querySelectorAll('.fchip').forEach(c => c.onclick = () => { filter = c.dataset.f; renderAll(); });
+  const asel = document.getElementById('actor-filter');
+  if (asel) asel.onchange = () => { actorFilter = asel.value; renderAll(); };
+
+  // Subtitle
+  document.getElementById('sub').textContent = events.length + ' events logged \u00b7 append-only for compliance';
+
+  // Rows
+  const rows = filtered();
+  document.getElementById('tb').innerHTML = rows.length ? rows.map(e => {
+    const actor = resolveActor(e);
+    const actorCell = actor.isEmail
+      ? `<span class="actor-email">${esc(actor.email)}</span>`
+      : (actor.unknown
+          ? `<span class="actor-email" style="font-style:italic">${esc(actor.name)}</span>`
+          : `<span class="actor">${esc(actor.name)}</span>${actor.email?`<div class="actor-email">${esc(actor.email)}</div>`:''}`);
+
+    const route = ENTITY_ROUTES[e.entity];
+    const entIdHtml = e.entity_id
+      ? (route
+          ? `<span class="ent clickable" title="View current state in ${esc(route)} section \u2192" onclick="__navEnt(${JSON.stringify(route)},${JSON.stringify(String(e.entity_id))})">${esc(e.entity_id)}</span>`
+          : `<span class="ent">${esc(e.entity_id)}</span>`)
+      : '';
+
+    const hasMeta = !!(e.ip_address || e.user_agent);
+    const metaToggle = hasMeta
+      ? `<span class="meta-toggle" onclick="__toggleMeta(${JSON.stringify(String(e.id))})" title="Show IP / user agent">\u24d8</span>`
+      : '';
+    const metaOpen = expandedMeta.has(String(e.id));
+    const metaRow = hasMeta ? `<div class="meta-row${metaOpen?' open':''}" id="meta-${esc(e.id)}">
+      ${e.ip_address ? `<div><span class="k">IP Address</span>${esc(e.ip_address)}</div>` : ''}
+      ${e.user_agent ? `<div><span class="k">User Agent</span>${esc(e.user_agent)}</div>` : ''}
+    </div>` : '';
+
+    return `<tr class="ev-row" data-id="${esc(e.id)}">
+      <td style="padding-left:16px"><div class="tm">${esc(fmtTs(e.ts))}</div></td>
+      <td><span class="act-badge ${actionCls[e.action]}">${esc(actionLbl[e.action])}</span></td>
+      <td>${esc(e.entity)} ${entIdHtml}</td>
+      <td>${actorCell}${metaToggle}</td>
+      <td>${renderDiff(e)}${metaRow}</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="5" style="padding:24px;text-align:center;color:#9CA3AF">No audit entries match.</td></tr>';
+}
+
+// ─── Cross-section deep link (UX consideration — target section may or may
+// not have the entity; each section handles unknown-entity gracefully). ───
+function __navEnt(section, entityId) {
+  try { parent.postMessage({ type:'navigate', section: section, entityId: entityId }, '*'); }
+  catch (err) { console.warn('[audit] navigate postMessage failed:', err); }
+}
+window.__navEnt = __navEnt;
+
+function __toggleMeta(id) {
+  const sid = String(id);
+  if (expandedMeta.has(sid)) expandedMeta.delete(sid); else expandedMeta.add(sid);
+  const el = document.getElementById('meta-' + sid);
+  if (el) el.classList.toggle('open');
+}
+window.__toggleMeta = __toggleMeta;
+
+function exportCsv() {
+  // Compliance export — raw values. Preserves before/after as JSON strings.
+  const headers = ['id','timestamp','action','entity','entity_id','actor_email','actor_name','field','old','new','before','after','ip_address','user_agent'];
+  const quote = v => {
+    if (v == null) return '';
+    const s = typeof v === 'object' ? JSON.stringify(v) : String(v);
+    return '"' + s.replace(/"/g, '""') + '"';
+  };
+  const lines = [headers.join(',')].concat(
+    events.map(e => [
+      e.id, e.ts, actionLbl[e.action], e.entity, e.entity_id, e.actor_email, e.actor_name,
+      e.field, e.old, e.new,
+      e.before !== undefined ? e.before : '',
+      e.after  !== undefined ? e.after  : '',
+      e.ip_address, e.user_agent
+    ].map(quote).join(','))
+  );
+  try {
+    const blob = new Blob([lines.join('\n')], {type:'text/csv'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = 'audit-log.csv'; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    try { parent.postMessage({type:'toast',msg:'Audit log exported',kind:'success'},'*'); } catch(_){}
+  } catch (err) { console.warn('[audit] csv export failed:', err); }
+}
+window.exportCsv = exportCsv;
+
+document.getElementById('srch').oninput = renderAll;
+renderAll();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SMOKE TESTS (Pattern #5)
+// window.__AUDIT_SMOKE__() — returns pass/fail map. jsdom-safe.
+// Covers: ingestion defense, action normalization, Pattern #3 XSS invariants,
+// Pattern #4 actor resolution (never collapses to "System"), Pattern #7
+// field exposure (before/after/ip_address/user_agent), Pattern #2 string ID
+// safety, before/after byte-identical preservation, diff rendering cases,
+// deep-link messaging, filter/search behavior, cross-section global exposure.
+// ═══════════════════════════════════════════════════════════════════════════
+window.__AUDIT_SMOKE__ = function(){
+  const results = {};
+  const run = (name, fn) => { try { results[name] = fn() ? 'PASS' : 'FAIL'; } catch(e) { results[name] = 'THROW: '+e.message; } };
+  const snapshot = () => JSON.parse(JSON.stringify(events));
+  const restore  = snap => { events.length = 0; snap.forEach(x => events.push(x)); __rebuildAuditLogGlobal(); };
+  const orig = snapshot();
+  const origContactMap = window.__contactByEmail;
+
+  // Pure-function ingestion mirror
+  const ingestOnce = (P) => {
+    const raw = Array.isArray(P && P.audit_log) ? P.audit_log : null;
+    if (!Array.isArray(raw) || !raw.length) return null;
+    return raw.map(normalizeEntry).filter(Boolean);
+  };
+
+  // ── INGESTION: defensive handling ──
+  run('ingest_null_payload',            () => ingestOnce(null) === null);
+  run('ingest_undefined_payload',       () => ingestOnce(undefined) === null);
+  run('ingest_missing_audit_log_field', () => ingestOnce({ meta:{payload_version:1} }) === null);
+  run('ingest_malformed_string',        () => ingestOnce({ audit_log:'nope' }) === null);
+  run('ingest_malformed_number',        () => ingestOnce({ audit_log:42 }) === null);
+  run('ingest_malformed_object',        () => ingestOnce({ audit_log:{} }) === null);
+  run('ingest_empty_array_keeps_demo',  () => ingestOnce({ audit_log:[] }) === null);
+  run('ingest_nulls_in_array_filtered', () => {
+    const n = ingestOnce({ audit_log:[null, undefined, {id:'X',action:'U',at:'2026-01-01'}] });
+    return n && n.length === 1 && n[0].id === 'X';
+  });
+  run('ingest_primitives_in_array_filtered', () => {
+    const n = ingestOnce({ audit_log:[1, 'nope', true, {id:'Y',action:'C',at:'2026-01-01'}] });
+    return n && n.length === 1 && n[0].id === 'Y';
+  });
+
+  // ── Pattern #2: string IDs ──
+  run('string_id_preserved_verbatim', () => {
+    const n = ingestOnce({ audit_log:[{id:'AUD-999',action:'U',at:'2026-01-01'}] });
+    return n[0].id === 'AUD-999' && typeof n[0].id === 'string';
+  });
+  run('missing_id_gets_tmp_prefix', () => {
+    const n = ingestOnce({ audit_log:[{action:'U',at:'2026-01-01'}] });
+    return typeof n[0].id === 'string' && n[0].id.startsWith('tmp-aud-');
+  });
+  run('numeric_id_coerced_to_string', () => {
+    const n = ingestOnce({ audit_log:[{id:42,action:'U',at:'2026-01-01'}] });
+    return n[0].id === '42' && typeof n[0].id === 'string';
+  });
+
+  // ── Action normalization ──
+  run('action_code_C_accepted',          () => normalizeAction('C') === 'C');
+  run('action_code_U_accepted',          () => normalizeAction('U') === 'U');
+  run('action_code_D_accepted',          () => normalizeAction('D') === 'D');
+  run('action_full_Created_accepted',    () => normalizeAction('Created') === 'C');
+  run('action_full_Updated_accepted',    () => normalizeAction('Updated') === 'U');
+  run('action_full_Deleted_accepted',    () => normalizeAction('Deleted') === 'D');
+  run('action_lowercase_accepted',       () => normalizeAction('updated') === 'U');
+  run('action_verb_create_accepted',     () => normalizeAction('create') === 'C');
+  run('action_unknown_defaults_to_U',    () => normalizeAction('FLURGLE') === 'U');
+  run('action_null_defaults_to_U',       () => normalizeAction(null) === 'U');
+
+  // ── Pattern #3: esc() / XSS invariants ──
+  run('esc_escapes_lt_gt',            () => esc('<script>') === '&lt;script&gt;');
+  run('esc_escapes_quotes',           () => esc('a"b\'c') === 'a&quot;b&#39;c');
+  run('esc_escapes_amp_first',        () => esc('&amp;') === '&amp;amp;');
+  run('esc_null_returns_empty_string',() => esc(null) === '');
+  run('esc_undefined_returns_empty',  () => esc(undefined) === '');
+  run('esc_numbers_coerced_safely',   () => esc(42) === '42');
+  run('xss_in_entity_id_escaped_in_render', () => {
+    restore([{id:'X',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'<img onerror=alert(1)>',actor_email:'x@x.com',actor_name:'X',field:'f',old:'a',new:'b'}]);
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    return !html.includes('<img onerror') && html.includes('&lt;img');
+  });
+  run('xss_in_before_object_key_escaped', () => {
+    restore([{id:'X',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'Y',actor_email:'x@x.com',actor_name:'X',before:{'<script>':'a'},after:{'<script>':'b'}}]);
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    return !html.includes('<script>') && html.includes('&lt;script&gt;');
+  });
+  run('xss_in_before_string_blob_escaped', () => {
+    restore([{id:'X',action:'D',ts:'2026-01-01',entity:'Risk',entity_id:'Y',actor_email:'x@x.com',actor_name:'X',before:'<img onerror=x>'}]);
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    return !html.includes('<img onerror=x>') && html.includes('&lt;img');
+  });
+  run('xss_in_actor_name_escaped', () => {
+    restore([{id:'X',action:'C',ts:'2026-01-01',entity:'Risk',entity_id:'Y',actor_email:'x@x.com',actor_name:'<b>evil</b>',field:'f',old:null,new:'ok'}]);
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    return !html.includes('<b>evil</b>') && html.includes('&lt;b&gt;evil');
+  });
+
+  // ── Pattern #4: actor resolution (NEVER collapses to "System") ──
+  run('actor_resolves_via_contactByEmail', () => {
+    window.__contactByEmail = { 'jane@adrm-security.com': { name:'Jane Carter', id:'CON-1' } };
+    const a = resolveActor({ actor_email:'jane@adrm-security.com' });
+    return a.name === 'Jane Carter' && a.resolved === true;
+  });
+  run('actor_case_insensitive_email_lookup', () => {
+    window.__contactByEmail = { 'mixed@case.com': { name:'Mixed', id:'CON-2' } };
+    const a = resolveActor({ actor_email:'MIXED@CASE.COM' });
+    return a.name === 'Mixed';
+  });
+  run('actor_unknown_email_renders_email_verbatim_NOT_System', () => {
+    window.__contactByEmail = {};
+    const a = resolveActor({ actor_email:'ghost@nowhere.com' });
+    return a.name === 'ghost@nowhere.com' && a.name !== 'System' && a.isEmail === true;
+  });
+  run('actor_unknown_email_with_actor_name_prefers_name', () => {
+    window.__contactByEmail = {};
+    const a = resolveActor({ actor_email:'x@x.com', actor_name:'Former Employee' });
+    return a.name === 'Former Employee' && a.email === 'x@x.com';
+  });
+  run('actor_no_email_no_name_falls_to_unknown_NOT_System', () => {
+    const a = resolveActor({});
+    return a.unknown === true && a.name !== 'System';
+  });
+  run('actor_from_legacy_user_field_mapped', () => {
+    const n = ingestOnce({ audit_log:[{id:'X',action:'U',at:'2026-01-01',user:'Legacy Name'}] });
+    return n[0].actor_name === 'Legacy Name';
+  });
+
+  // ── Pattern #7: render or expose all schema fields ──
+  run('ip_address_preserved_on_ingest', () => {
+    const n = ingestOnce({ audit_log:[{id:'X',action:'U',at:'2026-01-01',ip_address:'10.0.0.1'}] });
+    return n[0].ip_address === '10.0.0.1';
+  });
+  run('user_agent_preserved_on_ingest', () => {
+    const n = ingestOnce({ audit_log:[{id:'X',action:'U',at:'2026-01-01',user_agent:'Mozilla/5.0'}] });
+    return n[0].user_agent === 'Mozilla/5.0';
+  });
+  run('ip_and_ua_surface_in_dom_when_present', () => {
+    restore([{id:'X',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'Y',actor_email:'x@x.com',actor_name:'X',field:'f',old:'a',new:'b',ip_address:'10.0.0.1',user_agent:'UA/1.0'}]);
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    return html.includes('10.0.0.1') && html.includes('UA/1.0') && html.includes('meta-row');
+  });
+  run('meta_toggle_absent_when_no_metadata', () => {
+    restore([{id:'X',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'Y',actor_email:'x@x.com',actor_name:'X',field:'f',old:'a',new:'b'}]);
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    return !html.includes('meta-toggle');
+  });
+
+  // ── before/after preservation (compliance fidelity) ──
+  run('before_object_preserved_byte_identical', () => {
+    const sample = {status:'Open',score:12,tags:['a','b']};
+    const n = ingestOnce({ audit_log:[{id:'X',action:'U',at:'2026-01-01',before:sample,after:sample}] });
+    return JSON.stringify(n[0].before) === JSON.stringify(sample)
+        && JSON.stringify(n[0].after)  === JSON.stringify(sample);
+  });
+  run('before_string_preserved_raw', () => {
+    const n = ingestOnce({ audit_log:[{id:'X',action:'D',at:'2026-01-01',before:'raw snapshot text'}] });
+    return n[0].before === 'raw snapshot text' && n[0].after === undefined;
+  });
+  run('after_only_means_create', () => {
+    const n = ingestOnce({ audit_log:[{id:'X',action:'C',at:'2026-01-01',after:{x:1}}] });
+    return n[0].before === undefined && JSON.stringify(n[0].after) === '{"x":1}';
+  });
+  run('diff_renders_before_after_key_diff', () => {
+    restore([{id:'X',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'RK-1',actor_email:'x@x.com',actor_name:'X',before:{status:'Open',score:5},after:{status:'Closed',score:5}}]);
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    // Only `status` changed; score unchanged so shouldn't appear as changed
+    return html.includes('status') && html.includes('Open') && html.includes('Closed');
+  });
+  run('diff_renders_no_change_when_before_equals_after', () => {
+    restore([{id:'X',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'RK-1',actor_email:'x@x.com',actor_name:'X',before:{a:1},after:{a:1}}]);
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    return html.includes('no fields changed');
+  });
+  run('diff_renders_delete_snapshot', () => {
+    restore([{id:'X',action:'D',ts:'2026-01-01',entity:'Risk',entity_id:'RK-1',actor_email:'x@x.com',actor_name:'X',before:{t:'doomed'}}]);
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    return html.includes('Before') && html.includes('doomed');
+  });
+  run('diff_renders_create_snapshot', () => {
+    restore([{id:'X',action:'C',ts:'2026-01-01',entity:'Risk',entity_id:'RK-1',actor_email:'x@x.com',actor_name:'X',after:{t:'newborn'}}]);
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    return html.includes('After') && html.includes('newborn');
+  });
+  run('diff_falls_back_to_legacy_field_level', () => {
+    restore([{id:'X',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'RK-1',actor_email:'x@x.com',actor_name:'X',field:'status',old:'Open',new:'Closed'}]);
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    return html.includes('status') && html.includes('Open') && html.includes('Closed') && html.includes('ev-diff');
+  });
+
+  // ── Filter / search ──
+  run('filter_by_action_U', () => {
+    restore([
+      {id:'1',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'RK-1',actor_email:'a@x.com',actor_name:'A',field:'s',old:'o',new:'n'},
+      {id:'2',action:'C',ts:'2026-01-02',entity:'Risk',entity_id:'RK-2',actor_email:'a@x.com',actor_name:'A',field:'s',old:null,new:'n'}
+    ]);
+    filter = 'U'; const r = filtered(); filter = 'all';
+    return r.length === 1 && r[0].id === '1';
+  });
+  run('filter_by_actor_scopes_to_email', () => {
+    restore([
+      {id:'1',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'RK-1',actor_email:'a@x.com',actor_name:'A',field:'s',old:'o',new:'n'},
+      {id:'2',action:'U',ts:'2026-01-02',entity:'Risk',entity_id:'RK-2',actor_email:'b@x.com',actor_name:'B',field:'s',old:'o',new:'n'}
+    ]);
+    actorFilter = 'a@x.com'; const r = filtered(); actorFilter = 'all';
+    return r.length === 1 && r[0].id === '1';
+  });
+  run('search_matches_entity_id', () => {
+    restore([
+      {id:'1',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'RK-WATER',actor_email:'a@x.com',actor_name:'A',field:'s',old:'o',new:'n'},
+      {id:'2',action:'U',ts:'2026-01-02',entity:'Risk',entity_id:'RK-FIRE', actor_email:'a@x.com',actor_name:'A',field:'s',old:'o',new:'n'}
+    ]);
+    const srch = document.getElementById('srch'); srch.value = 'water';
+    const r = filtered(); srch.value = '';
+    return r.length === 1 && r[0].id === '1';
+  });
+  run('search_matches_inside_before_after', () => {
+    restore([
+      {id:'1',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'X',actor_email:'a@x.com',actor_name:'A',before:{status:'NEEDLE'},after:{status:'haystack'}},
+      {id:'2',action:'U',ts:'2026-01-02',entity:'Risk',entity_id:'Y',actor_email:'a@x.com',actor_name:'A',before:{status:'aaa'},after:{status:'bbb'}}
+    ]);
+    const srch = document.getElementById('srch'); srch.value = 'needle';
+    const r = filtered(); srch.value = '';
+    return r.length === 1 && r[0].id === '1';
+  });
+  run('empty_filter_result_renders_message', () => {
+    restore([{id:'1',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'Y',actor_email:'a@x.com',actor_name:'A',field:'s',old:'o',new:'n'}]);
+    const srch = document.getElementById('srch'); srch.value = 'zzznomatchzzz';
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    srch.value = ''; renderAll();
+    return html.includes('No audit entries match');
+  });
+
+  // ── Cross-section global exposure ──
+  run('AUDIT_LOG_global_exposed_after_ingest', () => {
+    restore([{id:'1',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'RK-1',actor_email:'a@x.com',actor_name:'A',field:'s',old:'o',new:'n'}]);
+    return Array.isArray(window.__AUDIT_LOG__) && window.__AUDIT_LOG__.length === 1 && window.__AUDIT_LOG__[0].id === '1';
+  });
+  run('AUDIT_LOG_global_is_defensive_copy', () => {
+    restore([{id:'1',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'RK-1',actor_email:'a@x.com',actor_name:'A',field:'s',old:'o',new:'n'}]);
+    window.__AUDIT_LOG__[0].id = 'MUTATED';
+    return events[0].id === '1'; // internal untouched
+  });
+
+  // ── Stale entity rendering (doesn't crash) ──
+  run('stale_entity_id_renders_without_crash', () => {
+    restore([{id:'1',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'RK-DELETED',actor_email:'a@x.com',actor_name:'A',field:'s',old:'o',new:'n'}]);
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    return html.includes('RK-DELETED');
+  });
+
+  // ── Deep link receiver (postMessage) ──
+  run('deeplink_posts_navigate_message', () => {
+    const received = [];
+    const orig = parent.postMessage;
+    try {
+      parent.postMessage = function(msg, target){ received.push({msg, target}); };
+      __navEnt('risks', 'RK-1');
+      return received.length === 1
+          && received[0].msg.type === 'navigate'
+          && received[0].msg.section === 'risks'
+          && received[0].msg.entityId === 'RK-1';
+    } finally {
+      parent.postMessage = orig;
+    }
+  });
+  run('clickable_entity_pill_for_known_route', () => {
+    restore([{id:'1',action:'U',ts:'2026-01-01',entity:'Risk',entity_id:'RK-1',actor_email:'a@x.com',actor_name:'A',field:'s',old:'o',new:'n'}]);
+    renderAll();
+    return document.querySelector('.ent.clickable') !== null;
+  });
+  run('no_clickable_pill_for_unknown_entity_type', () => {
+    restore([{id:'1',action:'U',ts:'2026-01-01',entity:'FluxCapacitor',entity_id:'FC-1',actor_email:'a@x.com',actor_name:'A',field:'s',old:'o',new:'n'}]);
+    renderAll();
+    const pills = document.querySelectorAll('.ent');
+    return pills.length === 1 && !pills[0].classList.contains('clickable');
+  });
+
+  // ── Timestamp formatting (preserves raw for unparseable) ──
+  run('ts_unparseable_preserved_verbatim', () => fmtTs('not a date') === 'not a date');
+  run('ts_null_returns_dash',              () => fmtTs(null) === '\u2014');
+
+  // ── Read-only invariant: no outbound save / bulk / delete functions exist ──
+  run('no_save_function_exposed',   () => typeof window.__AUDIT_SAVE__ === 'undefined');
+  run('no_delete_function_exposed', () => typeof window.__AUDIT_DELETE__ === 'undefined');
+  run('no_bulk_function_exposed',   () => typeof window.__AUDIT_BULK__ === 'undefined');
+  run('no_buildSavePayload_defined',() => typeof window.buildSavePayload === 'undefined' ||
+                                          typeof buildSavePayload === 'undefined');
+
+  // ── Version mismatch does not break rendering ──
+  run('version_mismatch_still_ingests', () => {
+    const P = { meta:{payload_version:99}, audit_log:[{id:'V',action:'U',at:'2026-01-01',entity:'Risk',entity_id:'Y'}] };
+    const n = ingestOnce(P);
+    return n && n.length === 1 && n[0].id === 'V';
+  });
+
+  // ── Round-trip stability: ingest → re-ingest from internal = identical ──
+  run('roundtrip_stability', () => {
+    const P1 = { audit_log:[{id:'R',action:'U',at:'2026-01-01',entity:'Risk',entity_id:'RK-1',actor_email:'a@x.com',before:{x:1},after:{x:2},ip_address:'10.0.0.1'}] };
+    const n1 = ingestOnce(P1);
+    const P2 = { audit_log:n1.map(e => ({
+      id:e.id, action:e.action, at:e.ts, entity:e.entity, entity_id:e.entity_id,
+      actor_email:e.actor_email, before:e.before, after:e.after, ip_address:e.ip_address
+    })) };
+    const n2 = ingestOnce(P2);
+    return JSON.stringify(n1[0].before) === JSON.stringify(n2[0].before)
+        && JSON.stringify(n1[0].after)  === JSON.stringify(n2[0].after)
+        && n1[0].id === n2[0].id
+        && n1[0].ip_address === n2[0].ip_address;
+  });
+
+  // ── Schema gap detection banner fires when before/after absent ──
+  run('schema_gap_flag_set_when_no_snapshots', () => {
+    // Simulate an ingest where nothing has before/after
+    const n = ingestOnce({ audit_log:[{id:'A',action:'U',at:'2026-01-01',field:'x',old:'a',new:'b'}] });
+    const anySnap = n.some(e => e.before !== undefined || e.after !== undefined);
+    return anySnap === false;
+  });
+
+  // ── Restore ──
+  window.__contactByEmail = origContactMap;
+  restore(orig);
+  renderAll();
+
+  console.table(results);
+  const failed = Object.entries(results).filter(([,v]) => v !== 'PASS');
+  if (failed.length) console.warn('[audit] smoke FAIL:', failed);
+  else console.log('[audit] all smoke PASS (' + Object.keys(results).length + ')');
+  return results;
+};
+</script></body></html>

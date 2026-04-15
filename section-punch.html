@@ -1,0 +1,522 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Punch List</title><style>
+*{box-sizing:border-box;margin:0;padding:0}body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;padding:20px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.ti{font-size:18px;font-weight:700;color:#fff}.sb{font-size:12px;color:#9CA3AF;margin-top:3px}.ctr{display:flex;gap:8px;align-items:center}
+.srch{background:#1f1f1f;border:1px solid #303030;border-radius:6px;padding:7px 11px;color:#E5E7EB;font-size:12.5px;outline:none;width:220px;font-family:inherit}
+.btn{padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #303030;background:#1f1f1f;color:#E5E7EB;cursor:pointer;font-family:inherit}.btn:hover{background:#252525}.bp{background:#3c4756;color:#fff;border-color:#4a5666}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.kpi{background:#1f1f1f;border:1px solid #2a2a2a;border-left:3px solid;border-radius:8px;padding:12px 14px}
+.kl{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:5px}.kv{font-size:22px;font-weight:800}.kc{font-size:11px;color:#9CA3AF;margin-top:3px}
+.card{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;overflow:hidden}
+.rtbl{width:100%;border-collapse:collapse;font-size:12.5px}.rtbl th{padding:10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9CA3AF;border-bottom:1px solid #303030;background:#191919}.rtbl td{padding:11px 10px;border-bottom:1px solid #2a2a2a}.rtbl tr[data-id]{cursor:pointer}.rtbl tr[data-id]:hover td{background:#252525}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}.pill::before{content:'';width:6px;height:6px;border-radius:50%}
+.p-o{background:rgba(239,68,68,.14);color:#ff6b6b}.p-o::before{background:#EF4444}.p-p{background:rgba(245,158,11,.14);color:#F59E0B}.p-p::before{background:#F59E0B}.p-c{background:rgba(34,197,94,.14);color:#22C55E}.p-c::before{background:#22C55E}
+.dbg{position:fixed;inset:0;background:rgba(10,10,10,.7);z-index:100;display:none}.dbg.on{display:block}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(480px,92vw);background:#1a1a1a;border-left:1px solid #303030;z-index:101;display:none;flex-direction:column}.dr.on{display:flex}
+.drh{padding:18px 22px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between}.drt{font-size:16px;font-weight:700;color:#fff}.drx{width:28px;height:28px;border-radius:6px;border:1px solid #303030;background:#252525;color:#9CA3AF;cursor:pointer;font-size:15px}
+.drb{flex:1;overflow-y:auto;padding:20px 22px}.drf{padding:14px 22px;border-top:1px solid #2a2a2a;background:#191919;display:flex;gap:8px}
+.f{margin-bottom:14px}.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px}
+.fi,.fs,.ft{width:100%;background:#161616;border:1px solid #303030;border-radius:7px;padding:9px 11px;color:#E5E7EB;font-size:13px;font-family:inherit;outline:none}.ft{resize:vertical;min-height:64px}
+.tbtn{padding:6px 10px;border-radius:5px;border:1px solid #303030;background:transparent;color:#EF4444;cursor:pointer;font-size:12px;font-weight:600}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.bulk-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:#1a1a1a;border-top:2px solid #F59E0B;padding:10px 18px;z-index:10;font-size:12.5px;align-items:center;gap:12px;box-shadow:0 -8px 20px rgba(0,0,0,.5);margin:0 -20px -20px}
+.bulk-bar.show{display:flex}
+.bulk-count{background:#F59E0B;color:#111;padding:3px 10px;border-radius:12px;font-weight:700;font-size:11.5px}
+.row-check{display:inline-flex;width:16px;height:16px;border:1.5px solid #4a4a4a;border-radius:3px;background:#181818;cursor:pointer;flex-shrink:0;align-items:center;justify-content:center;margin-right:8px;vertical-align:middle}
+.row-check.on{background:#F59E0B;border-color:#F59E0B}
+.row-check.on::after{content:"✓";color:#111;font-size:11px;font-weight:900}
+</style></head><body>
+<div class="hd"><div><div class="ti">Punch List</div><div class="sb" id="sub">Items requiring resolution before close-out</div></div>
+<div class="ctr"><input class="srch" id="srch" placeholder="Search punch items…"/><select class="srch" id="fstatus" style="width:140px"><option value="">All statuses</option></select><button class="btn">Export</button><button class="btn" onclick="bulkImport()">Import</button><button class="btn bp" onclick="openD(null)">+ Punch Item</button></div></div>
+<div class="kpis">
+<div class="kpi" style="border-left-color:#EF4444"><div class="kl">Open</div><div class="kv" style="color:#EF4444" id="k-o">0</div><div class="kc">unresolved</div></div>
+<div class="kpi" style="border-left-color:#F59E0B"><div class="kl">In Progress</div><div class="kv" style="color:#F59E0B" id="k-p">0</div><div class="kc">being worked</div></div>
+<div class="kpi" style="border-left-color:#22C55E"><div class="kl">Closed</div><div class="kv" style="color:#22C55E" id="k-c">0</div><div class="kc">resolved</div></div>
+</div>
+<div class="card"><table class="rtbl"><thead><tr><th style="padding-left:16px">Description</th><th>Location</th><th>Severity</th><th>Status</th><th>Assignee</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="bulk-bar" id="bulk-bar"><span class="bulk-count" id="bulk-count">0</span><span>selected</span><div style="flex:1"></div><button class="btn" onclick="bulkStatus('Closed')">Mark Closed</button><button class="btn" onclick="bulkAssign()">Assign…</button><button class="btn" onclick="bulkDelete()" style="color:#EF4444">Delete</button><button class="btn" onclick="clearSelection()">Cancel</button></div><div class="dbg" id="dbg" onclick="closeD()"></div>
+<div class="dr" id="dr"><div class="drh"><div><div class="drt" id="drt">New Punch Item</div></div><button class="drx" onclick="closeD()">×</button></div>
+<div class="drb" id="drb"></div>
+<div class="drf"><button class="tbtn" id="bd" onclick="delP()" style="display:none">Delete</button><button class="btn" id="bc" onclick="convertToTask()" style="display:none;margin-right:auto">→ Convert to Task</button><div style="display:flex;gap:8px;margin-left:auto"><button class="btn" onclick="closeD()">Cancel</button><button class="btn bp" onclick="saveP()">Save</button></div></div></div>
+<script>
+
+// ═══ ROW ACTION MENU (context) ═══
+window.showRowMenu = function(btn, actions) {
+  document.querySelectorAll('.row-menu-pop').forEach(x=>x.remove());
+  const rect = btn.getBoundingClientRect();
+  const menu = document.createElement('div');
+  menu.className = 'row-menu-pop';
+  menu.style.cssText = `position:fixed;top:${rect.bottom+4}px;left:${rect.right-180}px;min-width:180px;background:#1a1a1a;border:1px solid #333;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.6);z-index:999;padding:4px;font-family:inherit`;
+  menu.innerHTML = actions.map((a,i)=>a.divider?'<div style="height:1px;background:#2a2a2a;margin:4px 0"></div>':`<div data-i="${i}" style="padding:7px 12px;font-size:12.5px;color:${a.color||'#E5E7EB'};border-radius:5px;cursor:pointer;user-select:none">${a.label}</div>`).join('');
+  menu.querySelectorAll('[data-i]').forEach(el=>{el.onmouseenter=()=>el.style.background='#252525';el.onmouseleave=()=>el.style.background='';el.onclick=e=>{e.stopPropagation();menu.remove();actions[+el.dataset.i].fn();};});
+  document.body.appendChild(menu);
+  setTimeout(()=>{document.addEventListener('click',function closeMenu(){menu.remove();document.removeEventListener('click',closeMenu);},{once:true});},50);
+};
+
+// ═══ STATUS DOT CONVENTION ═══
+window.healthDot = function(status) {
+  const s = (status||'').toLowerCase();
+  if (/open|blocked|overdue|critical|late|fail|not started/.test(s)) return '🔴';
+  if (/progress|partial|warn|review|pending|draft/.test(s)) return '🟡';
+  if (/closed|complete|paid|done|healthy|ok|on time|resolved/.test(s)) return '🟢';
+  return '⚪';
+};
+window.healthColor = function(status) {
+  const s = (status||'').toLowerCase();
+  if (/open|blocked|overdue|critical|late|fail|not started/.test(s)) return '#EF4444';
+  if (/progress|partial|warn|review|pending|draft/.test(s)) return '#F59E0B';
+  if (/closed|complete|paid|done|healthy|ok|on time|resolved/.test(s)) return '#22C55E';
+  return '#6a6a6a';
+};
+
+window.__STATUSES__ = window.__STATUSES__ || {
+  project: ['Planning','In Progress','On Hold','Completed','Cancelled'],
+  task: ['Not Started','In Progress','Blocked','Done'],
+  risk: ['Open','Mitigating','Accepted','Closed'],
+  punch: ['Open','In Progress','Ready for Review','Closed'],
+  observation: ['Open','Under Review','Closed'],
+  rfi: ['Open','In Progress','Closed'],
+  milestone: ['Not Started','In Progress','Completed']
+};
+window.__TYPES__ = window.__TYPES__ || ['Install','Service','Assessment','Upgrade','Decommission','Maintenance'];
+window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__COMMENTS__ = window.__COMMENTS__ || {};
+window.__COMMENTS__ = {
+  'task:5': [{who:'Louis Feula',txt:'Kicking this off Monday. @John Doe can you confirm the IDF access codes?',at:'2026-04-08T09:15'},{who:'John Doe',txt:'Codes sent. Good to go.',at:'2026-04-08T09:42'}],
+  'risk:1': [{who:'Matt Isgur',txt:'Talked to vendor — they confirmed a 30-day delay. Need to update the mitigation plan.',at:'2026-04-05T14:20'}],
+  'punch:3': [{who:'Louis Feula',txt:'Parts arrived. Will complete tomorrow.',at:'2026-04-11T16:30'}]
+};
+window.__ATTACHMENTS__ = window.__ATTACHMENTS__ || {};
+
+window.attachmentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = (window.__ATTACHMENTS__[key]||[]);
+  const rows = list.length ? list.map((a,i) => `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#181818;border:1px solid #262626;border-radius:6px;margin-bottom:4px"><span style="font-size:14px">${a.ext==='pdf'?'📄':a.ext==='jpg'||a.ext==='png'?'🖼️':'📎'}</span><span style="flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</span><span style="font-size:10.5px;color:#6a6a6a">${a.size||''}</span><button class="btn" style="padding:3px 8px;font-size:11px" onclick="window.__removeAttach('${key}',${i})">×</button></div>`).join('') : '<div style="padding:8px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No attachments</div>';
+  return `<div style="margin-top:14px;padding-top:12px;border-top:1px solid #2a2a2a"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF">Attachments (${list.length})</div><button class="btn" style="padding:5px 10px;font-size:11px" onclick="window.__addAttach('${entityType}',${JSON.stringify(entityId)})">+ Attach file</button></div>${rows}</div>`;
+};
+window.__addAttach = function(et, id) {
+  const name = prompt('File name (demo — real version opens file picker):', 'photo.jpg');
+  if (!name) return;
+  const ext = (name.split('.').pop()||'').toLowerCase();
+  const key = et + ':' + id;
+  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Matt Isgur', at: new Date().toISOString() });
+  console.log('Make payload (attach):', { entityType: et, entityId: id, name });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  const widget = document.querySelector('[onclick*="__addAttach"]')?.closest('div').parentElement;
+  if (widget) widget.outerHTML = window.attachmentsWidget(et, id);
+};
+window.__removeAttach = function(key, idx) {
+  if (!confirm('Remove this attachment?')) return;
+  window.__ATTACHMENTS__[key].splice(idx, 1);
+  const [et, id] = key.split(':');
+  const widget = document.querySelector(`[onclick*="__addAttach(\\'${et}\\',${JSON.stringify(id.includes(',')?id:+id||id)}"]`)?.closest('div').parentElement;
+  if (widget) widget.outerHTML = window.attachmentsWidget(et, id.includes(',')?id:+id||id);
+};
+
+// ═══ @-mention autocomplete ═══
+window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__wireMention = function(inputId, hostId) {
+  const inp = document.getElementById(inputId);
+  if (!inp || inp.dataset.mwired) return;
+  inp.dataset.mwired = '1';
+  let dropdown = null;
+  function closeDrop(){ if(dropdown){dropdown.remove();dropdown=null;} }
+  inp.addEventListener('input', e=>{
+    const v = e.target.value;
+    const pos = e.target.selectionStart;
+    const before = v.slice(0, pos);
+    const m = before.match(/@([a-zA-Z ]*)$/);
+    closeDrop();
+    if (!m) return;
+    const q = m[1].toLowerCase();
+    const matches = window.__CONTACTS__.filter(c => c.toLowerCase().includes(q)).slice(0,5);
+    if (!matches.length) return;
+    dropdown = document.createElement('div');
+    dropdown.style.cssText = 'position:absolute;background:#1a1a1a;border:1px solid #3a3a3a;border-radius:7px;box-shadow:0 8px 20px rgba(0,0,0,.5);padding:3px;z-index:200;min-width:180px';
+    const r = inp.getBoundingClientRect();
+    dropdown.style.left = r.left+'px';
+    dropdown.style.top = (r.top-5-matches.length*30)+'px';
+    dropdown.innerHTML = matches.map((c,i)=>`<div data-c="${c}" style="padding:6px 10px;font-size:12px;border-radius:4px;cursor:pointer${i===0?';background:#252525':''}">${c}</div>`).join('');
+    document.body.appendChild(dropdown);
+    dropdown.querySelectorAll('[data-c]').forEach(el=>{
+      el.onmousedown=ev=>{
+        ev.preventDefault();
+        const c = el.dataset.c;
+        const newVal = v.slice(0, pos - m[0].length) + '@' + c + ' ' + v.slice(pos);
+        inp.value = newVal;
+        inp.focus();
+        closeDrop();
+      };
+    });
+  });
+  inp.addEventListener('blur', ()=>setTimeout(closeDrop,150));
+};
+
+window.originLink = function(entity) {
+  if (!entity?.originFrom) return '';
+  const label = entity.originFrom==='punch'?'Punch Item':entity.originFrom==='observation'?'Observation':entity.originFrom==='rfi'?'RFI':entity.originFrom==='meeting'?'Meeting':'Source';
+  return `<div style="margin-bottom:14px;padding:8px 12px;background:rgba(66,134,244,.08);border:1px solid rgba(66,134,244,.2);border-left:2px solid #4286f4;border-radius:6px;font-size:11.5px;color:#9ec2f4">↳ Converted from ${label} #${entity.originId}</div>`;
+};
+
+// ═══ Auto-wire mentions on any comment input added to DOM ═══
+(function(){
+  const obs = new MutationObserver(muts=>{
+    muts.forEach(m=>m.addedNodes.forEach(n=>{
+      if (n.nodeType!==1) return;
+      const inputs = n.querySelectorAll ? n.querySelectorAll('input[id^="cw-in-"]') : [];
+      inputs.forEach(inp=>window.__wireMention(inp.id,''));
+      if (n.id && n.id.startsWith('cw-in-')) window.__wireMention(n.id,'');
+    }));
+  });
+  obs.observe(document.body, { childList:true, subtree:true });
+})();
+
+window.commentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = window.__COMMENTS__[key] || [];
+  const renderList = list.length
+    ? list.map(c => `<div style="padding:8px 0;border-bottom:1px solid #252525;font-size:12px"><div style="display:flex;gap:6px;align-items:baseline"><strong style="color:#E5E7EB">${c.who}</strong><span style="color:#6a6a6a;font-size:10.5px">${new Date(c.at).toLocaleDateString('en-US',{month:'short',day:'numeric'})} ${new Date(c.at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div><div style="color:#9CA3AF;margin-top:2px;line-height:1.5">${c.txt.replace(/@(\w+(?:\s\w+)?)/g,'<span style="color:#60a5fa;font-weight:600">@$1</span>')}</div></div>`).join('')
+    : '<div style="padding:10px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No comments yet</div>';
+  return `<div style="margin-top:16px;padding-top:14px;border-top:1px solid #2a2a2a"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px">Comments (${list.length})</div><div id="cw-list-${entityId}">${renderList}</div><div style="display:flex;gap:6px;margin-top:10px"><input class="fi" id="cw-in-${entityId}" placeholder="Add a comment… (use @ to mention)" style="flex:1"/><button class="btn bp" onmouseenter="window.__wireMention('cw-in-'+arguments[0].target?.id||'','')" onclick="__postComment('${entityType}',${JSON.stringify(entityId)})">Post</button></div></div>`;
+};
+window.__postComment = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const inp = document.getElementById('cw-in-'+entityId);
+  const txt = inp.value.trim();
+  if (!txt) return;
+  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Matt Isgur', txt, at: new Date().toISOString() });
+  console.log('Make payload (comment):', { entityType, entityId, txt });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  inp.value = '';
+  const host = inp.closest('div').parentElement;
+  host.outerHTML = window.commentsWidget(entityType, entityId);
+};
+
+// ═══ DEMO DATA (used when payload absent or empty) ═══
+let items=[
+{id:1,desc:'Touch-up paint around card reader',loc:'Main Lobby',status:'Open',author:'Louis Feula',owner_email:'lfeula@adrm-security.com',severity:'Low',due:null,originFrom:null,originId:null},
+{id:2,desc:'Replace damaged ceiling tile above IDF',loc:'Floor 2 Hallway',status:'Open',author:'Matt Isgur',owner_email:'misgur@adrm-security.com',severity:'Medium',due:'2026-04-25',originFrom:null,originId:null},
+{id:3,desc:'Secure cable tray on west wall',loc:'IDF Room',status:'In Progress',author:'Louis Feula',owner_email:'lfeula@adrm-security.com',severity:'High',due:'2026-04-20',originFrom:'observation',originId:'OB-03'},
+{id:4,desc:'Label patch panel ports',loc:'MDF Room',status:'Closed',author:'John Doe',owner_email:'jdoe@adrm-security.com',severity:'Low',due:null,originFrom:null,originId:null}];
+let editing=null;
+
+// Contact lookup maps (name ↔ email) — populated from payload when present
+let __contactByName = {};
+let __contactByEmail = {};
+
+// ═══ PAYLOAD INGESTION ═══
+// Reads window.__PAYLOAD__, normalizes schema-shape punch_list into internal demo shape
+// so the existing UI code stays unchanged. Outbound Make payloads (save/bulk/import/delete)
+// emit schema shape via buildSavePayload() et al. Falls through to demo on empty/malformed.
+(function ingestPayload(){
+  try {
+    const P = window.__PAYLOAD__;
+    if (!P) return;
+
+    const expectedVersion = 1;
+    const actualVersion = P?.meta?.payload_version;
+    if (actualVersion != null && actualVersion !== expectedVersion) {
+      console.warn(`[punch] payload v${expectedVersion} expected, got v${actualVersion} — rendering best-effort`);
+    }
+
+    // ── Contact lookups (project contacts first, then account-wide); dedupe by email ──
+    const projectContacts = Array.isArray(P?.contacts) ? P.contacts : [];
+    const allContacts = Array.isArray(P?.lookups?.all_contacts) ? P.lookups.all_contacts : [];
+    projectContacts.forEach(c => {
+      if (c?.email) __contactByEmail[c.email] = c.name || c.email;
+      if (c?.name) __contactByName[c.name] = c.email || null;
+    });
+    allContacts.forEach(c => {
+      if (c?.email && !__contactByEmail[c.email]) __contactByEmail[c.email] = c.name || c.email;
+      if (c?.name && !__contactByName[c.name]) __contactByName[c.name] = c.email || null;
+    });
+    // Project-first ordering for @-mention autocomplete (per INGESTION-TEMPLATE §1)
+    const orderedNames = [...new Set([
+      ...projectContacts.map(c => c?.name).filter(Boolean),
+      ...allContacts.map(c => c?.name).filter(Boolean)
+    ])];
+    if (orderedNames.length) window.__CONTACTS__ = orderedNames;
+
+    // ── Normalize punch items (prefer punch_list, alias punchListJson) ──
+    const rawPunch = Array.isArray(P?.punch_list) ? P.punch_list
+                   : Array.isArray(P?.punchListJson) ? P.punchListJson
+                   : null;
+    if (Array.isArray(rawPunch) && rawPunch.length) {
+      const normPunch = rawPunch
+        .filter(p => p && typeof p === 'object')
+        .map(p => {
+          const email = p.assignee_email ?? p.owner_email ?? null;
+          const authorName = p.author ?? (email ? (__contactByEmail[email] || email) : '');
+          return {
+            id: p.id ?? null,
+            desc: p.title ?? p.desc ?? '(untitled punch item)',
+            loc: p.location ?? p.loc ?? '',
+            status: p.status ?? 'Open',
+            author: authorName,
+            owner_email: email,                         // pass-through for My Work filter
+            severity: p.severity ?? 'Medium',
+            due: p.due ?? null,
+            originFrom: p.originFrom ?? null,
+            originId: p.originId ?? null
+          };
+        })
+        .filter(p => p.id != null);
+      if (normPunch.length) items = normPunch;
+    }
+
+    console.warn('Payload ingestion active:', 'punch');
+  } catch (err) {
+    console.warn(`[punch] payload ingestion failed, falling back to demo data:`, err);
+  }
+})();
+
+// ═══ OUTBOUND PAYLOAD BUILDER (schema.md punchListJson[] shape) ═══
+function buildSavePayload(p, isNew) {
+  return {
+    ...(isNew ? {} : { id: p.id }),
+    title: p.desc,
+    location: p.loc ?? null,
+    status: p.status,
+    assignee_email: p.owner_email ?? null,
+    severity: p.severity ?? 'Medium',
+    due: p.due ?? null,
+    originFrom: p.originFrom ?? null,
+    originId: p.originId ?? null
+  };
+}
+
+const sc = s => {
+  const x = (s||'').toLowerCase();
+  if (/open|blocked|overdue|critical|late|fail|not started/.test(x)) return 'p-o';
+  if (/progress|partial|warn|review|pending|draft/.test(x)) return 'p-p';
+  return 'p-c';
+};
+const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const sevColor = s => /high|critical|urgent/i.test(s||'') ? '#EF4444' : /med/i.test(s||'') ? '#F59E0B' : '#6a6a6a';
+
+function filtered(){
+  const q = document.getElementById('srch').value.toLowerCase();
+  const sf = (document.getElementById('fstatus')||{value:''}).value;
+  return items.filter(i => (!q || JSON.stringify(i).toLowerCase().includes(q)) && (!sf || i.status===sf));
+}
+
+function renderAll(){
+  document.getElementById('k-o').textContent = items.filter(i=>/open/i.test(i.status)).length;
+  document.getElementById('k-p').textContent = items.filter(i=>/progress|review/i.test(i.status)).length;
+  document.getElementById('k-c').textContent = items.filter(i=>/closed|resolved|done/i.test(i.status)).length;
+  document.getElementById('sub').textContent = items.length+' items · '+items.filter(i=>!/closed|resolved|done/i.test(i.status)).length+' open';
+  const rows = filtered();
+  document.getElementById('tb').innerHTML = rows.length ? rows.map(i => {
+    const idJson = JSON.stringify(i.id);
+    const idAttr = esc(idJson);
+    const checked = __selected.has(i.id) ? 'on' : '';
+    return `<tr data-id="${idAttr}"><td style="padding-left:16px;font-weight:500"><span class="row-check ${checked}" onclick="event.stopPropagation();toggleSelect(${idJson.replace(/"/g,'&quot;')},this)"></span>${esc(i.desc)}</td><td style="color:#9CA3AF">${esc(i.loc||'—')}</td><td><span style="color:${sevColor(i.severity)};font-weight:600;font-size:11.5px">${esc(i.severity||'—')}</span></td><td><span style="margin-right:6px;font-size:9px;vertical-align:middle">${window.healthDot(i.status)}</span><span class="pill ${sc(i.status)}">${esc(i.status)}</span></td><td style="color:#9CA3AF">${esc(i.author||'—')}</td><td style="text-align:right;width:40px"><button class="btn" style="padding:3px 8px;font-size:14px;line-height:1" onclick='event.stopPropagation();showRowMenu(this,[{label:"Update",fn:()=>openD(${idJson.replace(/'/g,"\\'")})},{label:"Convert to Task",fn:()=>{editing={...items.find(x=>x.id===${idJson.replace(/'/g,"\\'")})};convertToTask();}},{divider:true},{label:"Delete",color:"#EF4444",fn:()=>{if(confirm("Delete?")){const id=${idJson.replace(/'/g,"\\'")};items=items.filter(x=>x.id!==id);console.log("Make payload (punch_delete):",{id});try{parent.postMessage({type:"toast",msg:"Deleted",kind:"success"},"*")}catch(e){}renderAll();}}}])'>⋯</button></td></tr>`;
+  }).join('') : '<tr><td colspan="6" style="padding:24px;text-align:center;color:#9CA3AF">No items match.</td></tr>';
+  document.querySelectorAll('#tb tr[data-id]').forEach(tr => tr.onclick = e => {
+    if (e.target.closest('button,.row-check')) return;
+    let id;
+    try { id = JSON.parse(tr.dataset.id.replace(/&quot;/g,'"')); } catch(ex) { id = tr.dataset.id; }
+    openD(id);
+  });
+}
+
+// ═══ BULK ACTIONS ═══
+let __selected = new Set();
+function toggleSelect(id, el){
+  if(__selected.has(id)){__selected.delete(id);el?.classList.remove('on');}
+  else{__selected.add(id);el?.classList.add('on');}
+  const n = __selected.size;
+  const c=document.getElementById('bulk-count');if(c)c.textContent = n;
+  const b=document.getElementById('bulk-bar');if(b)b.classList.toggle('show', n>0);
+}
+function clearSelection(){
+  __selected.clear();
+  document.querySelectorAll('.row-check.on').forEach(c=>c.classList.remove('on'));
+  const b=document.getElementById('bulk-bar');if(b)b.classList.remove('show');
+  const c=document.getElementById('bulk-count');if(c)c.textContent=0;
+}
+
+function bulkStatus(s){
+  if(!__selected.size)return;
+  const ids=[...__selected];
+  items.forEach(i=>{ if(__selected.has(i.id)){ i.status=s; } });
+  console.log('Make payload (punch_bulk_update):', { punch_ids: ids, status: s });
+  try{parent.postMessage({type:'toast',msg:`${ids.length} items updated`,kind:'success'},'*');}catch(e){}
+  clearSelection();renderAll();
+}
+
+function bulkAssign(){
+  const who = prompt('Assign to (name or email):');
+  if(!who) return;
+  const ids = [...__selected];
+  const looksEmail = /@/.test(who);
+  const email = looksEmail ? who : (__contactByName[who] ?? null);
+  const display = looksEmail ? (__contactByEmail[who] || who) : who;
+  items.forEach(i => {
+    if (__selected.has(i.id)) {
+      i.author = display;
+      i.owner_email = email;
+    }
+  });
+  console.log('Make payload (punch_bulk_assign):', { punch_ids: ids, assignee_email: email });
+  try{parent.postMessage({type:'toast',msg:`${ids.length} items assigned to ${display}`,kind:'success'},'*');}catch(e){}
+  clearSelection();renderAll();
+}
+
+function bulkDelete(){
+  if(!confirm(`Delete ${__selected.size} items?`))return;
+  const ids=[...__selected];
+  items=items.filter(i=>!__selected.has(i.id));
+  console.log('Make payload (punch_bulk_delete):', { punch_ids: ids });
+  try{parent.postMessage({type:'toast',msg:`${ids.length} items deleted`,kind:'success'},'*');}catch(e){}
+  clearSelection();renderAll();
+}
+
+function bulkImport(){
+  const rows = prompt('Paste CSV rows (one description per line):');
+  if(!rows) return;
+  const lines = rows.split('\n').filter(l=>l.trim());
+  const outboundBatch = [];
+  let added = 0;
+  lines.forEach((line, idx) => {
+    const tmpId = 'tmp-'+Date.now()+'-'+idx;
+    const newP = {
+      id: tmpId,
+      desc: line.trim(),
+      loc: '',
+      status: 'Open',
+      author: '',
+      owner_email: null,
+      severity: 'Medium',
+      due: null,
+      originFrom: null,
+      originId: null
+    };
+    items.push(newP);
+    outboundBatch.push(buildSavePayload(newP, true));
+    added++;
+  });
+  console.log('Make payload (punch_bulk_import):', { punch_items: outboundBatch });
+  try{parent.postMessage({type:'toast',msg:`${added} items imported`,kind:'success'},'*');}catch(e){}
+  renderAll();
+}
+
+document.getElementById('srch').oninput = renderAll;
+
+function openD(id){
+  editing = (id != null)
+    ? { ...(items.find(i => i.id === id) || {}) }
+    : { id:null, desc:'', loc:'', status:'Open', author:'', owner_email:null, severity:'Medium', due:null, originFrom:null, originId:null };
+  document.getElementById('drt').textContent = (id != null) ? 'Update Punch Item' : 'New Punch Item';
+  document.getElementById('bd').style.display = (id != null) ? 'inline-block' : 'none';
+  document.getElementById('bc').style.display = (id != null) ? 'inline-block' : 'none';
+  const p = editing;
+  const punchStatuses = (window.__STATUSES__?.punch) || ['Open','In Progress','Ready for Review','Closed'];
+  const statusOptions = punchStatuses.map(s => `<option ${s===p.status?'selected':''}>${esc(s)}</option>`).join('');
+  const contactOptions = (window.__CONTACTS__||[]).map(n => `<option ${n===p.author?'selected':''}>${esc(n)}</option>`).join('');
+  const severities = ['Low','Medium','High','Critical'];
+  const sevOptions = severities.map(s => `<option ${s===p.severity?'selected':''}>${esc(s)}</option>`).join('');
+
+  document.getElementById('drb').innerHTML =
+    `${window.originLink(editing)}` +
+    `<div class="f"><label class="fl">Description</label><textarea class="ft" id="d-desc" placeholder="What needs to be done?">${esc(p.desc)}</textarea></div>` +
+    `<div class="f"><label class="fl">Location</label><input class="fi" id="d-loc" value="${esc(p.loc)}" placeholder="e.g. Main Lobby"/></div>` +
+    `<div class="fr"><div class="f"><label class="fl">Status</label><select class="fs" id="d-st">${statusOptions}</select></div>` +
+    `<div class="f"><label class="fl">Severity</label><select class="fs" id="d-sev">${sevOptions}</select></div></div>` +
+    `<div class="fr"><div class="f"><label class="fl">Assignee</label><select class="fs" id="d-au"><option value="">Unassigned</option>${contactOptions}</select></div>` +
+    `<div class="f"><label class="fl">Due</label><input class="fi" id="d-due" type="date" value="${esc(p.due||'')}"/></div></div>` +
+    `${p.id!=null?window.commentsWidget('punch',p.id):''}${p.id!=null?window.attachmentsWidget('punch',p.id):''}`;
+
+  document.getElementById('d-au').value = p.author || '';
+  document.getElementById('dbg').classList.add('on');
+  document.getElementById('dr').classList.add('on');
+}
+
+function closeD(){
+  document.getElementById('dbg').classList.remove('on');
+  document.getElementById('dr').classList.remove('on');
+}
+
+function saveP(){
+  const desc = document.getElementById('d-desc').value.trim();
+  if(!desc){ alert('Description required'); return; }
+  const authorName = document.getElementById('d-au').value;
+  const ownerEmail = authorName
+    ? (__contactByName[authorName] ?? (editing.author === authorName ? editing.owner_email : null))
+    : null;
+
+  const isNew = editing.id == null || (typeof editing.id === 'string' && editing.id.startsWith('tmp-'));
+  const p = {
+    id: isNew ? ('tmp-'+Date.now()) : editing.id,
+    desc,
+    loc: document.getElementById('d-loc').value,
+    status: document.getElementById('d-st').value,
+    author: authorName,
+    owner_email: ownerEmail,
+    severity: document.getElementById('d-sev').value,
+    due: document.getElementById('d-due').value || null,
+    originFrom: editing.originFrom ?? null,
+    originId: editing.originId ?? null
+  };
+
+  if (!isNew) {
+    const idx = items.findIndex(x => x.id === editing.id);
+    if (idx >= 0) items[idx] = p; else items.push(p);
+  } else {
+    items.push(p);
+  }
+
+  console.log('Make payload (punch_save):', buildSavePayload(p, isNew));
+  try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  closeD();renderAll();
+}
+
+function delP(){
+  if(editing?.id == null) return;
+  if(!confirm('Delete?')) return;
+  const id = editing.id;
+  items = items.filter(i => i.id !== id);
+  console.log('Make payload (punch_delete):', { id });
+  try{parent.postMessage({type:'toast',msg:'Deleted',kind:'success'},'*');}catch(e){}
+  closeD();renderAll();
+}
+
+function convertToTask(){
+  if(editing?.id == null) return;
+  if(!confirm('Convert this punch item to a Task?\n\nA new Task will be created with the same description. The punch item will be marked Closed.')) return;
+  const task = {
+    title: editing.desc,
+    milestone_id: null,
+    assignee_email: editing.owner_email ?? null,
+    status: 'Not Started',
+    percent_complete: 0,
+    duration_days: 1,
+    priority: 'Normal',
+    originFrom: 'punch',
+    originId: editing.id
+  };
+  console.log('Make payload (punch → task):', task);
+  try{parent.postMessage({type:'toast',msg:'Task created',kind:'success'},'*');}catch(e){}
+  // Auto-close the source
+  editing.status = 'Closed';
+  const i = items.findIndex(x => x.id === editing.id);
+  if (i >= 0) items[i] = editing;
+  console.log('Make payload (punch_save):', buildSavePayload(editing, false));
+  alert('✓ Task created: "'+editing.desc+'"\n\nPunch item marked Closed.');
+  closeD();renderAll();
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeD(); });
+renderAll();
+
+// Populate filter dropdown once (after ingestion, so schema statuses flow through)
+(function(){
+  const sel = document.getElementById('fstatus');
+  if (!sel || sel.dataset.pop) return;
+  sel.dataset.pop = '1';
+  const uniq = [...new Set(items.map(x=>x.status).filter(Boolean))].sort();
+  uniq.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s; o.textContent = s;
+    sel.appendChild(o);
+  });
+  sel.onchange = renderAll;
+})();
+</script></body></html>

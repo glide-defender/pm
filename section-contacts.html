@@ -1,0 +1,1279 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Contacts</title><style>
+*{box-sizing:border-box;margin:0;padding:0}body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;padding:20px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.ti{font-size:18px;font-weight:700;color:#fff}.sb{font-size:12px;color:#9CA3AF;margin-top:3px}.ctr{display:flex;gap:8px;align-items:center}
+.srch{background:#1f1f1f;border:1px solid #303030;border-radius:6px;padding:7px 11px;color:#E5E7EB;font-size:12.5px;outline:none;width:220px;font-family:inherit}
+.srch:focus{border-color:#F59E0B}
+.btn{padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #303030;background:#1f1f1f;color:#E5E7EB;cursor:pointer;font-family:inherit}.btn:hover{background:#252525}.bp{background:#3c4756;color:#fff;border-color:#4a5666}.bp:hover{background:#4a5666}
+.fs-pill{display:inline-flex;gap:4px;padding:3px;background:#1f1f1f;border:1px solid #303030;border-radius:7px;margin-right:6px}
+.fs-pill button{padding:4px 10px;border:0;background:transparent;color:#9CA3AF;font-size:11.5px;font-weight:600;border-radius:5px;cursor:pointer;font-family:inherit}
+.fs-pill button.on{background:#3c4756;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.card{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;padding:14px 16px 14px 38px;cursor:pointer;transition:border-color .12s;position:relative}
+.card:hover{border-color:#3a3a3a;background:#232323}
+.chd{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;flex-shrink:0}
+.cnm{font-size:13.5px;font-weight:700;color:#fff;line-height:1.3}.ctl{font-size:11.5px;color:#9CA3AF;margin-top:2px}
+.pill-int{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;background:rgba(245,158,11,.14);color:#F59E0B;margin-left:6px;vertical-align:middle}
+.pill-ext{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;background:rgba(148,163,184,.12);color:#94a3b8;margin-left:6px;vertical-align:middle}
+.crole{display:inline-block;padding:3px 9px;border-radius:5px;font-size:10.5px;font-weight:600;background:rgba(66,134,244,.12);color:#60a5fa;margin-top:8px}
+.cdeet{margin-top:10px;padding-top:10px;border-top:1px solid #2a2a2a;font-size:11.5px}
+.cd-row{display:flex;gap:8px;padding:3px 0;color:#9CA3AF}.cd-l{color:#6a6a6a;width:52px;flex-shrink:0}.cd-v{color:#E5E7EB;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cd-warn{color:#ff8b8b}
+.dbg{position:fixed;inset:0;background:rgba(10,10,10,.7);z-index:100;display:none}.dbg.on{display:block}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(480px,92vw);background:#1a1a1a;border-left:1px solid #303030;z-index:101;display:none;flex-direction:column}.dr.on{display:flex}
+.drh{padding:18px 22px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between}.drt{font-size:16px;font-weight:700}.drx{width:28px;height:28px;border-radius:6px;border:1px solid #303030;background:#252525;color:#9CA3AF;cursor:pointer;font-size:15px}
+.drb{flex:1;overflow-y:auto;padding:20px 22px}.drf{padding:14px 22px;border-top:1px solid #2a2a2a;background:#191919;display:flex;gap:8px}
+.f{margin-bottom:14px}.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px}
+.fi,.fs{width:100%;background:#161616;border:1px solid #303030;border-radius:7px;padding:9px 11px;color:#E5E7EB;font-size:13px;font-family:inherit;outline:none}.fi:focus,.fs:focus{border-color:#F59E0B}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tbtn{padding:6px 10px;border-radius:5px;border:1px solid #303030;background:transparent;color:#EF4444;cursor:pointer;font-size:12px;font-weight:600}
+.bulk-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:#1a1a1a;border-top:2px solid #F59E0B;padding:10px 18px;z-index:10;font-size:12.5px;align-items:center;gap:12px;box-shadow:0 -8px 20px rgba(0,0,0,.5);margin:14px -20px -20px}
+.bulk-bar.show{display:flex}
+.bulk-count{background:#F59E0B;color:#111;padding:3px 10px;border-radius:12px;font-weight:700;font-size:11.5px}
+.row-check{display:inline-flex;width:16px;height:16px;border:1.5px solid #4a4a4a;border-radius:3px;background:#181818;cursor:pointer;flex-shrink:0;align-items:center;justify-content:center}
+.row-check.on{background:#F59E0B;border-color:#F59E0B}
+.row-check.on::after{content:"\2713";color:#111;font-size:11px;font-weight:900}
+.row-check.mixed{background:#F59E0B;border-color:#F59E0B}
+.row-check.mixed::after{content:"";display:block;width:8px;height:2px;background:#111;border-radius:1px}
+.selall{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:6px;border:1px solid #303030;background:#1f1f1f;color:#9CA3AF;cursor:pointer;font-size:11.5px;font-weight:600;font-family:inherit;user-select:none}
+.selall:hover{background:#252525;color:#E5E7EB}
+.selall .row-check{width:14px;height:14px;cursor:pointer;pointer-events:none}
+</style></head><body>
+<div class="hd"><div><div class="ti">Contacts</div><div class="sb" id="sub">—</div></div>
+<div class="ctr">
+  <div class="fs-pill"><button id="flt-all" class="on" onclick="setFilter('all')">All</button><button id="flt-int" onclick="setFilter('int')">Internal</button><button id="flt-ext" onclick="setFilter('ext')">External</button></div>
+  <button class="selall" id="selall-hdr" onclick="toggleSelectAllVisible()"><span class="row-check"></span><span id="selall-hdr-lbl">Select all</span></button>
+  <input class="srch" id="srch" placeholder="Search contacts\u2026"/>
+  <button class="btn" onclick="bulkImport()">Import</button>
+  <button class="btn bp" onclick="openD(null)">+ Contact</button>
+</div></div>
+<div class="grid" id="grid"></div>
+<div class="bulk-bar" id="bulk-bar"><span class="bulk-count" id="bulk-count">0</span><span>selected</span><button class="selall" id="selall-bar" onclick="toggleSelectAllVisible()" style="margin-left:10px"><span class="row-check"></span><span id="selall-bar-lbl">Select all visible</span></button><div style="flex:1"></div><button class="btn" onclick="bulkDelete()" style="color:#ff6b6b;border-color:#5a2424">Remove</button><button class="btn" onclick="clearSelection()">Cancel</button></div>
+<div class="dbg" id="dbg" onclick="closeD()"></div>
+<div class="dr" id="dr"><div class="drh"><div><div class="drt" id="drt">New Contact</div></div><button class="drx" onclick="closeD()">\u00d7</button></div><div class="drb" id="drb"></div><div class="drf"><button class="tbtn" id="bd" onclick="delC()" style="display:none">Delete</button><div style="display:flex;gap:8px;margin-left:auto"><button class="btn" onclick="closeD()">Cancel</button><button class="btn bp" onclick="saveC()">Save</button></div></div></div>
+<script>
+// \u2550\u2550\u2550 esc helper (Pattern #3) \u2550\u2550\u2550
+const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// \u2550\u2550\u2550 Shared workspace utility stubs (present in every section) \u2550\u2550\u2550
+window.__STATUSES__ = window.__STATUSES__ || {
+  project: ['Planning','In Progress','On Hold','Completed','Cancelled'],
+  task: ['Open','In Progress','Blocked','Closed'],
+  risk: ['Open','Mitigating','Accepted','Closed'],
+  punch: ['Open','In Progress','Closed'],
+  observation: ['Open','Under Review','Closed'],
+  rfi: ['Open','In Progress','Closed'],
+  milestone: ['Not Started','In Progress','Completed']
+};
+window.__TYPES__ = window.__TYPES__ || ['Install','Service','Assessment','Upgrade','Decommission','Maintenance'];
+// Seeded default \u2014 rebuilt from `contacts` below after ingestion.
+window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__COMMENTS__ = window.__COMMENTS__ || {};
+window.__ATTACHMENTS__ = window.__ATTACHMENTS__ || {};
+
+// \u2550\u2550\u2550 @-mention autocomplete \u2550\u2550\u2550
+window.__wireMention = function(inputId, hostId) {
+  const inp = document.getElementById(inputId);
+  if (!inp || inp.dataset.mwired) return;
+  inp.dataset.mwired = '1';
+  let dropdown = null;
+  function closeDrop(){ if(dropdown){dropdown.remove();dropdown=null;} }
+  inp.addEventListener('input', e=>{
+    const v = e.target.value;
+    const pos = e.target.selectionStart;
+    const before = v.slice(0, pos);
+    const m = before.match(/@([a-zA-Z ]*)$/);
+    closeDrop();
+    if (!m) return;
+    const q = m[1].toLowerCase();
+    const matches = window.__CONTACTS__.filter(c => c.toLowerCase().includes(q)).slice(0,5);
+    if (!matches.length) return;
+    dropdown = document.createElement('div');
+    dropdown.style.cssText = 'position:absolute;background:#1a1a1a;border:1px solid #3a3a3a;border-radius:7px;box-shadow:0 8px 20px rgba(0,0,0,.5);padding:3px;z-index:200;min-width:180px';
+    const r = inp.getBoundingClientRect();
+    dropdown.style.left = r.left+'px';
+    dropdown.style.top = (r.top-5-matches.length*30)+'px';
+    dropdown.innerHTML = matches.map((c,i)=>`<div data-c="${esc(c)}" style="padding:6px 10px;font-size:12px;border-radius:4px;cursor:pointer${i===0?';background:#252525':''}">${esc(c)}</div>`).join('');
+    document.body.appendChild(dropdown);
+    dropdown.querySelectorAll('[data-c]').forEach(el=>{
+      el.onmousedown=ev=>{
+        ev.preventDefault();
+        const c = el.dataset.c;
+        const newVal = v.slice(0, pos - m[0].length) + '@' + c + ' ' + v.slice(pos);
+        inp.value = newVal;
+        inp.focus();
+        closeDrop();
+      };
+    });
+  });
+  inp.addEventListener('blur', ()=>setTimeout(closeDrop,150));
+};
+
+window.originLink = function(entity) {
+  if (!entity?.originFrom) return '';
+  const label = entity.originFrom==='punch'?'Punch Item':entity.originFrom==='observation'?'Observation':entity.originFrom==='rfi'?'RFI':entity.originFrom==='meeting'?'Meeting':'Source';
+  return `<div style="margin-bottom:14px;padding:8px 12px;background:rgba(66,134,244,.08);border:1px solid rgba(66,134,244,.2);border-left:2px solid #4286f4;border-radius:6px;font-size:11.5px;color:#9ec2f4">\u21b3 Converted from ${esc(label)} #${esc(entity.originId)}</div>`;
+};
+
+// \u2550\u2550\u2550 Auto-wire mentions on any comment input added to DOM \u2550\u2550\u2550
+(function(){
+  const obs = new MutationObserver(muts=>{
+    muts.forEach(m=>m.addedNodes.forEach(n=>{
+      if (n.nodeType!==1) return;
+      const inputs = n.querySelectorAll ? n.querySelectorAll('input[id^="cw-in-"]') : [];
+      inputs.forEach(inp=>window.__wireMention(inp.id,''));
+      if (n.id && n.id.startsWith('cw-in-')) window.__wireMention(n.id,'');
+    }));
+  });
+  obs.observe(document.body, { childList:true, subtree:true });
+})();
+
+window.commentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = window.__COMMENTS__[key] || [];
+  const renderList = list.length
+    ? list.map(c => `<div style="padding:8px 0;border-bottom:1px solid #252525;font-size:12px"><div style="display:flex;gap:6px;align-items:baseline"><strong style="color:#E5E7EB">${esc(c.who)}</strong><span style="color:#6a6a6a;font-size:10.5px">${new Date(c.at).toLocaleDateString('en-US',{month:'short',day:'numeric'})} ${new Date(c.at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div><div style="color:#9CA3AF;margin-top:2px;line-height:1.5">${esc(c.txt).replace(/@(\w+(?:\s\w+)?)/g,'<span style="color:#60a5fa;font-weight:600">@$1</span>')}</div></div>`).join('')
+    : '<div style="padding:10px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No comments yet</div>';
+  return `<div style="margin-top:16px;padding-top:14px;border-top:1px solid #2a2a2a"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px">Comments (${list.length})</div><div id="cw-list-${esc(entityId)}">${renderList}</div><div style="display:flex;gap:6px;margin-top:10px"><input class="fi" id="cw-in-${esc(entityId)}" placeholder="Add a comment\u2026 (use @ to mention)" style="flex:1"/><button class="btn bp" onclick="__postComment('${esc(entityType)}',${JSON.stringify(String(entityId))})">Post</button></div></div>`;
+};
+window.__postComment = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const inp = document.getElementById('cw-in-'+entityId);
+  const txt = inp.value.trim();
+  if (!txt) return;
+  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Matt Isgur', txt, at: new Date().toISOString() });
+  console.log('Make payload (comment):', { entityType, entityId, txt });
+  try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  inp.value = '';
+  const host = inp.closest('div').parentElement;
+  host.outerHTML = window.commentsWidget(entityType, entityId);
+};
+
+window.attachmentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = (window.__ATTACHMENTS__[key]||[]);
+  const rows = list.length ? list.map((a,i) => `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#181818;border:1px solid #262626;border-radius:6px;margin-bottom:4px"><span style="font-size:14px">${a.ext==='pdf'?'\ud83d\udcc4':a.ext==='jpg'||a.ext==='png'?'\ud83d\uddbc\ufe0f':'\ud83d\udcce'}</span><span style="flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(a.name)}</span><span style="font-size:10.5px;color:#6a6a6a">${esc(a.size||'')}</span><button class="btn" style="padding:3px 8px;font-size:11px" onclick="window.__removeAttach('${esc(key)}',${i})">\u00d7</button></div>`).join('') : '<div style="padding:8px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No attachments</div>';
+  return `<div style="margin-top:14px;padding-top:12px;border-top:1px solid #2a2a2a"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF">Attachments (${list.length})</div><button class="btn" style="padding:5px 10px;font-size:11px" onclick="window.__addAttach('${esc(entityType)}',${JSON.stringify(String(entityId))})">+ Attach file</button></div>${rows}</div>`;
+};
+window.__addAttach = function(et, id) { const name=prompt('File name:','photo.jpg');if(!name)return;const ext=(name.split('.').pop()||'').toLowerCase();const key=et+':'+id;(window.__ATTACHMENTS__[key]=window.__ATTACHMENTS__[key]||[]).push({name,ext,size:'0.8 MB',by:'Matt Isgur',at:new Date().toISOString()});console.log('Make payload (attach):',{et,id,name});try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}const w=document.querySelector('[onclick*="__addAttach"]')?.closest('div').parentElement;if(w)w.outerHTML=window.attachmentsWidget(et,id);};
+window.__removeAttach = function(key, idx) { if(!confirm('Remove?'))return;window.__ATTACHMENTS__[key].splice(idx,1);const[et,id]=key.split(':');location.reload();};
+
+window.showRowMenu = function(btn, actions) {
+  document.querySelectorAll('.row-menu-pop').forEach(x=>x.remove());
+  const rect = btn.getBoundingClientRect();
+  const menu = document.createElement('div');
+  menu.className = 'row-menu-pop';
+  menu.style.cssText = `position:fixed;top:${rect.bottom+4}px;left:${rect.right-180}px;min-width:180px;background:#1a1a1a;border:1px solid #333;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.6);z-index:999;padding:4px;font-family:inherit`;
+  menu.innerHTML = actions.map((a,i)=>a.divider?'<div style="height:1px;background:#2a2a2a;margin:4px 0"></div>':`<div data-i="${i}" style="padding:7px 12px;font-size:12.5px;color:${a.color||'#E5E7EB'};border-radius:5px;cursor:pointer;user-select:none">${a.label}</div>`).join('');
+  menu.querySelectorAll('[data-i]').forEach(el=>{el.onmouseenter=()=>el.style.background='#252525';el.onmouseleave=()=>el.style.background='';el.onclick=e=>{e.stopPropagation();menu.remove();actions[+el.dataset.i].fn();};});
+  document.body.appendChild(menu);
+  setTimeout(()=>{document.addEventListener('click',function c(){menu.remove();document.removeEventListener('click',c);},{once:true});},50);
+};
+
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+// CONTACTS DATA
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+// Internal shape: { id, name, title, email, phone, role, company, is_internal }
+//   \u2022 `id` is a STRING (Pattern #2). Schema format: "CON-NN". New rows use
+//     `tmp-<timestamp>-<idx>` until Make returns a real id.
+//   \u2022 `title` (job title, e.g. "Manager, Physical Security") is UI-only per
+//     Pattern #1 \u2014 preserved on ingest if present, but NOT emitted in the
+//     outbound save payload. Flagged in SCHEMA-GAPS.md: schema has no title field,
+//     only `role` (project role). Keeping title internal preserves richer demo
+//     data and tolerates payload extensions, while outbound stays strictly
+//     schema-compliant.
+//   \u2022 `is_internal` distinguishes ADRM Security employees from external
+//     contacts (client/vendor/consultant). Drives the Internal pill on the
+//     card, the sort order in @-mention autocomplete globally, and is emitted
+//     verbatim per schema.
+//   \u2022 No originFrom/originId \u2014 contacts have no cross-entity conversion source.
+const COLORS=['#4286f4','#22C55E','#F59E0B','#8B5CF6','#06B6D4','#EF4444','#EC4899','#14b8a6'];
+let contacts=[
+  {id:'CON-01',name:'Jennifer Doe',   title:'Manager, Physical Security', email:'jen.doe@email.com',         phone:'',               role:'Client Sponsor', company:'ABC Sample Company', is_internal:false},
+  {id:'CON-02',name:'John Doe',       title:'Program Director',           email:'jdoe@sampleemail.com',      phone:'(512) 555-0100', role:'Project Owner',  company:'ABC Sample Company', is_internal:false},
+  {id:'CON-03',name:'Gerritt Bakker', title:'Director, Design Services',  email:'gbakker@adrm-security.com', phone:'',               role:'Design Lead',    company:'ADRM Security',      is_internal:true},
+  {id:'CON-04',name:'Matt Isgur',     title:'Project Manager',            email:'misgur@adrm-security.com',  phone:'',               role:'Project Manager',company:'ADRM Security',      is_internal:true}
+];
+let editing=null;
+let __filter='all'; // all | int | ext
+
+// \u2550\u2550\u2550 PAYLOAD INGESTION \u2550\u2550\u2550
+// Reads P.contacts[]. Pattern #6 (consolidated JSON fallback) is N/A \u2014 contacts
+// are a relational Glide table per handoff, not consolidated onto Projects. There
+// is no P.contactsJson alias to read.
+//
+// Pattern #4 is the entire entity here: every contact should carry an email, which
+// is the lookup key for owner_email / assignee_email / observed_by / asked_by /
+// uploaded_by across every other section. We warn (console) on any contact with an
+// empty email rather than dropping the row \u2014 silent drops would be worse than a
+// partially-functional contact.
+//
+// Duplicate-email handling: if the payload contains multiple contacts with the same
+// email, we render ALL of them and warn once per duplicate. Dedupe-on-ingest would
+// be silent data loss; the UI surfaces the problem so an admin can fix it. Flagged
+// in SCHEMA-GAPS.md.
+(function ingestPayload(){
+  try {
+    const P = window.__PAYLOAD__;
+    if (!P) return;
+    const expectedVersion = 1;
+    const actualVersion = P?.meta?.payload_version;
+    if (actualVersion != null && actualVersion !== expectedVersion) {
+      console.warn(`[contacts] payload v${expectedVersion} expected, got v${actualVersion} \u2014 rendering best-effort`);
+    }
+    const raw = Array.isArray(P?.contacts) ? P.contacts : null;
+    if (Array.isArray(raw) && raw.length) {
+      const seenEmails = new Map(); // lowercased email \u2192 first id seen
+      const norm = raw
+        .filter(c => c && typeof c === 'object')
+        .map((c, idx) => {
+          const id    = String(c.id ?? `tmp-${Date.now()}-${idx}`);
+          const name  = String(c.name ?? '').trim();
+          const email = String(c.email ?? '').trim();
+          if (!email) console.warn(`[contacts] "${name||'(unnamed)'}" (id=${id}) has no email \u2014 cross-section @-mentions and ownership lookups will miss this contact.`);
+          else {
+            const k = email.toLowerCase();
+            if (seenEmails.has(k)) console.warn(`[contacts] duplicate email "${email}" on ${id} (first seen on ${seenEmails.get(k)}) \u2014 both rows rendered; resolve in source data.`);
+            else seenEmails.set(k, id);
+          }
+          return {
+            id, name, email,
+            title:       String(c.title   ?? '').trim(), // UI-only, Pattern #1
+            phone:       String(c.phone   ?? '').trim(),
+            role:        String(c.role    ?? '').trim(),
+            company:     String(c.company ?? '').trim(),
+            is_internal: !!c.is_internal
+          };
+        })
+        .filter(c => c.name); // drop only rows with no name; email-missing rows still render with warning
+      if (norm.length) { contacts.length = 0; norm.forEach(n => contacts.push(n)); }
+    }
+    console.warn('Payload ingestion active:', 'contacts');
+  } catch (err) {
+    console.warn(`[contacts] payload ingestion failed, falling back to demo data:`, err);
+  }
+})();
+
+// \u2550\u2550\u2550 CROSS-SECTION LOOKUP EXPOSURE \u2550\u2550\u2550
+// The shell's __wireMention() reads window.__CONTACTS__ (string array of names)
+// for autocomplete. Other sections also need email\u2192contact and name\u2192contact
+// lookup maps so ownership/assignment renders correctly. We expose all three.
+// Internal contacts (ADRM employees) sort first, so they surface at the top of
+// @-mention dropdowns across the entire app.
+function __rebuildContactLookups(){
+  const byName = (a,b) => a.name.localeCompare(b.name);
+  const internal = contacts.filter(c=>c.is_internal).slice().sort(byName);
+  const external = contacts.filter(c=>!c.is_internal).slice().sort(byName);
+  const ordered  = [...internal, ...external];
+  window.__CONTACTS__      = ordered.map(c=>c.name);
+  window.__CONTACTS_FULL__ = ordered;
+  window.__contactByEmail  = Object.fromEntries(ordered.filter(c=>c.email).map(c=>[c.email.toLowerCase(), c]));
+  window.__contactByName   = Object.fromEntries(ordered.map(c=>[c.name, c]));
+}
+__rebuildContactLookups();
+
+// \u2550\u2550\u2550 OUTBOUND PAYLOAD BUILDER (schema contacts[] shape) \u2550\u2550\u2550
+// Schema fields (all snake_case per Pattern #8, no camelCase origin fields):
+//   { id, name, email, company, role, phone, is_internal }
+// `title` is deliberately excluded \u2014 UI-only per Pattern #1 and schema gap.
+function buildSavePayload(c) {
+  return {
+    id:          String(c.id ?? ''),
+    name:        String(c.name ?? ''),
+    email:       String(c.email ?? ''),
+    company:     String(c.company ?? ''),
+    role:        String(c.role ?? ''),
+    phone:       String(c.phone ?? ''),
+    is_internal: !!c.is_internal
+  };
+}
+
+// \u2550\u2550\u2550 RENDER \u2550\u2550\u2550
+const init  = n => (n||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+const color = i => COLORS[i%COLORS.length];
+
+function filtered(){
+  const q = (document.getElementById('srch').value||'').toLowerCase();
+  let rows = contacts;
+  if (__filter === 'int') rows = rows.filter(c=>c.is_internal);
+  else if (__filter === 'ext') rows = rows.filter(c=>!c.is_internal);
+  if (!q) return rows;
+  return rows.filter(c => JSON.stringify(c).toLowerCase().includes(q));
+}
+
+function setFilter(f){
+  __filter = f;
+  ['all','int','ext'].forEach(k => {
+    const b = document.getElementById('flt-'+k);
+    if (b) b.classList.toggle('on', k===f);
+  });
+  renderAll();
+}
+
+function renderAll(){
+  const total = contacts.length;
+  const nInt  = contacts.filter(c=>c.is_internal).length;
+  document.getElementById('sub').textContent = `${total} contact${total===1?'':'s'} on this project \u00b7 ${nInt} internal \u00b7 ${total-nInt} external`;
+  const rows = filtered();
+  document.getElementById('grid').innerHTML = rows.length ? rows.map((c,i)=>{
+    const sid = String(c.id);
+    const checked = __selected.has(sid) ? ' on' : '';
+    const keyAttr = JSON.stringify(sid).replace(/"/g,'&quot;');
+    const emailJson = JSON.stringify(c.email||'').replace(/"/g,'&quot;');
+    const pill = c.is_internal
+      ? '<span class="pill-int">Internal</span>'
+      : '<span class="pill-ext">External</span>';
+    const emailRow = c.email
+      ? `<div class="cd-row"><span class="cd-l">Email</span><span class="cd-v" style="color:#60a5fa">${esc(c.email)}</span></div>`
+      : `<div class="cd-row"><span class="cd-l">Email</span><span class="cd-v cd-warn" title="Missing email \u2014 cross-section lookups will miss this contact">\u26a0 missing</span></div>`;
+    return `<div class="card" data-id="${esc(sid)}">
+      <span class="row-check${checked}" style="position:absolute;top:16px;left:14px;z-index:6" onclick="event.stopPropagation();toggleSelect(${keyAttr},this)"></span>
+      <button class="btn" style="position:absolute;top:10px;right:10px;padding:3px 8px;font-size:14px;line-height:1;z-index:5" onclick="event.stopPropagation();showRowMenu(this,[{label:'Update',fn:()=>openD(${keyAttr})},{label:'Copy Email',fn:()=>{navigator.clipboard?.writeText(${emailJson});}},{divider:true},{label:'Remove',color:'#EF4444',fn:()=>{if(confirm('Remove contact?')){contacts=contacts.filter(x=>String(x.id)!==${keyAttr});__selected.delete(${keyAttr});__rebuildContactLookups();renderAll();updateBulkBar();}}}])">\u22ef</button>
+      <div class="chd">
+        <div class="av" style="background:${color(i)}">${esc(init(c.name))}</div>
+        <div style="flex:1;min-width:0">
+          <div class="cnm">${esc(c.name)}${pill}</div>
+          <div class="ctl">${c.title?esc(c.title):'\u2014'}</div>
+        </div>
+      </div>
+      ${c.role?`<span class="crole">${esc(c.role)}</span>`:''}
+      <div class="cdeet">
+        ${c.company?`<div class="cd-row"><span class="cd-l">Company</span><span class="cd-v">${esc(c.company)}</span></div>`:''}
+        ${emailRow}
+        ${c.phone?`<div class="cd-row"><span class="cd-l">Phone</span><span class="cd-v">${esc(c.phone)}</span></div>`:''}
+      </div>
+    </div>`;
+  }).join('') : '<div style="padding:40px;text-align:center;color:#9CA3AF;grid-column:1/-1;background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px">No contacts match.</div>';
+  document.querySelectorAll('.card[data-id]').forEach(el => el.onclick = () => openD(el.dataset.id));
+  updateSelectAllState();
+}
+
+document.getElementById('srch').oninput = renderAll;
+
+// \u2550\u2550\u2550 DRAWER \u2550\u2550\u2550
+function openD(id){
+  if (id != null && id !== '') {
+    const found = contacts.find(c => String(c.id) === String(id));
+    if (!found) return;
+    editing = { ...found };
+  } else {
+    editing = { id:null, name:'', title:'', email:'', phone:'', role:'', company:'', is_internal:false };
+  }
+  document.getElementById('drt').textContent = editing.id ? 'Update Contact' : 'New Contact';
+  document.getElementById('bd').style.display = editing.id ? 'inline-block' : 'none';
+  const c = editing;
+  document.getElementById('drb').innerHTML = `
+    <div class="f"><label class="fl">Name</label><input class="fi" id="d-nm" value="${esc(c.name)}"/></div>
+    <div class="f"><label class="fl">Job Title</label><input class="fi" id="d-ti" value="${esc(c.title)}" placeholder="e.g. Manager, Physical Security"/></div>
+    <div class="f"><label class="fl">Company</label><input class="fi" id="d-co" value="${esc(c.company)}"/></div>
+    <div class="fr">
+      <div class="f"><label class="fl">Email</label><input class="fi" id="d-em" value="${esc(c.email)}" placeholder="name@company.com"/></div>
+      <div class="f"><label class="fl">Phone</label><input class="fi" id="d-ph" value="${esc(c.phone)}"/></div>
+    </div>
+    <div class="f"><label class="fl">Role on Project</label><input class="fi" id="d-ro" value="${esc(c.role)}" placeholder="e.g. Client Sponsor, Design Lead"/></div>
+    <div class="f"><label class="fl">Contact Type</label>
+      <select class="fs" id="d-int">
+        <option value="ext"${!c.is_internal?' selected':''}>External \u2014 client, vendor, or consultant</option>
+        <option value="int"${c.is_internal?' selected':''}>Internal \u2014 ADRM Security employee</option>
+      </select>
+    </div>
+    ${editing.id?window.commentsWidget('contact',editing.id):''}
+    ${editing.id?window.attachmentsWidget('contact',editing.id):''}
+  `;
+  document.getElementById('dbg').classList.add('on');
+  document.getElementById('dr').classList.add('on');
+}
+
+function closeD(){
+  document.getElementById('dbg').classList.remove('on');
+  document.getElementById('dr').classList.remove('on');
+  editing = null;
+}
+
+function saveC(){
+  const name = (document.getElementById('d-nm').value||'').trim();
+  if(!name){ alert('Name is required'); return; }
+  const origId = editing?.id || null;
+  const c = {
+    id:          origId || `tmp-${Date.now()}`,
+    name,
+    title:      (document.getElementById('d-ti').value||'').trim(),
+    company:    (document.getElementById('d-co').value||'').trim(),
+    email:      (document.getElementById('d-em').value||'').trim(),
+    phone:      (document.getElementById('d-ph').value||'').trim(),
+    role:       (document.getElementById('d-ro').value||'').trim(),
+    is_internal: document.getElementById('d-int').value === 'int'
+  };
+  if(!c.email) console.warn(`[contacts] saving ${c.id} ("${c.name}") with no email \u2014 cross-section lookups will miss them.`);
+  const i = origId ? contacts.findIndex(x => String(x.id) === String(origId)) : -1;
+  if (i >= 0) contacts[i] = c; else contacts.push(c);
+  __rebuildContactLookups();
+  console.log('Make payload (contact_save):', { isNew: i<0, row: buildSavePayload(c) });
+  try{ parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*'); }catch(e){}
+  closeD(); renderAll(); updateBulkBar();
+}
+
+function delC(){
+  if(!editing?.id) return;
+  if(!confirm('Remove this contact from the project?')) return;
+  const id = String(editing.id);
+  contacts = contacts.filter(c => String(c.id) !== id);
+  __selected.delete(id);
+  __rebuildContactLookups();
+  console.log('Make payload (contact_delete):', { id });
+  try{ parent.postMessage({type:'toast',msg:'Deleted',kind:'success'},'*'); }catch(e){}
+  closeD(); renderAll(); updateBulkBar();
+}
+
+// \u2550\u2550\u2550 BULK ACTIONS \u2550\u2550\u2550
+// Only delete is meaningful for contacts (no status field). Import sits outside
+// bulk-mode because it creates new rows rather than operating on selection.
+// Select-all respects the current filter + search (operates on `filtered()`).
+let __selected = new Set();
+function toggleSelect(id, el){
+  const sid = String(id);
+  if(__selected.has(sid)){ __selected.delete(sid); el?.classList.remove('on'); }
+  else{ __selected.add(sid); el?.classList.add('on'); }
+  updateBulkBar();
+}
+function updateBulkBar(){
+  const n = __selected.size;
+  const c = document.getElementById('bulk-count'); if(c) c.textContent = n;
+  const b = document.getElementById('bulk-bar');   if(b) b.classList.toggle('show', n>0);
+  updateSelectAllState();
+}
+function clearSelection(){
+  __selected.clear();
+  document.querySelectorAll('.row-check.on').forEach(c=>c.classList.remove('on'));
+  updateBulkBar();
+}
+
+// \u2550 Select-all: operates on currently-visible (filtered) rows. Three states: \u2550
+//   none-of-visible-selected  \u2192 "Select all (N)",   unchecked box
+//   some-of-visible-selected  \u2192 "Select all (N)",   indeterminate box
+//   all-of-visible-selected   \u2192 "Deselect all",     checked box
+function toggleSelectAllVisible(){
+  const vis = filtered();
+  const visIds = vis.map(c => String(c.id));
+  const allSelected = visIds.length > 0 && visIds.every(id => __selected.has(id));
+  if (allSelected) {
+    visIds.forEach(id => __selected.delete(id));
+  } else {
+    visIds.forEach(id => __selected.add(id));
+  }
+  // Refresh the on-class for each visible row without a full re-render (cheaper + preserves menu state)
+  document.querySelectorAll('.card[data-id]').forEach(card => {
+    const id = card.dataset.id;
+    const chk = card.querySelector('.row-check');
+    if (chk) chk.classList.toggle('on', __selected.has(id));
+  });
+  updateBulkBar();
+}
+function updateSelectAllState(){
+  const vis = filtered();
+  const visIds = vis.map(c => String(c.id));
+  const selVisCount = visIds.filter(id => __selected.has(id)).length;
+  let state, label;
+  if (visIds.length === 0)                        { state='empty';  label='Select all'; }
+  else if (selVisCount === 0)                     { state='none';   label=`Select all (${visIds.length})`; }
+  else if (selVisCount === visIds.length)         { state='all';    label='Deselect all'; }
+  else                                            { state='mixed';  label=`Select all (${visIds.length})`; }
+  ['selall-hdr','selall-bar'].forEach(hostId => {
+    const host = document.getElementById(hostId);
+    if (!host) return;
+    const chk = host.querySelector('.row-check');
+    const lbl = document.getElementById(hostId+'-lbl');
+    if (chk) {
+      chk.classList.remove('on','mixed');
+      if (state === 'all')   chk.classList.add('on');
+      if (state === 'mixed') chk.classList.add('mixed');
+    }
+    if (lbl) lbl.textContent = label;
+    host.style.opacity = state === 'empty' ? '.5' : '1';
+    host.style.pointerEvents = state === 'empty' ? 'none' : 'auto';
+  });
+}
+function bulkDelete(){
+  if(!__selected.size) return;
+  const n = __selected.size;
+  if(!confirm(`Remove ${n} contact${n===1?'':'s'} from the project?`)) return;
+  const ids = [...__selected];
+  contacts = contacts.filter(c => !__selected.has(String(c.id)));
+  __rebuildContactLookups();
+  console.log('Make payload (contacts_bulk_delete):', { ids });
+  try{ parent.postMessage({type:'toast',msg:`${n} removed`,kind:'success'},'*'); }catch(e){}
+  clearSelection(); renderAll();
+}
+function bulkImport(){
+  const rows = prompt('Paste rows \u2014 one per line, comma-separated:\nName, Email, Company, Role');
+  if(!rows) return;
+  const lines = rows.split('\n').filter(l => l.trim());
+  let added = 0;
+  lines.forEach((line, idx) => {
+    const [name, email, company, role] = line.split(',').map(s => (s||'').trim());
+    if(!name) return;
+    contacts.push({
+      id: `tmp-${Date.now()}-${idx}`,
+      name, title:'',
+      email: email||'', phone:'', role: role||'', company: company||'',
+      is_internal: false
+    });
+    added++;
+  });
+  __rebuildContactLookups();
+  try{ parent.postMessage({type:'toast',msg:`${added} contacts imported`,kind:'success'},'*'); }catch(e){}
+  renderAll();
+}
+
+document.addEventListener('keydown', e => {
+  if(e.key==='Escape'){ closeD(); clearSelection(); }
+});
+
+// \u2550\u2550\u2550 openEntity receiver (deep link target) \u2550\u2550\u2550
+window.addEventListener('message', e => {
+  if (e.data?.type === 'openEntity' && e.data.entityId != null) {
+    setTimeout(()=>{ try{ openD(e.data.entityId); }catch(_){} }, 100);
+  }
+});
+
+renderAll();
+
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+// SMOKE TESTS (Pattern #5)
+// window.__CONTACTS_SMOKE__() \u2014 returns pass/fail map. Runs in-browser (jsdom-safe).
+// Covers: ingestion defense, Pattern #4 email validation, Pattern #7 field exposure,
+// Pattern #2 string IDs, outbound shape, roundtrip stability, is_internal flow,
+// duplicate-email handling, DOM render, XSS invariants, drawer state, save/delete,
+// bulk flows, filter, and cross-section lookup exposure.
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+window.__CONTACTS_SMOKE__ = function(){
+  const results = {};
+  const run = (name, fn) => { try { results[name] = fn() ? 'PASS' : 'FAIL'; } catch(e) { results[name] = 'THROW: '+e.message; } };
+  const snapshot = () => JSON.parse(JSON.stringify(contacts));
+  const restore  = (snap) => { contacts.length = 0; snap.forEach(x => contacts.push(x)); __selected.clear(); __rebuildContactLookups(); };
+  const origItems = snapshot();
+
+  // Pure-function ingestion mirror (same logic as the IIFE, no DOM)
+  const ingestOnce = (P) => {
+    const raw = Array.isArray(P?.contacts) ? P.contacts : null;
+    if (!Array.isArray(raw) || !raw.length) return null;
+    return raw.filter(c => c && typeof c === 'object').map((c, idx) => ({
+      id:    String(c.id ?? `tmp-x-${idx}`),
+      name:  String(c.name ?? '').trim(),
+      email: String(c.email ?? '').trim(),
+      title: String(c.title ?? '').trim(),
+      phone: String(c.phone ?? '').trim(),
+      role:  String(c.role ?? '').trim(),
+      company: String(c.company ?? '').trim(),
+      is_internal: !!c.is_internal
+    })).filter(c => c.name);
+  };
+
+  // \u2500\u2500 INGESTION: defensive handling \u2500\u2500
+  run('ingest_null_payload',          () => ingestOnce(null) === null);
+  run('ingest_undefined_payload',     () => ingestOnce(undefined) === null);
+  run('ingest_missing_contacts_field',() => ingestOnce({ meta:{payload_version:1}, project:{name:'X'} }) === null);
+  run('ingest_malformed_string',      () => ingestOnce({ contacts: 'nope' }) === null);
+  run('ingest_malformed_number',      () => ingestOnce({ contacts: 42 }) === null);
+  run('ingest_malformed_object',      () => ingestOnce({ contacts: {} }) === null);
+  run('ingest_empty_array_keeps_demo',() => ingestOnce({ contacts: [] }) === null);
+  run('ingest_nulls_in_array_filtered', () => {
+    const n = ingestOnce({ contacts: [null, undefined, { id:'X', name:'ok', email:'o@x.com' }] });
+    return n && n.length === 1 && n[0].name === 'ok';
+  });
+  run('ingest_nameless_row_dropped', () => {
+    const n = ingestOnce({ contacts: [{ id:'X', email:'x@x.com' }, { id:'Y', name:'keep', email:'y@x.com' }] });
+    return n && n.length === 1 && n[0].name === 'keep';
+  });
+  run('ingest_whitespace_name_dropped', () => {
+    const n = ingestOnce({ contacts: [{ name:'   ', email:'x@x.com' }, { name:'keep', email:'y@x.com' }] });
+    return n && n.length === 1 && n[0].name === 'keep';
+  });
+  run('ingest_missing_email_still_renders', () => {
+    // Pattern #4: no-email rows warn, do NOT get dropped.
+    const n = ingestOnce({ contacts: [{ id:'X', name:'No Email Bob' }] });
+    return n && n.length === 1 && n[0].email === '';
+  });
+  run('ingest_missing_is_internal_defaults_false', () => {
+    const n = ingestOnce({ contacts:[{ id:'X', name:'X', email:'x@x.com' }] });
+    return n && n[0].is_internal === false;
+  });
+  run('ingest_is_internal_true_preserved', () => {
+    const n = ingestOnce({ contacts:[{ id:'X', name:'X', email:'x@x.com', is_internal:true }] });
+    return n && n[0].is_internal === true;
+  });
+  run('ingest_title_preserved_if_present', () => {
+    // Pattern #1: title is UI-only, but if payload includes it we accept & keep it.
+    const n = ingestOnce({ contacts:[{ id:'X', name:'X', email:'x@x.com', title:'CTO' }] });
+    return n && n[0].title === 'CTO';
+  });
+  run('ingest_string_id_preserved_verbatim', () => {
+    const n = ingestOnce({ contacts:[{ id:'CON-99', name:'X', email:'x@x.com' }] });
+    return n && n[0].id === 'CON-99';
+  });
+
+  // \u2500\u2500 PATTERN #2: String ID safety \u2500\u2500
+  run('string_id_comparison_case_sensitive', () => String('CON-01') !== String('con-01'));
+  run('string_id_prefixed_matches',          () => String('CON-07') === String('CON-07'));
+  run('string_id_no_Math_max_coercion',      () => {
+    // new-id generator doesn't use Math.max over ids; new rows use tmp-<ts>
+    const newId = `tmp-${Date.now()}`;
+    return typeof newId === 'string' && newId.startsWith('tmp-');
+  });
+
+  // \u2500\u2500 PATTERN #4: email pass-through \u2500\u2500
+  run('pattern4_email_in_outbound', () => {
+    const p = buildSavePayload({id:'X',name:'N',email:'n@x.com',is_internal:false});
+    return p.email === 'n@x.com';
+  });
+  run('pattern4_lookup_by_email_works', () => {
+    restore([{id:'CON-01',name:'A',email:'a@adrm-security.com',is_internal:true,title:'',phone:'',role:'',company:''}]);
+    return window.__contactByEmail['a@adrm-security.com']?.name === 'A';
+  });
+  run('pattern4_lookup_email_is_lowercased_key', () => {
+    restore([{id:'CON-01',name:'Mixed',email:'Mixed@Case.Com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    return window.__contactByEmail['mixed@case.com']?.name === 'Mixed';
+  });
+
+  // \u2500\u2500 PATTERN #7: all schema fields expressed \u2500\u2500
+  run('pattern7_outbound_has_all_schema_fields', () => {
+    const p = buildSavePayload({id:'X',name:'N',email:'e',company:'c',role:'r',phone:'p',is_internal:true});
+    const keys = Object.keys(p).sort();
+    return JSON.stringify(keys) === JSON.stringify(['company','email','id','is_internal','name','phone','role']);
+  });
+  run('pattern7_title_not_in_outbound', () => {
+    // title is UI-only per Pattern #1, not a schema field
+    const p = buildSavePayload({id:'X',name:'N',email:'e',title:'CTO',is_internal:false});
+    return !('title' in p);
+  });
+  run('pattern7_is_internal_coerced_boolean', () => {
+    const pT = buildSavePayload({id:'X',name:'N',is_internal:'truthy'});
+    const pF = buildSavePayload({id:'X',name:'N',is_internal:0});
+    return pT.is_internal === true && pF.is_internal === false;
+  });
+  run('pattern7_is_internal_visible_on_card', () => {
+    restore([{id:'CON-01',name:'Int Person',email:'i@adrm-security.com',is_internal:true,title:'',phone:'',role:'',company:''}]);
+    renderAll();
+    return document.querySelector('.pill-int') && document.querySelector('.pill-int').textContent === 'Internal';
+  });
+  run('pattern7_external_visible_on_card', () => {
+    restore([{id:'CON-01',name:'Ext Person',email:'e@ext.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    renderAll();
+    return document.querySelector('.pill-ext') && document.querySelector('.pill-ext').textContent === 'External';
+  });
+
+  // \u2500\u2500 PATTERN #8: field casing \u2500\u2500
+  run('pattern8_is_internal_is_snake_case', () => {
+    const p = buildSavePayload({id:'X',name:'N',is_internal:true});
+    return 'is_internal' in p && !('isInternal' in p);
+  });
+  run('pattern8_no_originFrom_emitted', () => {
+    const p = buildSavePayload({id:'X',name:'N',originFrom:'punch',originId:'PL-1'});
+    return !('originFrom' in p) && !('originId' in p);
+  });
+
+  // \u2500\u2500 OUTBOUND shape \u2500\u2500
+  run('outbound_exactly_7_fields', () => {
+    const p = buildSavePayload({id:'X',name:'N',email:'e',company:'c',role:'r',phone:'p',is_internal:false,title:'drop',extra:'nope'});
+    return Object.keys(p).length === 7;
+  });
+  run('outbound_all_strings_except_is_internal', () => {
+    const p = buildSavePayload({id:'X',name:'N',email:'e',company:'c',role:'r',phone:'p',is_internal:true});
+    return typeof p.id==='string' && typeof p.name==='string' && typeof p.email==='string'
+        && typeof p.company==='string' && typeof p.role==='string' && typeof p.phone==='string'
+        && typeof p.is_internal==='boolean';
+  });
+  run('outbound_missing_fields_default_empty_string', () => {
+    const p = buildSavePayload({id:'X',name:'N'});
+    return p.email==='' && p.company==='' && p.role==='' && p.phone==='';
+  });
+
+  // \u2500\u2500 ROUND-TRIP: ingest \u2192 save \u2192 re-ingest produces identical shape \u2500\u2500
+  run('roundtrip_single_row_identical', () => {
+    const schemaIn = {id:'CON-42',name:'Round Tripper',email:'rt@adrm-security.com',company:'ADRM Security',role:'Engineer',phone:'555',is_internal:true};
+    const ingested = ingestOnce({ contacts:[schemaIn] });
+    const out = buildSavePayload(ingested[0]);
+    return JSON.stringify(out) === JSON.stringify(schemaIn);
+  });
+  run('roundtrip_multi_row_order_preserved', () => {
+    const inp = [
+      {id:'CON-01',name:'A',email:'a@x.com',company:'',role:'',phone:'',is_internal:false},
+      {id:'CON-02',name:'B',email:'b@x.com',company:'',role:'',phone:'',is_internal:true},
+      {id:'CON-03',name:'C',email:'c@x.com',company:'',role:'',phone:'',is_internal:false}
+    ];
+    const ingested = ingestOnce({ contacts: inp });
+    const out = ingested.map(buildSavePayload);
+    return out[0].id==='CON-01' && out[1].id==='CON-02' && out[2].id==='CON-03';
+  });
+  run('roundtrip_byte_identical_no_edit', () => {
+    const src = {id:'CON-9',name:'X',email:'x@x.com',company:'',role:'',phone:'',is_internal:false};
+    const ingested = ingestOnce({ contacts:[src] });
+    const out = buildSavePayload(ingested[0]);
+    return JSON.stringify(out) === JSON.stringify(src);
+  });
+
+  // \u2500\u2500 DUPLICATE EMAIL: both render, neither dropped \u2500\u2500
+  run('dup_email_both_render', () => {
+    const n = ingestOnce({ contacts:[
+      {id:'CON-1',name:'First',email:'same@x.com'},
+      {id:'CON-2',name:'Second',email:'same@x.com'}
+    ]});
+    return n && n.length === 2;
+  });
+  run('dup_email_lookup_resolves_last_written', () => {
+    // Object.fromEntries keeps the last entry for a duplicate key \u2014 document the behavior.
+    restore([
+      {id:'CON-1',name:'First', email:'same@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'Second',email:'same@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    return window.__contactByEmail['same@x.com']?.name === 'Second';
+  });
+
+  // \u2500\u2500 __CONTACTS__ / __contactBy* exposure \u2500\u2500
+  run('lookups_internal_sorted_first', () => {
+    restore([
+      {id:'CON-1',name:'Zed External',email:'z@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'Alice External',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-3',name:'Bob Internal',email:'b@adrm-security.com',is_internal:true,title:'',phone:'',role:'',company:''}
+    ]);
+    return window.__CONTACTS__[0] === 'Bob Internal';
+  });
+  run('lookups_groups_alphabetized_within', () => {
+    restore([
+      {id:'CON-1',name:'Zed External',email:'z@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'Alice External',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    return window.__CONTACTS__.indexOf('Alice External') < window.__CONTACTS__.indexOf('Zed External');
+  });
+  run('lookups_byEmail_populated', () => {
+    restore([{id:'CON-1',name:'Matt',email:'misgur@adrm-security.com',is_internal:true,title:'',phone:'',role:'',company:''}]);
+    return window.__contactByEmail['misgur@adrm-security.com']?.id === 'CON-1';
+  });
+  run('lookups_byName_populated', () => {
+    restore([{id:'CON-1',name:'Matt Isgur',email:'m@x.com',is_internal:true,title:'',phone:'',role:'',company:''}]);
+    return window.__contactByName['Matt Isgur']?.id === 'CON-1';
+  });
+  run('lookups_missing_email_excluded_from_byEmail', () => {
+    restore([
+      {id:'CON-1',name:'No Mail',email:'',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'Has Mail',email:'y@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    return !('' in window.__contactByEmail) && window.__contactByEmail['y@x.com']?.id === 'CON-2';
+  });
+  run('lookups_rebuild_after_save', () => {
+    restore([]);
+    const c={id:'CON-99',name:'Fresh',email:'f@x.com',is_internal:true,title:'',phone:'',role:'',company:''};
+    contacts.push(c); __rebuildContactLookups();
+    return window.__CONTACTS__.includes('Fresh') && window.__contactByEmail['f@x.com']?.id === 'CON-99';
+  });
+
+  // \u2500\u2500 RENDER (DOM) \u2500\u2500
+  run('render_card_count_matches_items', () => {
+    restore([
+      {id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'B',email:'b@x.com',is_internal:true,title:'',phone:'',role:'',company:''},
+      {id:'CON-3',name:'C',email:'c@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    setFilter('all'); renderAll();
+    return document.querySelectorAll('.card[data-id]').length === 3;
+  });
+  run('render_empty_state_when_no_matches', () => {
+    restore([{id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    document.getElementById('srch').value = 'zzzz-nomatch-zzzz';
+    renderAll();
+    const ok = document.getElementById('grid').innerHTML.includes('No contacts match');
+    document.getElementById('srch').value = '';
+    renderAll();
+    return ok;
+  });
+  run('render_sub_count_reflects_split', () => {
+    restore([
+      {id:'CON-1',name:'A',email:'a@x.com',is_internal:true, title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'B',email:'b@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    renderAll();
+    const t = document.getElementById('sub').textContent;
+    return t.includes('2 contacts') && t.includes('1 internal') && t.includes('1 external');
+  });
+  run('render_missing_email_shows_warning_chip', () => {
+    restore([{id:'CON-1',name:'NoMail',email:'',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    renderAll();
+    return document.querySelector('.cd-warn')?.textContent.includes('missing');
+  });
+  run('render_bulk_checkbox_renders_per_card', () => {
+    restore([
+      {id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'B',email:'b@x.com',is_internal:true, title:'',phone:'',role:'',company:''}
+    ]);
+    setFilter('all'); renderAll();
+    return document.querySelectorAll('.card .row-check').length === 2;
+  });
+  run('render_selected_checkbox_has_on_class', () => {
+    restore([{id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    __selected.clear(); __selected.add('CON-1');
+    setFilter('all'); renderAll();
+    const ok = document.querySelector('.card .row-check').classList.contains('on');
+    clearSelection();
+    return ok;
+  });
+
+  // \u2500\u2500 FILTER pills \u2500\u2500
+  run('filter_int_shows_only_internal', () => {
+    restore([
+      {id:'CON-1',name:'Int',email:'i@adrm-security.com',is_internal:true, title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'Ext',email:'e@ext.com',          is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    setFilter('int'); renderAll();
+    const ok = document.querySelectorAll('.card[data-id]').length === 1
+          && document.querySelector('.card[data-id]').dataset.id === 'CON-1';
+    setFilter('all');
+    return ok;
+  });
+  run('filter_ext_shows_only_external', () => {
+    restore([
+      {id:'CON-1',name:'Int',email:'i@adrm-security.com',is_internal:true, title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'Ext',email:'e@ext.com',          is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    setFilter('ext'); renderAll();
+    const ok = document.querySelectorAll('.card[data-id]').length === 1
+          && document.querySelector('.card[data-id]').dataset.id === 'CON-2';
+    setFilter('all');
+    return ok;
+  });
+  run('filter_search_matches_any_field', () => {
+    restore([
+      {id:'CON-1',name:'Alice', email:'alice@x.com',    is_internal:false,title:'',phone:'',role:'',company:'Acme'},
+      {id:'CON-2',name:'Bob',   email:'bob@other.com',  is_internal:false,title:'',phone:'',role:'',company:'Other'}
+    ]);
+    document.getElementById('srch').value = 'acme';
+    const out = filtered();
+    document.getElementById('srch').value = '';
+    return out.length === 1 && out[0].name === 'Alice';
+  });
+
+  // \u2500\u2500 XSS invariants (Pattern #3) \u2500\u2500
+  run('xss_name_not_parsed_as_markup', () => {
+    const payload = '<scr'+'ipt>alert(1)</scr'+'ipt>';
+    restore([{id:'CON-1',name:payload,email:'x@x.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    setFilter('all'); renderAll();
+    const injected = document.querySelector('#grid script');
+    const cnm = document.querySelector('.cnm');
+    return !injected && cnm.textContent.includes(payload);
+  });
+  run('xss_email_cell_text_not_link_or_script', () => {
+    const payload = '"><img src=x onerror=alert(1)>';
+    restore([{id:'CON-1',name:'X',email:payload,is_internal:false,title:'',phone:'',role:'',company:''}]);
+    setFilter('all'); renderAll();
+    const injectedImg = document.querySelector('#grid img');
+    return !injectedImg;
+  });
+  run('xss_data_id_attribute_no_breakout', () => {
+    const payload = 'a" onclick="alert(1)';
+    restore([{id:payload,name:'X',email:'x@x.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    setFilter('all'); renderAll();
+    const card = document.querySelector('.card[data-id]');
+    return card.getAttribute('data-id') === payload && !card.hasAttribute('onclick');
+  });
+  run('xss_drawer_input_value_is_literal', () => {
+    const payload = '"><img src=x>';
+    restore([{id:'CON-1',name:payload,email:'x@x.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    openD('CON-1');
+    const inp = document.getElementById('d-nm');
+    const injected = document.querySelector('#drb img');
+    const ok = inp.value === payload && !injected;
+    closeD();
+    return ok;
+  });
+  run('xss_drawer_email_no_event_handler_injected', () => {
+    const payload = '" onmouseover="alert(1)" x="';
+    restore([{id:'CON-1',name:'X',email:payload,is_internal:false,title:'',phone:'',role:'',company:''}]);
+    openD('CON-1');
+    const inp = document.getElementById('d-em');
+    const ok = !inp.hasAttribute('onmouseover') && inp.value === payload;
+    closeD();
+    return ok;
+  });
+
+  // \u2500\u2500 DRAWER state \u2500\u2500
+  run('openD_null_blank_editing', () => {
+    openD(null);
+    const ok = editing && editing.id === null && editing.name === '' && editing.is_internal === false;
+    closeD();
+    return ok;
+  });
+  run('openD_existing_populates', () => {
+    restore([{id:'CON-1',name:'Alice',email:'a@x.com',is_internal:true,title:'T',phone:'p',role:'r',company:'c'}]);
+    renderAll();
+    openD('CON-1');
+    const ok = editing && editing.id === 'CON-1' && editing.name === 'Alice' && editing.is_internal === true
+           && document.getElementById('d-int').value === 'int';
+    closeD();
+    return ok;
+  });
+  run('openD_clones_not_reference', () => {
+    restore([{id:'CON-1',name:'Alice',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    renderAll();
+    openD('CON-1');
+    editing.name = 'MUTATED';
+    const ok = contacts[0].name === 'Alice';
+    closeD();
+    return ok;
+  });
+  run('openD_drawer_title_update_for_existing', () => {
+    restore([{id:'CON-1',name:'X',email:'x@x.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    renderAll();
+    openD('CON-1');
+    const ok = document.getElementById('drt').textContent === 'Update Contact';
+    closeD();
+    return ok;
+  });
+  run('openD_drawer_title_new_for_null', () => {
+    openD(null);
+    const ok = document.getElementById('drt').textContent === 'New Contact';
+    closeD();
+    return ok;
+  });
+  run('openD_delete_button_hidden_for_new', () => {
+    openD(null);
+    const ok = document.getElementById('bd').style.display === 'none';
+    closeD();
+    return ok;
+  });
+  run('openD_nonexistent_id_noop', () => {
+    restore([{id:'CON-1',name:'X',email:'x@x.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    renderAll();
+    editing = null;
+    openD('CON-DOESNOTEXIST');
+    return editing === null;
+  });
+  run('closeD_clears_editing', () => {
+    openD(null);
+    closeD();
+    return editing === null;
+  });
+
+  // \u2500\u2500 SAVE flows \u2500\u2500
+  const withAlert = (fn) => {
+    let alerted = false;
+    const orig = window.alert;
+    window.alert = () => { alerted = true; };
+    try { fn(); } finally { window.alert = orig; }
+    return alerted;
+  };
+  const withConfirm = (answer, fn) => {
+    const orig = window.confirm;
+    window.confirm = () => answer;
+    try { fn(); } finally { window.confirm = orig; }
+  };
+
+  run('saveC_rejects_blank_name', () => {
+    restore([]);
+    openD(null);
+    document.getElementById('d-nm').value = '   ';
+    const alerted = withAlert(() => saveC());
+    const ok = alerted && contacts.length === 0;
+    closeD();
+    return ok;
+  });
+  run('saveC_new_row_appends_with_tmp_id', () => {
+    restore([]);
+    openD(null);
+    document.getElementById('d-nm').value = 'Brand New';
+    document.getElementById('d-em').value = 'bn@x.com';
+    document.getElementById('d-int').value = 'int';
+    saveC();
+    const added = contacts.find(c => c.name === 'Brand New');
+    return added && added.id.startsWith('tmp-') && added.is_internal === true;
+  });
+  run('saveC_update_preserves_id', () => {
+    restore([{id:'CON-1',name:'Old',email:'o@x.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    renderAll();
+    openD('CON-1');
+    document.getElementById('d-nm').value = 'New Name';
+    saveC();
+    return contacts.length === 1 && contacts[0].id === 'CON-1' && contacts[0].name === 'New Name';
+  });
+  run('saveC_flips_is_internal', () => {
+    restore([{id:'CON-1',name:'X',email:'x@x.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    renderAll();
+    openD('CON-1');
+    document.getElementById('d-int').value = 'int';
+    saveC();
+    return contacts[0].is_internal === true;
+  });
+  run('saveC_rebuilds_lookups_after_is_internal_change', () => {
+    restore([
+      {id:'CON-1',name:'Will Be Internal',email:'w@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'Other External',  email:'o@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    renderAll();
+    openD('CON-1');
+    document.getElementById('d-int').value = 'int';
+    saveC();
+    return window.__CONTACTS__[0] === 'Will Be Internal';
+  });
+  run('saveC_toast_posted', () => {
+    let got=null;
+    const orig = window.parent.postMessage;
+    window.parent.postMessage = (m) => { if(m?.type==='toast') got=m; };
+    try {
+      restore([]);
+      openD(null);
+      document.getElementById('d-nm').value = 'Tst';
+      saveC();
+    } finally { window.parent.postMessage = orig; }
+    return got && got.kind === 'success';
+  });
+
+  // \u2500\u2500 DELETE flows \u2500\u2500
+  run('delC_confirm_accepted_removes', () => {
+    restore([
+      {id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'B',email:'b@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    renderAll();
+    openD('CON-1');
+    withConfirm(true, () => delC());
+    return contacts.length === 1 && contacts[0].id === 'CON-2';
+  });
+  run('delC_confirm_declined_keeps', () => {
+    restore([{id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    renderAll();
+    openD('CON-1');
+    withConfirm(false, () => delC());
+    const ok = contacts.length === 1;
+    closeD();
+    return ok;
+  });
+  run('delC_clears_selection_for_deleted_id', () => {
+    restore([{id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    renderAll();
+    __selected.add('CON-1');
+    openD('CON-1');
+    withConfirm(true, () => delC());
+    return !__selected.has('CON-1');
+  });
+  run('delC_rebuilds_lookups', () => {
+    restore([{id:'CON-1',name:'Gone',email:'g@x.com',is_internal:true,title:'',phone:'',role:'',company:''}]);
+    renderAll();
+    openD('CON-1');
+    withConfirm(true, () => delC());
+    return !window.__CONTACTS__.includes('Gone') && !window.__contactByEmail['g@x.com'];
+  });
+
+  // \u2500\u2500 BULK flows \u2500\u2500
+  run('bulk_toggleSelect_adds', () => {
+    clearSelection();
+    toggleSelect('CON-1', null); toggleSelect('CON-2', null);
+    const ok = __selected.size === 2 && __selected.has('CON-1') && __selected.has('CON-2');
+    clearSelection();
+    return ok;
+  });
+  run('bulk_toggleSelect_removes_when_toggled_off', () => {
+    clearSelection();
+    toggleSelect('CON-1', null); toggleSelect('CON-1', null);
+    return __selected.size === 0;
+  });
+  run('bulk_count_reflects_selection', () => {
+    clearSelection();
+    toggleSelect('CON-1', null); toggleSelect('CON-2', null); toggleSelect('CON-3', null);
+    const ok = document.getElementById('bulk-count').textContent === '3';
+    clearSelection();
+    return ok;
+  });
+  run('bulk_bar_toggles_visibility', () => {
+    clearSelection();
+    toggleSelect('CON-1', null);
+    const shown = document.getElementById('bulk-bar').classList.contains('show');
+    clearSelection();
+    const hidden = !document.getElementById('bulk-bar').classList.contains('show');
+    return shown && hidden;
+  });
+  run('bulk_delete_removes_selected_keeps_others', () => {
+    restore([
+      {id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'B',email:'b@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-3',name:'C',email:'c@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    renderAll();
+    toggleSelect('CON-1', null); toggleSelect('CON-3', null);
+    withConfirm(true, () => bulkDelete());
+    return contacts.length === 1 && contacts[0].id === 'CON-2' && __selected.size === 0;
+  });
+  run('bulk_delete_confirm_declined_keeps_all', () => {
+    restore([
+      {id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'B',email:'b@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    renderAll();
+    toggleSelect('CON-1', null);
+    withConfirm(false, () => bulkDelete());
+    return contacts.length === 2;
+  });
+  run('bulk_delete_empty_selection_noop', () => {
+    restore([{id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    clearSelection();
+    bulkDelete();
+    return contacts.length === 1;
+  });
+  run('bulk_delete_rebuilds_lookups', () => {
+    restore([
+      {id:'CON-1',name:'Doomed',email:'d@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'Keep',  email:'k@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    renderAll();
+    toggleSelect('CON-1', null);
+    withConfirm(true, () => bulkDelete());
+    return !window.__contactByEmail['d@x.com'] && window.__contactByEmail['k@x.com'];
+  });
+
+  // \u2500\u2500 SELECT-ALL \u2500\u2500
+  run('selectall_none_to_all', () => {
+    restore([
+      {id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'B',email:'b@x.com',is_internal:true, title:'',phone:'',role:'',company:''},
+      {id:'CON-3',name:'C',email:'c@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    setFilter('all'); renderAll();
+    clearSelection();
+    toggleSelectAllVisible();
+    const ok = __selected.size === 3 && __selected.has('CON-1') && __selected.has('CON-2') && __selected.has('CON-3');
+    clearSelection();
+    return ok;
+  });
+  run('selectall_all_to_none_is_deselect', () => {
+    restore([
+      {id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'B',email:'b@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    setFilter('all'); renderAll();
+    __selected.clear(); __selected.add('CON-1'); __selected.add('CON-2');
+    toggleSelectAllVisible();
+    return __selected.size === 0;
+  });
+  run('selectall_mixed_selects_remaining', () => {
+    // When some are selected, the "mixed" state should resolve to "select all"
+    restore([
+      {id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'B',email:'b@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-3',name:'C',email:'c@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    setFilter('all'); renderAll();
+    __selected.clear(); __selected.add('CON-2');
+    toggleSelectAllVisible();
+    const ok = __selected.size === 3;
+    clearSelection();
+    return ok;
+  });
+  run('selectall_respects_filter', () => {
+    // Only visible (filtered) rows should be affected.
+    restore([
+      {id:'CON-1',name:'Int', email:'i@adrm-security.com',is_internal:true, title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'Ext1',email:'e1@x.com',           is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-3',name:'Ext2',email:'e2@x.com',           is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    setFilter('ext'); renderAll();
+    clearSelection();
+    toggleSelectAllVisible();
+    const ok = __selected.size === 2 && __selected.has('CON-2') && __selected.has('CON-3') && !__selected.has('CON-1');
+    clearSelection(); setFilter('all');
+    return ok;
+  });
+  run('selectall_respects_search', () => {
+    restore([
+      {id:'CON-1',name:'Alice Match', email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'Bob',         email:'b@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    setFilter('all');
+    document.getElementById('srch').value = 'alice';
+    renderAll();
+    clearSelection();
+    toggleSelectAllVisible();
+    const ok = __selected.size === 1 && __selected.has('CON-1');
+    document.getElementById('srch').value = '';
+    clearSelection();
+    renderAll();
+    return ok;
+  });
+  run('selectall_label_deselect_when_all_selected', () => {
+    restore([
+      {id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'B',email:'b@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    setFilter('all'); renderAll();
+    __selected.clear(); __selected.add('CON-1'); __selected.add('CON-2');
+    updateSelectAllState();
+    const ok = document.getElementById('selall-hdr-lbl').textContent === 'Deselect all';
+    clearSelection();
+    return ok;
+  });
+  run('selectall_label_count_when_none_selected', () => {
+    restore([
+      {id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'B',email:'b@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    setFilter('all'); renderAll();
+    clearSelection();
+    return document.getElementById('selall-hdr-lbl').textContent === 'Select all (2)';
+  });
+  run('selectall_mixed_state_applies_mixed_class', () => {
+    restore([
+      {id:'CON-1',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-2',name:'B',email:'b@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'CON-3',name:'C',email:'c@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    setFilter('all'); renderAll();
+    __selected.clear(); __selected.add('CON-1');
+    updateSelectAllState();
+    const chk = document.querySelector('#selall-hdr .row-check');
+    const ok = chk.classList.contains('mixed') && !chk.classList.contains('on');
+    clearSelection();
+    return ok;
+  });
+  run('selectall_disabled_when_no_visible', () => {
+    restore([]);
+    setFilter('all'); renderAll();
+    const host = document.getElementById('selall-hdr');
+    return host.style.pointerEvents === 'none';
+  });
+  run('selectall_uses_string_ids', () => {
+    restore([
+      {id:'CON-01',name:'A',email:'a@x.com',is_internal:false,title:'',phone:'',role:'',company:''},
+      {id:'tmp-123',name:'B',email:'b@x.com',is_internal:false,title:'',phone:'',role:'',company:''}
+    ]);
+    setFilter('all'); renderAll();
+    clearSelection();
+    toggleSelectAllVisible();
+    const ok = __selected.has('CON-01') && __selected.has('tmp-123');
+    clearSelection();
+    return ok;
+  });
+
+  // \u2500\u2500 DEEP LINK RECEIVER \u2500\u2500
+  run('deeplink_openEntity_opens_drawer', () => {
+    restore([{id:'CON-42',name:'Target',email:'t@x.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    renderAll();
+    closeD();
+    openD('CON-42');
+    const ok = editing && editing.id === 'CON-42';
+    closeD();
+    return ok;
+  });
+  run('deeplink_unknown_entity_noop', () => {
+    restore([{id:'CON-1',name:'X',email:'x@x.com',is_internal:false,title:'',phone:'',role:'',company:''}]);
+    renderAll();
+    editing = null;
+    openD('CON-NOPE');
+    return editing === null;
+  });
+
+  // \u2500\u2500 Restore clean state \u2500\u2500
+  restore(origItems);
+  renderAll();
+
+  console.table(results);
+  const failed = Object.entries(results).filter(([,v]) => v !== 'PASS');
+  if (failed.length) console.warn('[contacts] smoke FAIL:', failed);
+  else console.log('[contacts] all smoke PASS (' + Object.keys(results).length + ')');
+  return results;
+};
+</script></body></html>

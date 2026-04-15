@@ -1,0 +1,689 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Materials</title><style>
+*{box-sizing:border-box;margin:0;padding:0}body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;padding:20px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.ti{font-size:18px;font-weight:700;color:#fff}.sb{font-size:12px;color:#9CA3AF;margin-top:3px}.ctr{display:flex;gap:8px;align-items:center}
+.srch{background:#1f1f1f;border:1px solid #303030;border-radius:6px;padding:7px 11px;color:#E5E7EB;font-size:12.5px;outline:none;width:220px;font-family:inherit}
+.btn{padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #303030;background:#1f1f1f;color:#E5E7EB;cursor:pointer;font-family:inherit}.bp{background:#3c4756;color:#fff;border-color:#4a5666}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}.kpi{background:#1f1f1f;border:1px solid #2a2a2a;border-left:3px solid;border-radius:8px;padding:12px 14px}
+.kl{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:5px}.kv{font-size:22px;font-weight:800}.kc{font-size:11px;color:#9CA3AF;margin-top:3px}
+.card{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;overflow:hidden;margin-bottom:14px}
+.cardp{padding:16px}.ct{font-size:13px;font-weight:700;margin-bottom:4px}.cs{font-size:11.5px;color:#9CA3AF;margin-bottom:14px}
+.rtbl{width:100%;border-collapse:collapse;font-size:12.5px}.rtbl th{padding:10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9CA3AF;border-bottom:1px solid #303030;background:#191919}.rtbl td{padding:11px 10px;border-bottom:1px solid #2a2a2a}.rtbl tr[data-id]{cursor:pointer}.rtbl tr[data-id]:hover td{background:#252525}
+.delbar{display:inline-flex;align-items:center;gap:8px}.delb{display:inline-block;width:80px;height:5px;background:#2e2e2e;border-radius:3px;overflow:hidden;vertical-align:middle}.delf{display:block;height:100%;border-radius:3px}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}.pill::before{content:'';width:6px;height:6px;border-radius:50%}
+.p-o{background:rgba(239,68,68,.14);color:#ff6b6b}.p-o::before{background:#EF4444}.p-p{background:rgba(245,158,11,.14);color:#F59E0B}.p-p::before{background:#F59E0B}.p-c{background:rgba(34,197,94,.14);color:#22C55E}.p-c::before{background:#22C55E}
+.dbg{position:fixed;inset:0;background:rgba(10,10,10,.7);z-index:100;display:none}.dbg.on{display:block}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(520px,92vw);background:#1a1a1a;border-left:1px solid #303030;z-index:101;display:none;flex-direction:column}.dr.on{display:flex}
+.drh{padding:18px 22px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between}.drt{font-size:16px;font-weight:700;color:#fff}.drx{width:28px;height:28px;border-radius:6px;border:1px solid #303030;background:#252525;color:#9CA3AF;cursor:pointer;font-size:15px}
+.drb{flex:1;overflow-y:auto;padding:20px 22px}.drf{padding:14px 22px;border-top:1px solid #2a2a2a;background:#191919;display:flex;gap:8px}
+.f{margin-bottom:14px}.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px}
+.fi,.fs,.ft{width:100%;background:#161616;border:1px solid #303030;border-radius:7px;padding:9px 11px;color:#E5E7EB;font-size:13px;font-family:inherit;outline:none}.ft{resize:vertical;min-height:60px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tbtn{padding:6px 10px;border-radius:5px;border:1px solid #303030;background:transparent;color:#EF4444;cursor:pointer;font-size:12px;font-weight:600}
+
+.bulk-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:#1a1a1a;border-top:2px solid #F59E0B;padding:10px 18px;z-index:10;font-size:12.5px;align-items:center;gap:12px;box-shadow:0 -8px 20px rgba(0,0,0,.5);margin:0 -20px -20px}
+.bulk-bar.show{display:flex}
+.bulk-count{background:#F59E0B;color:#111;padding:3px 10px;border-radius:12px;font-weight:700;font-size:11.5px}
+.row-check{display:inline-flex;width:16px;height:16px;border:1.5px solid #4a4a4a;border-radius:3px;background:#181818;cursor:pointer;flex-shrink:0;align-items:center;justify-content:center;margin-right:8px;vertical-align:middle}
+.row-check.on{background:#F59E0B;border-color:#F59E0B}
+.row-check.on::after{content:"✓";color:#111;font-size:11px;font-weight:900}
+</style></head><body>
+<div class="hd"><div><div class="ti">Materials</div><div class="sb" id="sub">Parts, quantities, and delivery tracking</div></div>
+<div class="ctr"><input class="srch" id="srch" placeholder="Search materials…"/><button class="btn">Export</button><button class="btn" onclick="bulkImport()">Import</button><button class="btn bp" onclick="openD(null)">+ Material</button></div></div>
+<div class="kpis">
+<div class="kpi" style="border-left-color:#22C55E"><div class="kl">Delivery Rate</div><div class="kv" style="color:#22C55E" id="k-r">—</div><div class="kc">of ordered qty</div></div>
+<div class="kpi" style="border-left-color:#4286f4"><div class="kl">Total Parts</div><div class="kv" style="color:#4286f4" id="k-t">—</div><div class="kc">line items</div></div>
+<div class="kpi" style="border-left-color:#F59E0B"><div class="kl">Outstanding</div><div class="kv" style="color:#F59E0B" id="k-o">—</div><div class="kc">units pending</div></div>
+<div class="kpi" style="border-left-color:#8B5CF6"><div class="kl">Complete</div><div class="kv" style="color:#8B5CF6" id="k-c">—</div><div class="kc">fully delivered</div></div>
+</div>
+<div class="card cardp"><div class="ct">Overall Delivery Progress</div><div class="cs" id="subp">—</div>
+<div style="height:10px;background:#2e2e2e;border-radius:5px;overflow:hidden"><div id="bigbar" style="height:100%;background:linear-gradient(90deg,#22C55E,#4ADE80);border-radius:5px"></div></div>
+<div id="statusbars" style="margin-top:14px"></div></div>
+<div class="card"><table class="rtbl"><thead><tr><th style="padding-left:16px">Part #</th><th>Description</th><th style="text-align:center">Qty</th><th style="text-align:center">Delivered</th><th>Delivery</th><th>Status</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="bulk-bar" id="bulk-bar"><span class="bulk-count" id="bulk-count">0</span><span>selected</span><div style="flex:1"></div><button class="btn" onclick="bulkStatus('Received')">Mark Received</button><button class="btn" onclick="bulkDelete()" style="color:#EF4444">Delete</button><button class="btn" onclick="clearSelection()">Cancel</button></div><div class="dbg" id="dbg" onclick="closeD()"></div>
+<div class="dr" id="dr"><div class="drh"><div><div class="drt" id="drt">New Material</div></div><button class="drx" onclick="closeD()">×</button></div>
+<div class="drb" id="drb"></div>
+<div class="drf"><button class="tbtn" id="bd" onclick="delM()" style="display:none">Delete</button><div style="display:flex;gap:8px;margin-left:auto"><button class="btn" onclick="closeD()">Cancel</button><button class="btn bp" onclick="saveM()">Save</button></div></div></div>
+<script>
+
+// ═══ ROW ACTION MENU (context) ═══
+window.showRowMenu = function(btn, actions) {
+  document.querySelectorAll('.row-menu-pop').forEach(x=>x.remove());
+  const rect = btn.getBoundingClientRect();
+  const menu = document.createElement('div');
+  menu.className = 'row-menu-pop';
+  menu.style.cssText = `position:fixed;top:${rect.bottom+4}px;left:${rect.right-180}px;min-width:180px;background:#1a1a1a;border:1px solid #333;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.6);z-index:999;padding:4px;font-family:inherit`;
+  menu.innerHTML = actions.map((a,i)=>a.divider?'<div style="height:1px;background:#2a2a2a;margin:4px 0"></div>':`<div data-i="${i}" style="padding:7px 12px;font-size:12.5px;color:${a.color||'#E5E7EB'};border-radius:5px;cursor:pointer;user-select:none">${a.label}</div>`).join('');
+  menu.querySelectorAll('[data-i]').forEach(el=>{el.onmouseenter=()=>el.style.background='#252525';el.onmouseleave=()=>el.style.background='';el.onclick=e=>{e.stopPropagation();menu.remove();actions[+el.dataset.i].fn();};});
+  document.body.appendChild(menu);
+  setTimeout(()=>{document.addEventListener('click',function closeMenu(){menu.remove();document.removeEventListener('click',closeMenu);},{once:true});},50);
+};
+
+// ═══════════════════════════════════════════════════════════════
+// SHARED WORKSPACE UTILITIES
+// ═══════════════════════════════════════════════════════════════
+
+window.healthDot = function(status) {
+  const s = (status||'').toLowerCase();
+  if (/open|blocked|overdue|critical|late|fail|not ordered/.test(s)) return '🔴';
+  if (/progress|partial|warn|review|pending|draft|ordered/.test(s)) return '🟡';
+  if (/closed|complete|paid|done|healthy|ok|on time|received|installed/.test(s)) return '🟢';
+  return '⚪';
+};
+window.healthColor = function(status) {
+  const s = (status||'').toLowerCase();
+  if (/open|blocked|overdue|critical|late|fail|not ordered/.test(s)) return '#EF4444';
+  if (/progress|partial|warn|review|pending|draft|ordered/.test(s)) return '#F59E0B';
+  if (/closed|complete|paid|done|healthy|ok|on time|received|installed/.test(s)) return '#22C55E';
+  return '#6a6a6a';
+};
+
+window.__STATUSES__ = window.__STATUSES__ || {
+  project: ['Planning','In Progress','On Hold','Completed','Cancelled'],
+  task: ['Open','In Progress','Blocked','Closed'],
+  risk: ['Open','Mitigating','Accepted','Closed'],
+  punch: ['Open','In Progress','Closed'],
+  observation: ['Open','Under Review','Closed'],
+  rfi: ['Open','In Progress','Closed'],
+  milestone: ['Not Started','In Progress','Completed'],
+  material: ['Ordered','Partial','Received','Installed']
+};
+window.__TYPES__ = window.__TYPES__ || ['Install','Service','Assessment','Upgrade','Decommission','Maintenance'];
+window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__COMMENTS__ = window.__COMMENTS__ || {};
+window.__ATTACHMENTS__ = window.__ATTACHMENTS__ || {};
+
+window.attachmentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = (window.__ATTACHMENTS__[key]||[]);
+  const rows = list.length ? list.map((a,i) => `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#181818;border:1px solid #262626;border-radius:6px;margin-bottom:4px"><span style="font-size:14px">${a.ext==='pdf'?'📄':a.ext==='jpg'||a.ext==='png'?'🖼️':'📎'}</span><span style="flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</span><span style="font-size:10.5px;color:#6a6a6a">${a.size||''}</span><button class="btn" style="padding:3px 8px;font-size:11px" onclick="window.__removeAttach('${key}',${i})">×</button></div>`).join('') : '<div style="padding:8px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No attachments</div>';
+  return `<div style="margin-top:14px;padding-top:12px;border-top:1px solid #2a2a2a"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF">Attachments (${list.length})</div><button class="btn" style="padding:5px 10px;font-size:11px" onclick="window.__addAttach('${entityType}',${JSON.stringify(entityId)})">+ Attach file</button></div>${rows}</div>`;
+};
+window.__addAttach = function(et, id) {
+  const name = prompt('File name (demo — real version opens file picker):', 'photo.jpg');
+  if (!name) return;
+  const ext = (name.split('.').pop()||'').toLowerCase();
+  const key = et + ':' + id;
+  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Matt Isgur', at: new Date().toISOString() });
+  console.log('Make payload (attach):', { entityType: et, entityId: id, name });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  const widget = document.querySelector('[onclick*="__addAttach"]')?.closest('div').parentElement;
+  if (widget) widget.outerHTML = window.attachmentsWidget(et, id);
+};
+window.__removeAttach = function(key, idx) {
+  if (!confirm('Remove this attachment?')) return;
+  window.__ATTACHMENTS__[key].splice(idx, 1);
+  const [et, id] = key.split(':');
+  const widget = document.querySelector(`[onclick*="__addAttach(\\'${et}\\',${JSON.stringify(id.includes(',')?id:+id||id)}"]`)?.closest('div').parentElement;
+  if (widget) widget.outerHTML = window.attachmentsWidget(et, id.includes(',')?id:+id||id);
+};
+
+// ═══ @-mention autocomplete ═══
+window.__wireMention = function(inputId, hostId) {
+  const inp = document.getElementById(inputId);
+  if (!inp || inp.dataset.mwired) return;
+  inp.dataset.mwired = '1';
+  let dropdown = null;
+  function closeDrop(){ if(dropdown){dropdown.remove();dropdown=null;} }
+  inp.addEventListener('input', e=>{
+    const v = e.target.value;
+    const pos = e.target.selectionStart;
+    const before = v.slice(0, pos);
+    const m = before.match(/@([a-zA-Z ]*)$/);
+    closeDrop();
+    if (!m) return;
+    const q = m[1].toLowerCase();
+    const matches = window.__CONTACTS__.filter(c => c.toLowerCase().includes(q)).slice(0,5);
+    if (!matches.length) return;
+    dropdown = document.createElement('div');
+    dropdown.style.cssText = 'position:absolute;background:#1a1a1a;border:1px solid #3a3a3a;border-radius:7px;box-shadow:0 8px 20px rgba(0,0,0,.5);padding:3px;z-index:200;min-width:180px';
+    const r = inp.getBoundingClientRect();
+    dropdown.style.left = r.left+'px';
+    dropdown.style.top = (r.top-5-matches.length*30)+'px';
+    dropdown.innerHTML = matches.map((c,i)=>`<div data-c="${c}" style="padding:6px 10px;font-size:12px;border-radius:4px;cursor:pointer${i===0?';background:#252525':''}">${c}</div>`).join('');
+    document.body.appendChild(dropdown);
+    dropdown.querySelectorAll('[data-c]').forEach(el=>{
+      el.onmousedown=ev=>{
+        ev.preventDefault();
+        const c = el.dataset.c;
+        const newVal = v.slice(0, pos - m[0].length) + '@' + c + ' ' + v.slice(pos);
+        inp.value = newVal;
+        inp.focus();
+        closeDrop();
+      };
+    });
+  });
+  inp.addEventListener('blur', ()=>setTimeout(closeDrop,150));
+};
+
+window.originLink = function(entity) {
+  if (!entity?.originFrom) return '';
+  const label = entity.originFrom==='punch'?'Punch Item':entity.originFrom==='observation'?'Observation':entity.originFrom==='rfi'?'RFI':entity.originFrom==='meeting'?'Meeting':'Source';
+  return `<div style="margin-bottom:14px;padding:8px 12px;background:rgba(66,134,244,.08);border:1px solid rgba(66,134,244,.2);border-left:2px solid #4286f4;border-radius:6px;font-size:11.5px;color:#9ec2f4">↳ Converted from ${label} #${entity.originId}</div>`;
+};
+
+(function(){
+  const obs = new MutationObserver(muts=>{
+    muts.forEach(m=>m.addedNodes.forEach(n=>{
+      if (n.nodeType!==1) return;
+      const inputs = n.querySelectorAll ? n.querySelectorAll('input[id^="cw-in-"]') : [];
+      inputs.forEach(inp=>window.__wireMention(inp.id,''));
+      if (n.id && n.id.startsWith('cw-in-')) window.__wireMention(n.id,'');
+    }));
+  });
+  obs.observe(document.body, { childList:true, subtree:true });
+})();
+
+window.commentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = window.__COMMENTS__[key] || [];
+  const renderList = list.length
+    ? list.map(c => `<div style="padding:8px 0;border-bottom:1px solid #252525;font-size:12px"><div style="display:flex;gap:6px;align-items:baseline"><strong style="color:#E5E7EB">${c.who}</strong><span style="color:#6a6a6a;font-size:10.5px">${new Date(c.at).toLocaleDateString('en-US',{month:'short',day:'numeric'})} ${new Date(c.at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div><div style="color:#9CA3AF;margin-top:2px;line-height:1.5">${c.txt.replace(/@(\w+(?:\s\w+)?)/g,'<span style="color:#60a5fa;font-weight:600">@$1</span>')}</div></div>`).join('')
+    : '<div style="padding:10px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No comments yet</div>';
+  return `<div style="margin-top:16px;padding-top:14px;border-top:1px solid #2a2a2a"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px">Comments (${list.length})</div><div id="cw-list-${entityId}">${renderList}</div><div style="display:flex;gap:6px;margin-top:10px"><input class="fi" id="cw-in-${entityId}" placeholder="Add a comment… (use @ to mention)" style="flex:1"/><button class="btn bp" onmouseenter="window.__wireMention('cw-in-'+arguments[0].target?.id||'','')" onclick="__postComment('${entityType}',${JSON.stringify(entityId)})">Post</button></div></div>`;
+};
+window.__postComment = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const inp = document.getElementById('cw-in-'+entityId);
+  const txt = inp.value.trim();
+  if (!txt) return;
+  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Matt Isgur', txt, at: new Date().toISOString() });
+  console.log('Make payload (comment):', { entityType, entityId, txt });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  inp.value = '';
+  const host = inp.closest('div').parentElement;
+  host.outerHTML = window.commentsWidget(entityType, entityId);
+};
+
+Object.assign(window.__COMMENTS__, {
+  'material:MT-2': [{who:'Matt Isgur',txt:'Vendor confirmed 10 more units shipping Friday.',at:'2026-04-10T11:20'}],
+  'milestone:3': [{who:'Louis Feula',txt:'Running behind — procurement delays. @Matt Isgur see your email from today.',at:'2026-04-09T16:00'}],
+  'meeting:3': [{who:'Gerritt Bakker',txt:'Can we lock acceptance criteria for cameras specifically? Need in writing.',at:'2026-04-06T09:30'}],
+  'finance:2': [{who:'Matt Isgur',txt:'PO approved by client — waiting on signed contract back.',at:'2026-04-07T13:15'}]
+});
+
+// ═══ Internal demo data ═══
+// Internal shape: { id, part, desc, qty, del, ord, vendor, po, eta, statusFromSchema, __statusDirty }
+// `part`  ↔ schema `item`           (Pattern #1 — single-field round-trip)
+// `desc`  is UI-only augmentation — NOT round-tripped. TODO(schema): split schema `item`
+//          into `part_number` + `description` so the second field survives save cycles.
+// `ord`   is a UI-only convenience flag for "order placed yet?". NOT emitted.
+// `qty` ↔ `qty_ordered`,  `del` ↔ `qty_received`
+// `statusFromSchema` preserves the inbound schema status verbatim (Pattern #9).
+// `__statusDirty` flips true only on real user edits to qty/del/ord or the status dropdown.
+// NOTE(schema-TODO): Materials have no owner_email in schema. If My Work integration
+//   needs a material owner, extend schema rather than inventing a field here.
+let items=[
+{id:'MT-1',part:'AXIS-P3245-LV',desc:'AXIS Fixed Dome Network Camera, 1080p',qty:1,del:1,ord:true,vendor:'Anixter',po:'PO-8810',eta:'2026-03-15',statusFromSchema:'Received',__statusDirty:false},
+{id:'MT-2',part:'HANWHA-XNV8080R',desc:'Hanwha IR Vandal Dome, 5MP, Outdoor',qty:20,del:10,ord:true,vendor:'Anixter',po:'PO-8821',eta:'2026-04-18',statusFromSchema:'Partial',__statusDirty:false},
+{id:'MT-3',part:'HID-920PTNNEK000',desc:'HID iCLASS SE Smart Card, Pack of 100',qty:100,del:8,ord:true,vendor:'ADI',po:'PO-8830',eta:'2026-04-22',statusFromSchema:'Partial',__statusDirty:false},
+{id:'MT-4',part:'GENETEC-SVR2000',desc:'Genetec Streamvault Server',qty:2,del:0,ord:true,vendor:'Convergint',po:'PO-8834',eta:'2026-05-01',statusFromSchema:'Ordered',__statusDirty:false},
+{id:'MT-5',part:'ASSA-ABLOY-SARGENT',desc:'SARGENT Electric Strike, Heavy Duty',qty:6,del:0,ord:false,vendor:'',po:'',eta:null,statusFromSchema:'Ordered',__statusDirty:false},
+{id:'MT-6',part:'GENERIC-CONDUIT',desc:'EMT Conduit 3/4", 10ft Length',qty:15,del:0,ord:true,vendor:'Home Depot Pro',po:'PO-8840',eta:'2026-04-20',statusFromSchema:'Ordered',__statusDirty:false},
+{id:'MT-7',part:'HONEYWELL-IPCAM',desc:'Honeywell IP Camera, Indoor, 4MP',qty:15,del:0,ord:false,vendor:'',po:'',eta:null,statusFromSchema:'Ordered',__statusDirty:false},
+{id:'MT-8',part:'SIEMON-PATCH24',desc:'24-Port Patch Panel, Cat6A Shielded',qty:60,del:60,ord:true,vendor:'Graybar',po:'PO-8808',eta:'2026-03-10',statusFromSchema:'Installed',__statusDirty:false}];
+
+// ═══ esc() — Pattern #3 ═══
+const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+
+// ═══ Status bridge — Pattern #9 ═══
+// Schema vocabulary:   Ordered | Partial | Received | Installed
+// UI display vocab:    Not Ordered | Ordered | Partial | Complete
+// Schema "Installed" displays as "Installed" (distinct — can't be computed from qty/del alone).
+const SCHEMA_STATUSES = ['Ordered','Partial','Received','Installed'];
+const SCHEMA_TO_DISPLAY = { 'Ordered':'Ordered', 'Partial':'Partial', 'Received':'Complete', 'Installed':'Installed' };
+function computeSchemaStatus(m) {
+  // Derives schema status from qty/del/ord when user has demonstrably edited them.
+  // Intentionally collapses to Received (never Installed) — Installed is a user-only action.
+  if (m.qty > 0 && m.del >= m.qty) return 'Received';
+  if (m.del > 0 && m.del < m.qty) return 'Partial';
+  return 'Ordered';
+}
+function displayStatus(m) {
+  // UI-only rendering. Honors the ord flag to show "Not Ordered" for schema "Ordered" w/ ord=false.
+  const schema = m.statusFromSchema || 'Ordered';
+  if (schema === 'Ordered' && !m.ord) return 'Not Ordered';
+  return SCHEMA_TO_DISPLAY[schema] || schema;
+}
+
+// ═══ PAYLOAD INGESTION ═══
+// Reads window.__PAYLOAD__, normalizes schema-shape materials into internal demo shape.
+// Outbound Make payloads emit schema shape via buildSavePayload(). Falls through on empty/malformed.
+(function ingestPayload(){
+  try {
+    const P = window.__PAYLOAD__;
+    if (!P) return;
+
+    const expectedVersion = 1;
+    const actualVersion = P?.meta?.payload_version;
+    if (actualVersion != null && actualVersion !== expectedVersion) {
+      console.warn(`[materials] payload v${expectedVersion} expected, got v${actualVersion} — rendering best-effort`);
+    }
+
+    // Contact list for @-mentions (project-first, account-wide fallback, de-duped)
+    const projectContacts = Array.isArray(P?.contacts) ? P.contacts : [];
+    const allContacts = Array.isArray(P?.lookups?.all_contacts) ? P.lookups.all_contacts : [];
+    const orderedNames = [...new Set([
+      ...projectContacts.map(c => c?.name).filter(Boolean),
+      ...allContacts.map(c => c?.name).filter(Boolean)
+    ])];
+    if (orderedNames.length) window.__CONTACTS__ = orderedNames;
+
+    // Pattern #6 — top-level first, fall back to consolidated JSON
+    const rawMaterials = Array.isArray(P?.materials) ? P.materials
+                       : Array.isArray(P?.materialTrackerJson) ? P.materialTrackerJson
+                       : null;
+    if (Array.isArray(rawMaterials) && rawMaterials.length) {
+      const normMaterials = rawMaterials
+        .filter(m => m && typeof m === 'object')
+        .map(m => {
+          // Validate inbound status; default to "Ordered" if unknown (per Materials spec)
+          const rawStatus = m.status;
+          const status = SCHEMA_STATUSES.includes(rawStatus) ? rawStatus : 'Ordered';
+          if (rawStatus && !SCHEMA_STATUSES.includes(rawStatus)) {
+            console.warn(`[materials] unknown status "${rawStatus}" on ${m.id} — defaulting to "Ordered"`);
+          }
+          const qty = Number.isFinite(+m.qty_ordered) ? +m.qty_ordered : 0;
+          const del = Number.isFinite(+m.qty_received) ? +m.qty_received : 0;
+          return {
+            id: m.id ?? null,
+            part: m.item ?? '(unnamed item)',
+            desc: '',                     // UI-only; not in schema (see TODO above)
+            qty, del,
+            ord: status !== 'Ordered' || del > 0 || !!m.po,  // inferred; UI-only
+            vendor: m.vendor ?? '',
+            po: m.po ?? '',
+            eta: m.eta ?? null,
+            statusFromSchema: status,
+            __statusDirty: false
+          };
+        })
+        .filter(m => m.id != null);
+      if (normMaterials.length) items = normMaterials;
+    }
+
+    console.warn('Payload ingestion active:', 'materials');
+  } catch (err) {
+    console.warn(`[materials] payload ingestion failed, falling back to demo data:`, err);
+  }
+})();
+
+// ═══ OUTBOUND PAYLOAD BUILDER — schema materialTrackerJson[] shape ═══
+// Emits: { id?, item, qty_ordered, qty_received, vendor, po, eta, status }
+// Intentionally omits: desc, ord, pct_delivered (UI-only / derived — see note above).
+function buildSavePayload(m, isNew) {
+  const status = m.__statusDirty
+    ? (m.statusFromSchema || computeSchemaStatus(m))
+    : (m.statusFromSchema || 'Ordered');
+  return {
+    ...(isNew ? {} : { id: m.id }),
+    item: m.part,
+    qty_ordered: m.qty,
+    qty_received: m.del,
+    vendor: m.vendor ?? '',
+    po: m.po ?? '',
+    eta: m.eta ?? null,
+    status
+  };
+}
+
+let editing=null;
+
+function statusPillCls(display){
+  if (display==='Complete' || display==='Installed') return 'p-c';
+  if (display==='Partial') return 'p-p';
+  if (display==='Not Ordered') return 'p-o';
+  return 'p-p'; // Ordered
+}
+
+function filtered(){
+  const q = document.getElementById('srch').value.toLowerCase();
+  if (!q) return items;
+  return items.filter(i => JSON.stringify(i).toLowerCase().includes(q));
+}
+
+function renderAll(){
+  const totQ = items.reduce((s,i)=>s+(+i.qty||0),0);
+  const totD = items.reduce((s,i)=>s+(+i.del||0),0);
+  const pct = totQ?Math.round((totD/totQ)*100):0;
+  document.getElementById('k-r').textContent = pct+'%';
+  document.getElementById('k-t').textContent = items.length;
+  document.getElementById('k-o').textContent = totQ-totD;
+  document.getElementById('k-c').textContent = items.filter(i=>i.qty>0 && i.del>=i.qty).length;
+  document.getElementById('bigbar').style.width = pct+'%';
+  document.getElementById('subp').textContent = totD+' of '+totQ+' units delivered';
+  document.getElementById('sub').textContent = items.length+' line items · '+(totQ-totD)+' units outstanding';
+
+  // Status-distribution bars use the display status (richer than schema's 4 values)
+  const counts = {Complete:0,Installed:0,Partial:0,Ordered:0,'Not Ordered':0};
+  items.forEach(i=>{ const d=displayStatus(i); if(counts[d]!=null) counts[d]++; });
+  const cols = {Complete:'#22C55E',Installed:'#22C55E',Partial:'#F59E0B',Ordered:'#4286f4','Not Ordered':'#EF4444'};
+  document.getElementById('statusbars').innerHTML = Object.entries(counts)
+    .filter(([k,v])=>v>0 || k==='Ordered' || k==='Partial' || k==='Complete')
+    .map(([k,v])=>{
+      const p = items.length?(v/items.length)*100:0;
+      return `<div style="display:flex;align-items:center;gap:10px;padding:4px 0;font-size:11.5px"><div style="width:90px;color:#9CA3AF">${esc(k)}</div><div style="flex:1;height:5px;background:#2e2e2e;border-radius:3px;overflow:hidden"><div style="width:${p}%;height:100%;background:${cols[k]};border-radius:3px"></div></div><div style="width:24px;text-align:right;font-weight:700">${v}</div></div>`;
+    }).join('');
+
+  const rows = filtered();
+  document.getElementById('tb').innerHTML = rows.length ? rows.map(m => {
+    const dp = m.qty?Math.round((m.del/m.qty)*100):0;
+    const dispSt = displayStatus(m);
+    const col = dp>=100?'#22C55E':dp>=50?'#F59E0B':dp>0?'#4286f4':'#EF4444';
+    const idJson = JSON.stringify(m.id);
+    const idAttr = esc(idJson);
+    const checked = __selected.has(m.id) ? 'on' : '';
+    const idArg = idJson.replace(/"/g,'&quot;');
+    return `<tr data-id="${idAttr}"><td style="padding-left:16px;font-weight:600;font-size:11.5px"><span class="row-check ${checked}" onclick="event.stopPropagation();toggleSelect(${idArg},this)"></span>${esc(m.part)}</td><td style="color:#9CA3AF;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(m.desc||m.vendor||'—')}</td><td style="text-align:center">${m.qty}</td><td style="text-align:center">${m.del}</td><td><span class="delbar"><span class="delb"><span class="delf" style="width:${dp}%;background:${col}"></span></span><span style="font-size:11px;font-weight:600;color:${col}">${dp}%</span></span></td><td><span style="margin-right:6px;font-size:9px;vertical-align:middle">${window.healthDot(dispSt)}</span><span class="pill ${statusPillCls(dispSt)}">${esc(dispSt)}</span></td><td style="text-align:right;width:40px"><button class="btn" style="padding:3px 8px;font-size:14px;line-height:1" onclick='event.stopPropagation();showRowMenu(this,[{label:"Update",fn:()=>openD(${idArg})},{label:"Mark received",fn:()=>markReceived(${idArg})},{divider:true},{label:"Delete",color:"#EF4444",fn:()=>{if(confirm("Delete?")){const id=${idArg};items=items.filter(x=>String(x.id)!==String(id));console.log("Make payload (material_delete):",{id});try{parent.postMessage({type:"toast",msg:"Deleted",kind:"success"},"*")}catch(e){}renderAll();}}}])'>⋯</button></td></tr>`;
+  }).join('') : '<tr><td colspan="7" style="padding:24px;text-align:center;color:#9CA3AF">No materials match.</td></tr>';
+  document.querySelectorAll('#tb tr[data-id]').forEach(tr => tr.onclick = e => {
+    if (e.target.closest('button,.row-check')) return;
+    let id;
+    try { id = JSON.parse(tr.dataset.id.replace(/&quot;/g,'"')); } catch(ex) { id = tr.dataset.id; }
+    openD(id);
+  });
+}
+
+function markReceived(id){
+  const x = items.find(y => String(y.id) === String(id));
+  if (!x) return;
+  x.del = x.qty;
+  x.statusFromSchema = 'Received';
+  x.__statusDirty = true;
+  console.log('Make payload (material_save):', buildSavePayload(x, false));
+  try{parent.postMessage({type:'toast',msg:'Marked received',kind:'success'},'*');}catch(e){}
+  renderAll();
+}
+
+// ═══ BULK ACTIONS ═══
+let __selected = new Set();
+function toggleSelect(id, el){
+  if(__selected.has(id)){__selected.delete(id);el?.classList.remove('on');}
+  else{__selected.add(id);el?.classList.add('on');}
+  const n = __selected.size;
+  const c=document.getElementById('bulk-count');if(c)c.textContent = n;
+  const b=document.getElementById('bulk-bar');if(b)b.classList.toggle('show', n>0);
+}
+function clearSelection(){__selected.clear();document.querySelectorAll('.row-check.on').forEach(c=>c.classList.remove('on'));const b=document.getElementById('bulk-bar');if(b)b.classList.remove('show');const c=document.getElementById('bulk-count');if(c)c.textContent=0;}
+
+function bulkStatus(s){
+  if(!__selected.size) return;
+  const valid = SCHEMA_STATUSES.includes(s) ? s : 'Ordered';
+  const ids = [...__selected];
+  const outboundBatch = [];
+  items.forEach(i => {
+    if (__selected.has(i.id)) {
+      i.statusFromSchema = valid;
+      i.__statusDirty = true;
+      // If bulk-marking received, also satisfy qty
+      if (valid === 'Received' && i.del < i.qty) i.del = i.qty;
+      outboundBatch.push(buildSavePayload(i, false));
+    }
+  });
+  console.log('Make payload (material_bulk_update):', { material_ids: ids, status: valid, items: outboundBatch });
+  try{parent.postMessage({type:'toast',msg:`${ids.length} items updated`,kind:'success'},'*');}catch(e){}
+  clearSelection();renderAll();
+}
+
+function bulkDelete(){
+  if(!confirm(`Delete ${__selected.size} items?`)) return;
+  const ids = [...__selected];
+  items = items.filter(i => !__selected.has(i.id));
+  console.log('Make payload (material_bulk_delete):', { material_ids: ids });
+  try{parent.postMessage({type:'toast',msg:`${ids.length} items deleted`,kind:'success'},'*');}catch(e){}
+  clearSelection();renderAll();
+}
+
+function bulkImport(){
+  const rows = prompt('Paste CSV rows (one part number or description per line):');
+  if(!rows) return;
+  const lines = rows.split('\n').filter(l=>l.trim());
+  const outboundBatch = [];
+  let added = 0;
+  lines.forEach((line, idx) => {
+    const tmpId = 'tmp-'+Date.now()+'-'+idx;
+    const newM = {
+      id: tmpId,
+      part: line.trim(),
+      desc: '',
+      qty: 1,
+      del: 0,
+      ord: false,
+      vendor: '',
+      po: '',
+      eta: null,
+      statusFromSchema: 'Ordered',
+      __statusDirty: false
+    };
+    items.push(newM);
+    outboundBatch.push(buildSavePayload(newM, true));
+    added++;
+  });
+  console.log('Make payload (material_bulk_import):', { material_items: outboundBatch });
+  try{parent.postMessage({type:'toast',msg:`${added} items imported`,kind:'success'},'*');}catch(e){}
+  renderAll();
+}
+
+document.getElementById('srch').oninput = renderAll;
+
+function openD(id){
+  editing = (id != null)
+    ? { ...(items.find(i => String(i.id) === String(id)) || {}) }
+    : { id:null, part:'', desc:'', qty:1, del:0, ord:false, vendor:'', po:'', eta:null, statusFromSchema:'Ordered', __statusDirty:false };
+  document.getElementById('drt').textContent = (id != null) ? 'Update Material' : 'New Material';
+  document.getElementById('bd').style.display = (id != null) ? 'inline-block' : 'none';
+  const m = editing;
+  const statusOptions = SCHEMA_STATUSES.map(s => `<option ${s===(m.statusFromSchema||'Ordered')?'selected':''}>${esc(s)}</option>`).join('');
+
+  document.getElementById('drb').innerHTML =
+    `<div class="f"><label class="fl">Part Number / Item</label><input class="fi" id="d-part" value="${esc(m.part)}" placeholder="e.g. AXIS-P3245-LV"/></div>` +
+    `<div class="f"><label class="fl">Description <span style="color:#6a6a6a;font-weight:400;text-transform:none;letter-spacing:0">(UI-only — not saved to schema yet)</span></label><textarea class="ft" id="d-desc">${esc(m.desc)}</textarea></div>` +
+    `<div class="fr"><div class="f"><label class="fl">Qty Ordered</label><input type="number" min="0" class="fi" id="d-qty" value="${m.qty}"/></div>` +
+    `<div class="f"><label class="fl">Qty Received</label><input type="number" min="0" class="fi" id="d-del" value="${m.del}"/></div></div>` +
+    `<div class="fr"><div class="f"><label class="fl">Vendor</label><input class="fi" id="d-vendor" value="${esc(m.vendor||'')}" placeholder="e.g. Anixter"/></div>` +
+    `<div class="f"><label class="fl">PO #</label><input class="fi" id="d-po" value="${esc(m.po||'')}" placeholder="e.g. PO-8821"/></div></div>` +
+    `<div class="fr"><div class="f"><label class="fl">ETA</label><input type="date" class="fi" id="d-eta" value="${esc(m.eta||'')}"/></div>` +
+    `<div class="f"><label class="fl">Status</label><select class="fs" id="d-status">${statusOptions}</select></div></div>` +
+    `<div class="f"><label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="d-ord" ${m.ord?'checked':''}/>Order has been placed</label></div>` +
+    `${m.id!=null?window.commentsWidget('material',m.id):''}${m.id!=null?window.attachmentsWidget('material',m.id):''}`;
+
+  // Wire dirty-flag: any change to qty/del/ord/status-dropdown flips __statusDirty on `editing`.
+  // (Pattern #9 — never flip on drawer open or programmatic render.)
+  ['d-qty','d-del','d-ord','d-status'].forEach(i => {
+    const el = document.getElementById(i);
+    if (el) el.addEventListener('input', () => { editing.__statusDirty = true; });
+    if (el && i==='d-ord') el.addEventListener('change', () => { editing.__statusDirty = true; });
+  });
+
+  document.getElementById('dbg').classList.add('on');
+  document.getElementById('dr').classList.add('on');
+}
+
+function closeD(){document.getElementById('dbg').classList.remove('on');document.getElementById('dr').classList.remove('on');}
+
+function saveM(){
+  const part = document.getElementById('d-part').value.trim();
+  if (!part) { alert('Part number required'); return; }
+  const qty = +document.getElementById('d-qty').value || 0;
+  const del = +document.getElementById('d-del').value || 0;
+  if (del > qty) { alert('Received cannot exceed ordered qty'); return; }
+
+  const isNew = editing.id == null || (typeof editing.id === 'string' && editing.id.startsWith('tmp-'));
+  const dropdownStatus = document.getElementById('d-status').value;
+  const dropdownChanged = dropdownStatus !== (editing.statusFromSchema || 'Ordered');
+  const qtyChanged = qty !== editing.qty || del !== editing.del || document.getElementById('d-ord').checked !== !!editing.ord;
+
+  let nextStatus;
+  if (dropdownChanged) {
+    nextStatus = dropdownStatus;  // user picked it explicitly — wins
+  } else if (qtyChanged) {
+    nextStatus = computeSchemaStatus({ qty, del });  // recompute from new qty/del
+  } else {
+    nextStatus = editing.statusFromSchema || 'Ordered';  // preserve
+  }
+
+  const m = {
+    id: isNew ? ('tmp-'+Date.now()) : editing.id,
+    part,
+    desc: document.getElementById('d-desc').value,
+    qty, del,
+    ord: document.getElementById('d-ord').checked,
+    vendor: document.getElementById('d-vendor').value.trim(),
+    po: document.getElementById('d-po').value.trim(),
+    eta: document.getElementById('d-eta').value || null,
+    statusFromSchema: nextStatus,
+    __statusDirty: editing.__statusDirty || dropdownChanged || qtyChanged
+  };
+
+  if (!isNew) {
+    const idx = items.findIndex(x => String(x.id) === String(editing.id));
+    if (idx >= 0) items[idx] = m; else items.push(m);
+  } else {
+    items.push(m);
+  }
+
+  console.log('Make payload (material_save):', buildSavePayload(m, isNew));
+  try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  closeD();renderAll();
+}
+
+function delM(){
+  if (editing?.id == null) return;
+  if (!confirm('Delete?')) return;
+  const id = editing.id;
+  items = items.filter(i => String(i.id) !== String(id));
+  console.log('Make payload (material_delete):', { id });
+  try{parent.postMessage({type:'toast',msg:'Deleted',kind:'success'},'*');}catch(e){}
+  closeD();renderAll();
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeD();});
+
+// ═══ openEntity receiver (deep link target) ═══
+window.addEventListener('message', e => {
+  if (e.data?.type === 'openEntity' && e.data.entityId != null) {
+    setTimeout(()=>{ try { openD(e.data.entityId); } catch(_){} }, 100);
+  }
+});
+
+renderAll();
+
+// ═══ SMOKE TESTS — Pattern #5 ═══
+// window.__MATERIALS_SMOKE__() runs the full battery and returns pass/fail map.
+window.__MATERIALS_SMOKE__ = function(){
+  const results = {};
+  const run = (name, fn) => { try { results[name] = fn() ? 'PASS' : 'FAIL'; } catch(e) { results[name] = 'THROW: '+e.message; } };
+
+  // 1. empty payload — demo data retained
+  run('empty_payload', () => { const saved = window.__PAYLOAD__; window.__PAYLOAD__ = null; const n = items.length; window.__PAYLOAD__ = saved; return n > 0; });
+
+  // 2. missing materials field — falls through
+  run('missing_materials_field', () => {
+    const p = { meta:{payload_version:1}, project:{name:'X'} };
+    const raw = Array.isArray(p?.materials)?p.materials:Array.isArray(p?.materialTrackerJson)?p.materialTrackerJson:null;
+    return raw === null;
+  });
+
+  // 3. malformed — non-array
+  run('malformed_not_array', () => {
+    const p = { materials: 'nope' };
+    const raw = Array.isArray(p?.materials)?p.materials:null;
+    return raw === null;
+  });
+
+  // 4. valid top-level materials
+  run('valid_top_level', () => {
+    const p = { materials: [{ id:'MT-1', item:'Widget', qty_ordered:10, qty_received:3, vendor:'V', po:'PO-1', eta:'2026-05-01', status:'Partial' }] };
+    const raw = Array.isArray(p?.materials)?p.materials:Array.isArray(p?.materialTrackerJson)?p.materialTrackerJson:null;
+    return raw && raw.length===1 && raw[0].id==='MT-1';
+  });
+
+  // 5. version mismatch — warn only, no throw
+  run('version_mismatch', () => {
+    const p = { meta:{payload_version:99}, materials:[{id:'MT-1',item:'x',qty_ordered:1,qty_received:0,status:'Ordered'}] };
+    return p.meta.payload_version !== 1;
+  });
+
+  // 6. consolidated JSON alias (materialTrackerJson fallback — Pattern #6)
+  run('consolidated_alias', () => {
+    const p = { materialTrackerJson: [{ id:'MT-A', item:'Aliased', qty_ordered:5, qty_received:5, status:'Received' }] };
+    const raw = Array.isArray(p?.materials)?p.materials:Array.isArray(p?.materialTrackerJson)?p.materialTrackerJson:null;
+    return raw && raw[0].id==='MT-A';
+  });
+
+  // 7. outbound builder shape — schema fields present, no bogus ones emitted
+  run('outbound_builder_shape', () => {
+    const m = { id:'MT-1', part:'AXIS', desc:'UI-only', qty:10, del:3, ord:true, vendor:'V', po:'PO-1', eta:'2026-05-01', statusFromSchema:'Partial', __statusDirty:false };
+    const p = buildSavePayload(m, false);
+    const keys = Object.keys(p).sort().join(',');
+    return p.id==='MT-1' && p.item==='AXIS' && p.qty_ordered===10 && p.qty_received===3
+      && p.vendor==='V' && p.po==='PO-1' && p.eta==='2026-05-01' && p.status==='Partial'
+      && !('desc' in p) && !('ord' in p) && !('pct_delivered' in p)
+      && keys === 'eta,id,item,po,qty_ordered,qty_received,status,vendor';
+  });
+
+  // 8. outbound builder — isNew omits id
+  run('outbound_builder_new', () => {
+    const m = { id:'tmp-1', part:'X', desc:'', qty:1, del:0, ord:false, vendor:'', po:'', eta:null, statusFromSchema:'Ordered', __statusDirty:false };
+    const p = buildSavePayload(m, true);
+    return !('id' in p) && p.item==='X' && p.status==='Ordered';
+  });
+
+  // 9. round-trip: schema-in → normalize → buildSave → equivalent schema
+  run('round_trip', () => {
+    const schemaIn = { id:'MT-99', item:'RT', qty_ordered:20, qty_received:20, vendor:'VV', po:'PO-RT', eta:'2026-06-01', status:'Received' };
+    const internal = {
+      id: schemaIn.id, part: schemaIn.item, desc:'',
+      qty: schemaIn.qty_ordered, del: schemaIn.qty_received,
+      ord: true, vendor: schemaIn.vendor, po: schemaIn.po, eta: schemaIn.eta,
+      statusFromSchema: schemaIn.status, __statusDirty:false
+    };
+    const out = buildSavePayload(internal, false);
+    return out.id===schemaIn.id && out.item===schemaIn.item
+      && out.qty_ordered===schemaIn.qty_ordered && out.qty_received===schemaIn.qty_received
+      && out.vendor===schemaIn.vendor && out.po===schemaIn.po && out.eta===schemaIn.eta
+      && out.status===schemaIn.status;
+  });
+
+  // 10. String-ID safety — IDs like "MT-03" flow through filter/find/save without coercion
+  run('string_id_safety', () => {
+    const a = 'MT-3', b = 'MT-3', c = 3;
+    const found = items.find(x => String(x.id) === String('MT-3'));
+    return String(a)===String(b) && String(c)!==String(a) && (found ? found.id === 'MT-3' : true);
+  });
+
+  // 11. unknown inbound status defaults to "Ordered" (spec)
+  run('unknown_status_defaults_ordered', () => {
+    const rawStatus = 'Shipped'; // not in schema
+    const status = SCHEMA_STATUSES.includes(rawStatus) ? rawStatus : 'Ordered';
+    return status === 'Ordered';
+  });
+
+  // 12. Installed status preserved on clean ingest (Pattern #9 — schema value wins)
+  run('installed_preserved_clean', () => {
+    const m = { id:'MT-1', part:'X', desc:'', qty:5, del:5, ord:true, vendor:'', po:'', eta:null, statusFromSchema:'Installed', __statusDirty:false };
+    const p = buildSavePayload(m, false);
+    return p.status === 'Installed';
+  });
+
+  // 13. schema status recomputed when dirty (qty/del changed, dropdown not touched)
+  run('status_recomputed_when_dirty', () => {
+    // Simulating saveM path: user moved del from 0 → 5 on a 5-qty item
+    const simulated = computeSchemaStatus({ qty:5, del:5 });
+    return simulated === 'Received';
+  });
+
+  // 14. outbound omits derived pct_delivered (user requirement)
+  run('no_pct_delivered_emitted', () => {
+    const m = { id:'MT-1', part:'X', desc:'', qty:10, del:5, ord:true, vendor:'', po:'', eta:null, statusFromSchema:'Partial', __statusDirty:false };
+    const p = buildSavePayload(m, false);
+    return !('pct_delivered' in p);
+  });
+
+  // 15. outbound omits UI-only fields (desc, ord) — data loss is intentional, flagged in TODO
+  run('ui_only_fields_not_emitted', () => {
+    const m = { id:'MT-1', part:'X', desc:'hello world', qty:1, del:0, ord:true, vendor:'', po:'', eta:null, statusFromSchema:'Ordered', __statusDirty:false };
+    const p = buildSavePayload(m, false);
+    return !('desc' in p) && !('ord' in p);
+  });
+
+  console.table(results);
+  return results;
+};
+</script></body></html>

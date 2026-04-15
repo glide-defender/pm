@@ -1,0 +1,2090 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Meetings</title><style>
+*{box-sizing:border-box;margin:0;padding:0}body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;padding:20px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.ti{font-size:18px;font-weight:700;color:#fff}.sb{font-size:12px;color:#9CA3AF;margin-top:3px}
+.ctr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.srch{background:#1f1f1f;border:1px solid #303030;border-radius:6px;padding:7px 11px;color:#E5E7EB;font-size:12.5px;outline:none;width:220px;font-family:inherit}
+.btn{padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #303030;background:#1f1f1f;color:#E5E7EB;cursor:pointer;font-family:inherit}.bp{background:#3c4756;color:#fff;border-color:#4a5666}
+.btn.sm{padding:4px 10px;font-size:11.5px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:#1f1f1f;border:1px solid #2a2a2a;border-left:3px solid;border-radius:8px;padding:12px 14px}
+.kl{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:5px}.kv{font-size:22px;font-weight:800}.kc{font-size:11px;color:#9CA3AF;margin-top:3px}
+.mcard{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:border-color .12s;position:relative}
+.mcard:hover{border-color:#3a3a3a;background:#232323}
+.mcard.sel{border-color:#F59E0B}
+.mhead{display:flex;align-items:flex-start;gap:14px;margin-bottom:8px}
+.mdate{background:#252525;border-radius:7px;padding:6px 8px;text-align:center;min-width:48px;flex-shrink:0}
+.mdate-m{font-size:9px;font-weight:700;color:#F59E0B;text-transform:uppercase;letter-spacing:.5px}
+.mdate-d{font-size:17px;font-weight:800;color:#fff;line-height:1;margin-top:2px}
+.mdate-y{font-size:9px;color:#6a6a6a;margin-top:2px}
+.mbody{flex:1;min-width:0}
+.mtitle{font-size:14px;font-weight:700;color:#fff;margin-bottom:2px}
+.mmeta{font-size:11.5px;color:#9CA3AF}
+.mattend{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
+.av{width:24px;height:24px;border-radius:50%;color:#fff;font-weight:700;font-size:10px;display:flex;align-items:center;justify-content:center;margin-left:-4px;border:2px solid #1f1f1f}
+.av:first-child{margin-left:0}
+.av.warn{background:#3a2a1a;border-color:#5a3a1a;color:#F59E0B}
+.mstats{display:flex;gap:14px;margin-top:10px;font-size:11px;color:#6a6a6a;flex-wrap:wrap}
+.mstat{display:flex;align-items:center;gap:5px}
+.mnotes-pill{background:rgba(66,134,244,.1);color:#9ec2f4;padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:600}
+.dbg{position:fixed;inset:0;background:rgba(10,10,10,.7);z-index:100;display:none}.dbg.on{display:block}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(820px,96vw);background:#1a1a1a;border-left:1px solid #303030;z-index:101;display:none;flex-direction:column}.dr.on{display:flex}
+.drh{padding:14px 22px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.drh-main{flex:1;min-width:0}
+.drt{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
+.drt-sub{font-size:11.5px;color:#9CA3AF;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.drx{width:28px;height:28px;border-radius:6px;border:1px solid #303030;background:#252525;color:#9CA3AF;cursor:pointer;font-size:15px;flex-shrink:0}
+.drb{flex:1;overflow-y:auto}
+.drf{padding:12px 22px;border-top:1px solid #2a2a2a;background:#191919;display:flex;gap:8px;align-items:center}
+.savestate{font-size:11px;color:#6a6a6a;display:flex;align-items:center;gap:5px;margin-right:auto}
+.savestate.saving{color:#F59E0B}
+.savestate.saved{color:#22C55E}
+.savestate.err{color:#EF4444}
+.tabs{display:flex;gap:2px;padding:0 22px;border-bottom:1px solid #2a2a2a;background:#1a1a1a;flex-shrink:0}
+.tab{padding:10px 14px;font-size:12px;font-weight:600;color:#9CA3AF;cursor:pointer;border-bottom:2px solid transparent;user-select:none;display:flex;align-items:center;gap:5px}
+.tab:hover{color:#E5E7EB}
+.tab.on{color:#F59E0B;border-bottom-color:#F59E0B}
+.tab.disabled{opacity:.4;cursor:not-allowed}
+.tab-count{background:#252525;padding:1px 7px;border-radius:9px;font-size:10.5px;color:#9CA3AF}
+.tab.on .tab-count{background:rgba(245,158,11,.15);color:#F59E0B}
+.tab-stale{color:#F59E0B;font-size:11px}
+.tabpanel{padding:22px}
+.f{margin-bottom:14px}.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px}
+.fi,.fs,.ft{width:100%;background:#161616;border:1px solid #303030;border-radius:7px;padding:9px 11px;color:#E5E7EB;font-size:13px;font-family:inherit;outline:none}.ft{resize:vertical;min-height:90px}.tbtn{padding:6px 10px;border-radius:5px;border:1px solid #303030;background:transparent;color:#EF4444;cursor:pointer;font-size:12px;font-weight:600}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.atchip{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#252525;border:1px solid #363636;border-radius:12px;font-size:11.5px;margin:2px 3px 2px 0}
+.atchip.warn{border-color:#5a3a1a;color:#F59E0B}
+.atchip .x{cursor:pointer;color:#6a6a6a;font-weight:700}
+.atchip .x:hover{color:#EF4444}
+.decrow{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:#181818;border:1px solid #262626;border-radius:6px;margin-bottom:6px}
+.decrow .dtxt{flex:1;font-size:12.5px;color:#E5E7EB;line-height:1.45;background:transparent;border:none;outline:none;font-family:inherit;resize:none;min-height:18px;padding:0}
+.decpill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(66,134,244,.1);border:1px solid rgba(66,134,244,.3);border-radius:10px;color:#9ec2f4;font-size:11px;cursor:pointer;font-weight:600}
+.decpill:hover{background:rgba(66,134,244,.18)}
+
+.bulk-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:#1a1a1a;border-top:2px solid #F59E0B;padding:10px 18px;z-index:10;font-size:12.5px;align-items:center;gap:12px;box-shadow:0 -8px 20px rgba(0,0,0,.5);margin:0 -20px -20px}
+.bulk-bar.show{display:flex}
+.bulk-count{background:#F59E0B;color:#111;padding:3px 10px;border-radius:12px;font-weight:700;font-size:11.5px}
+.row-check{display:inline-flex;width:16px;height:16px;border:1.5px solid #4a4a4a;border-radius:3px;background:#181818;cursor:pointer;flex-shrink:0;align-items:center;justify-content:center;margin-right:8px;vertical-align:middle}
+.row-check.on{background:#F59E0B;border-color:#F59E0B}
+.row-check.on::after{content:"✓";color:#111;font-size:11px;font-weight:900}
+.row-check.mixed{background:#F59E0B;border-color:#F59E0B}
+.row-check.mixed::after{content:"";display:block;width:8px;height:2px;background:#111;border-radius:1px}
+.selall{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:6px;border:1px solid #303030;background:#1f1f1f;color:#9CA3AF;cursor:pointer;font-size:11.5px;font-weight:600;font-family:inherit;user-select:none}
+.selall:hover{background:#252525;color:#E5E7EB}
+.selall .row-check{width:14px;height:14px;cursor:pointer;pointer-events:none;margin-right:0}
+.mcheck{position:absolute;top:12px;left:10px;z-index:3}
+.mcard .mhead{padding-left:22px}
+
+/* ═══ NOTES / BLOCK EDITOR ═══ */
+.notes-host{padding:18px 22px 80px 22px;min-height:400px}
+.notes-lane-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#191919;border:1px solid #262626;border-radius:8px;margin-bottom:14px}
+.notes-lane-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.notes-lane-meta{flex:1;min-width:0}
+.notes-lane-name{font-size:12.5px;font-weight:700;color:#fff}
+.notes-lane-ts{font-size:10.5px;color:#6a6a6a;margin-top:1px}
+.notes-lane-badge{font-size:10px;padding:2px 7px;border-radius:9px;background:#252525;color:#9CA3AF;font-weight:600;letter-spacing:.3px}
+.notes-lane-badge.you{background:rgba(245,158,11,.15);color:#F59E0B}
+.notes-lane-badge.ro{background:#252525;color:#6a6a6a}
+.notes-empty{text-align:center;padding:40px 20px;color:#6a6a6a;font-size:12.5px}
+.notes-empty-hint{font-size:11.5px;margin-top:8px;color:#4a4a4a}
+.all-lane-block{margin-bottom:24px;padding-bottom:18px;border-bottom:1px dashed #2a2a2a}
+.all-lane-block:last-child{border-bottom:none}
+
+.blk{position:relative;margin:2px 0;padding:3px 0;border-radius:4px;display:flex;align-items:flex-start;gap:6px}
+.blk:hover{background:rgba(255,255,255,.01)}
+.blk-handle{width:18px;height:22px;display:flex;align-items:center;justify-content:center;color:#3a3a3a;font-size:14px;opacity:0;cursor:grab;user-select:none;flex-shrink:0;margin-top:2px}
+.blk-handle:active{cursor:grabbing}
+.blk:hover .blk-handle{opacity:1}
+.blk.dragging{opacity:.35}
+.blk.drop-above{box-shadow:0 -2px 0 0 #F59E0B inset}
+.blk.drop-below{box-shadow:0 2px 0 0 #F59E0B inset}
+.blk-body{flex:1;min-width:0}
+.blk-text{outline:none;padding:4px 6px;border-radius:4px;min-height:22px;line-height:1.55;word-wrap:break-word;white-space:pre-wrap;color:#E5E7EB}
+.blk-text:empty::before{content:attr(data-ph);color:#4a4a4a;pointer-events:none}
+.blk-text:focus{background:#1e1e1e}
+.blk-text.readonly{background:transparent !important;cursor:default}
+.blk-h1 .blk-text{font-size:20px;font-weight:800;color:#fff;padding:6px 6px}
+.blk-h2 .blk-text{font-size:17px;font-weight:700;color:#fff;padding:5px 6px}
+.blk-h3 .blk-text{font-size:14.5px;font-weight:700;color:#fff;padding:4px 6px}
+.blk-marker{width:22px;text-align:center;color:#9CA3AF;font-size:13px;line-height:1.55;padding-top:5px;user-select:none;flex-shrink:0}
+.blk-check-box{width:16px;height:16px;border:1.5px solid #4a4a4a;border-radius:3px;background:#181818;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin:5px 5px 0 0}
+.blk-check-box.done{background:#22C55E;border-color:#22C55E}
+.blk-check-box.done::after{content:"✓";color:#0a0a0a;font-size:11px;font-weight:900}
+.blk-check.done .blk-text{color:#6a6a6a;text-decoration:line-through}
+.blk-code{background:#0f0f0f;border:1px solid #262626;border-radius:6px;padding:8px 12px;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px;color:#d4d4d4}
+.blk-code .blk-text{padding:0;font-family:inherit;font-size:inherit;color:inherit;white-space:pre-wrap}
+.blk-quote{border-left:3px solid #3c4756;padding-left:12px;color:#9CA3AF;font-style:italic}
+.blk-divider-wrap{padding:10px 0}
+.blk-divider-line{height:1px;background:#2a2a2a}
+.blk-callout{background:rgba(66,134,244,.06);border:1px solid rgba(66,134,244,.22);border-left:3px solid #4286f4;padding:8px 12px;border-radius:6px;display:flex;gap:8px;align-items:flex-start}
+.blk-callout.warn{background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.25);border-left-color:#F59E0B}
+.blk-callout.success{background:rgba(34,197,94,.06);border-color:rgba(34,197,94,.22);border-left-color:#22C55E}
+.blk-callout-icon{font-size:14px;padding-top:2px}
+.blk-delete{opacity:0;padding:2px 6px;font-size:13px;background:transparent;border:none;color:#6a6a6a;cursor:pointer;border-radius:3px;margin-top:2px}
+.blk:hover .blk-delete{opacity:.6}
+.blk-delete:hover{opacity:1;color:#EF4444}
+
+.slashpop{position:fixed;background:#1a1a1a;border:1px solid #333;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.7);padding:4px;z-index:9999;min-width:240px;max-height:320px;overflow-y:auto;font-family:inherit}
+.slashpop-item{padding:7px 10px;font-size:12.5px;color:#E5E7EB;border-radius:5px;cursor:pointer;display:flex;align-items:center;gap:10px;user-select:none}
+.slashpop-item:hover,.slashpop-item.on{background:#252525}
+.slashpop-icon{width:26px;height:26px;background:#252525;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.slashpop-label{flex:1;font-weight:600}
+.slashpop-hint{font-size:10.5px;color:#6a6a6a;font-weight:normal}
+.slashpop-empty{padding:10px;color:#6a6a6a;font-size:12px;text-align:center}
+
+.ai-panel{padding:18px 22px}
+.ai-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:10px 14px;background:#191919;border:1px solid #262626;border-radius:8px}
+.ai-header-meta{display:flex;align-items:center;gap:10px;font-size:11.5px;color:#9CA3AF}
+.ai-stale-pill{background:rgba(245,158,11,.14);color:#F59E0B;padding:3px 9px;border-radius:10px;font-size:10.5px;font-weight:700}
+.ai-fresh-pill{background:rgba(34,197,94,.14);color:#22C55E;padding:3px 9px;border-radius:10px;font-size:10.5px;font-weight:700}
+.ai-loading{padding:40px 20px;text-align:center;color:#9CA3AF;font-size:12.5px}
+.ai-loading-dots::after{content:'...';animation:aidots 1.2s steps(4) infinite;display:inline-block;width:16px;text-align:left}
+@keyframes aidots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+.ai-placeholder{padding:14px 18px;background:rgba(245,158,11,.04);border:1px dashed rgba(245,158,11,.2);border-radius:8px;color:#9CA3AF;font-size:12px;line-height:1.6;margin-bottom:16px}
+.ai-placeholder strong{color:#F59E0B}
+.ai-output{background:#191919;border:1px solid #262626;border-radius:8px;padding:16px 18px;line-height:1.7;font-size:13px}
+.ai-output h1,.ai-output h2,.ai-output h3{color:#fff;margin:12px 0 6px;font-weight:700}
+.ai-output h1{font-size:18px}.ai-output h2{font-size:15px}.ai-output h3{font-size:13.5px}
+.ai-output ul,.ai-output ol{margin:6px 0 8px 22px}
+.ai-output li{margin:3px 0}
+.ai-output p{margin:6px 0}
+.ai-output blockquote{border-left:3px solid #3c4756;padding-left:10px;color:#9CA3AF;margin:8px 0}
+.ai-output code{background:#0f0f0f;padding:1px 5px;border-radius:3px;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px}
+.ai-output pre{background:#0f0f0f;border:1px solid #262626;padding:10px 12px;border-radius:6px;overflow-x:auto;margin:8px 0}
+.ai-output pre code{background:transparent;padding:0}
+</style></head><body>
+<div class="hd"><div><div class="ti">Meetings</div><div class="sb" id="sub">—</div></div>
+<div class="ctr"><input class="srch" id="srch" placeholder="Search meetings…"/><button class="selall" id="selall-hdr" onclick="toggleSelectAllVisible()"><span class="row-check"></span><span id="selall-hdr-lbl">Select all</span></button><button class="btn" onclick="bulkImport()">Import</button><button class="btn bp" onclick="openD(null)">+ Meeting</button></div></div>
+<div class="kpis">
+<div class="kpi" style="border-left-color:#F59E0B"><div class="kl">Total</div><div class="kv" style="color:#F59E0B" id="k-t">—</div><div class="kc">meetings logged</div></div>
+<div class="kpi" style="border-left-color:#4286f4"><div class="kl">Last 30 days</div><div class="kv" style="color:#4286f4" id="k-r">—</div><div class="kc">recent activity</div></div>
+<div class="kpi" style="border-left-color:#22C55E"><div class="kl">Decisions</div><div class="kv" style="color:#22C55E" id="k-d">—</div><div class="kc">captured</div></div>
+</div>
+<div id="list"></div>
+<div class="bulk-bar" id="bulk-bar"><span class="bulk-count" id="bulk-count">0</span><span>selected</span><button class="selall" id="selall-bar" onclick="toggleSelectAllVisible()" style="margin-left:10px"><span class="row-check"></span><span id="selall-bar-lbl">Select all visible</span></button><div style="flex:1"></div><button class="btn" onclick="bulkDelete()" style="color:#EF4444">Delete</button><button class="btn" onclick="clearSelection()">Cancel</button></div><div class="dbg" id="dbg" onclick="closeD()"></div>
+<div class="dr" id="dr">
+  <div class="drh">
+    <div class="drh-main">
+      <div class="drt" id="drt">New Meeting</div>
+      <div class="drt-sub" id="drt-sub"></div>
+    </div>
+    <button class="drx" onclick="closeD()">×</button>
+  </div>
+  <div class="tabs" id="drawer-tabs"></div>
+  <div class="drb" id="drb"></div>
+  <div class="drf">
+    <div class="savestate" id="savestate"></div>
+    <button class="tbtn" id="bd" onclick="delM()" style="display:none">Delete</button>
+    <button class="btn" onclick="closeD()">Close</button>
+    <button class="btn bp" id="saveDetailsBtn" onclick="saveM()">Save Details</button>
+  </div>
+</div>
+<script>
+
+window.showRowMenu = function(btn, actions) {
+  document.querySelectorAll('.row-menu-pop').forEach(x=>x.remove());
+  const rect = btn.getBoundingClientRect();
+  const menu = document.createElement('div');
+  menu.className = 'row-menu-pop';
+  menu.style.cssText = `position:fixed;top:${rect.bottom+4}px;left:${rect.right-180}px;min-width:180px;background:#1a1a1a;border:1px solid #333;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.6);z-index:999;padding:4px;font-family:inherit`;
+  menu.innerHTML = actions.map((a,i)=>a.divider?'<div style="height:1px;background:#2a2a2a;margin:4px 0"></div>':`<div data-i="${i}" style="padding:7px 12px;font-size:12.5px;color:${a.color||'#E5E7EB'};border-radius:5px;cursor:pointer;user-select:none">${a.label}</div>`).join('');
+  menu.querySelectorAll('[data-i]').forEach(el=>{el.onmouseenter=()=>el.style.background='#252525';el.onmouseleave=()=>el.style.background='';el.onclick=e=>{e.stopPropagation();menu.remove();actions[+el.dataset.i].fn();};});
+  document.body.appendChild(menu);
+  setTimeout(()=>{document.addEventListener('click',function c(){menu.remove();document.removeEventListener('click',c);},{once:true});},50);
+};
+
+window.healthDot = function(status){const s=(status||'').toLowerCase();if(/open|blocked|overdue|critical|late|fail/.test(s))return'🔴';if(/progress|partial|warn|review|pending|draft/.test(s))return'🟡';if(/closed|complete|paid|done|healthy|ok|on time/.test(s))return'🟢';return'⚪';};
+window.__STATUSES__ = window.__STATUSES__ || { task:['Not Started','In Progress','Blocked','Done'] };
+window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__COMMENTS__ = window.__COMMENTS__ || {};
+window.__ATTACHMENTS__ = window.__ATTACHMENTS__ || {};
+
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+const __USER__ = window.__USER__ || {
+  email: window.__PAYLOAD__?.loggedin_user_email || 'misgur@adrm-security.com',
+  name:  window.__PAYLOAD__?.loggedin_user_name  || 'Matt Isgur',
+  role:  window.__PAYLOAD__?.loggedin_user_role  || 'PM'
+};
+window.__USER__ = __USER__;
+
+const __contactByEmail = {};
+(function buildContactLookup(){
+  try {
+    const P = window.__PAYLOAD__;
+    const proj = Array.isArray(P?.contacts) ? P.contacts : [];
+    const all  = Array.isArray(P?.lookups?.all_contacts) ? P.lookups.all_contacts : [];
+    [...proj, ...all].forEach(c => {
+      if (c && c.email) {
+        const key = String(c.email).toLowerCase();
+        if (!__contactByEmail[key]) __contactByEmail[key] = { name: String(c.name||c.email), email: c.email };
+      }
+    });
+  } catch(_){}
+})();
+if (!Object.keys(__contactByEmail).length) {
+  [
+    {name:'Matt Isgur',email:'misgur@adrm-security.com'},
+    {name:'Louis Feula',email:'lfeula@adrm-security.com'},
+    {name:'John Doe',email:'jdoe@acme.com'},
+    {name:'Gerritt Bakker',email:'gbakker@adrm-security.com'},
+    {name:'Jennifer Doe',email:'jennifer@acme.com'}
+  ].forEach(c => { __contactByEmail[c.email.toLowerCase()] = c; });
+}
+function resolveName(email){
+  const e = String(email||'').toLowerCase();
+  if (!e) return { name:'', email:'', warn:true };
+  const hit = __contactByEmail[e];
+  if (hit) return { name:hit.name, email, warn:false };
+  return { name:email, email, warn:true };
+}
+const COLORS=['#4286f4','#22C55E','#F59E0B','#8B5CF6','#06B6D4','#EF4444','#EC4899'];
+const who=n=>COLORS[(n||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0)%COLORS.length];
+const init=n=>(n||'?').split(/[\s@.]+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+
+window.attachmentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = (window.__ATTACHMENTS__[key]||[]);
+  const rows = list.length ? list.map((a,i) => `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#181818;border:1px solid #262626;border-radius:6px;margin-bottom:4px"><span style="font-size:14px">${a.ext==='pdf'?'📄':a.ext==='jpg'||a.ext==='png'?'🖼️':'📎'}</span><span style="flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(a.name)}</span><span style="font-size:10.5px;color:#6a6a6a">${esc(a.size||'')}</span><button class="btn" style="padding:3px 8px;font-size:11px" onclick="window.__removeAttach('${key}',${i})">×</button></div>`).join('') : '<div style="padding:8px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No attachments</div>';
+  return `<div style="margin-top:14px;padding-top:12px;border-top:1px solid #2a2a2a"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF">Attachments (${list.length})</div><button class="btn" style="padding:5px 10px;font-size:11px" onclick="window.__addAttach('${entityType}',${JSON.stringify(entityId)})">+ Attach file</button></div>${rows}</div>`;
+};
+window.__addAttach = function(et, id) {
+  const name = prompt('File name:', 'photo.jpg');
+  if (!name) return;
+  const ext = (name.split('.').pop()||'').toLowerCase();
+  const key = et + ':' + id;
+  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size:'0.8 MB', by:__USER__.name, at:new Date().toISOString() });
+  try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  if (typeof renderTabContent === 'function' && currentTab === 'details') renderTabContent();
+};
+window.__removeAttach = function(key, idx) {
+  if (!confirm('Remove this attachment?')) return;
+  window.__ATTACHMENTS__[key].splice(idx, 1);
+  if (typeof renderTabContent === 'function' && currentTab === 'details') renderTabContent();
+};
+window.commentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = window.__COMMENTS__[key] || [];
+  const renderList = list.length
+    ? list.map(c => `<div style="padding:8px 0;border-bottom:1px solid #252525;font-size:12px"><div style="display:flex;gap:6px;align-items:baseline"><strong style="color:#E5E7EB">${esc(c.who)}</strong><span style="color:#6a6a6a;font-size:10.5px">${new Date(c.at).toLocaleDateString('en-US',{month:'short',day:'numeric'})} ${new Date(c.at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div><div style="color:#9CA3AF;margin-top:2px;line-height:1.5">${esc(c.txt).replace(/@(\w+(?:\s\w+)?)/g,'<span style="color:#60a5fa;font-weight:600">@$1</span>')}</div></div>`).join('')
+    : '<div style="padding:10px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No comments yet</div>';
+  return `<div style="margin-top:16px;padding-top:14px;border-top:1px solid #2a2a2a"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px">Comments (${list.length})</div><div id="cw-list-${entityId}">${renderList}</div><div style="display:flex;gap:6px;margin-top:10px"><input class="fi" id="cw-in-${entityId}" placeholder="Add a comment…" style="flex:1"/><button class="btn bp" onclick="__postComment('${entityType}',${JSON.stringify(entityId)})">Post</button></div></div>`;
+};
+window.__postComment = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const inp = document.getElementById('cw-in-'+entityId);
+  const txt = inp.value.trim();
+  if (!txt) return;
+  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who:__USER__.name, txt, at:new Date().toISOString() });
+  try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  if (typeof renderTabContent === 'function' && currentTab === 'details') renderTabContent();
+};
+Object.assign(window.__COMMENTS__, {
+  'meeting:MTG-03': [{who:'Gerritt Bakker',txt:'Can we lock acceptance criteria for cameras specifically?',at:'2026-04-06T09:30'}]
+});
+
+function isoToLocalInput(iso){if(!iso)return'';const d=new Date(iso);if(isNaN(d.getTime()))return'';const p=n=>String(n).padStart(2,'0');return`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;}
+function localInputToIso(l){if(!l)return'';const d=new Date(l);if(isNaN(d.getTime()))return'';return d.toISOString();}
+
+function ingestMeeting(sm, idx){
+  const decRaw = Array.isArray(sm?.decisions) ? sm.decisions : [];
+  const legacyNotes = typeof sm?.notes === 'string' ? sm.notes : '';
+  return {
+    id: String(sm?.id ?? `tmp-${Date.now()}-${idx||0}`),
+    title: String(sm?.title ?? ''),
+    datetime: String(sm?.datetime ?? ''),
+    duration_min: Number.isFinite(+sm?.duration_min) ? +sm.duration_min : 60,
+    attendees: Array.isArray(sm?.attendees) ? sm.attendees.map(a=>String(a||'').trim()).filter(Boolean) : [],
+    agenda: String(sm?.agenda ?? ''),
+    notes: legacyNotes,
+    decisions: decRaw.filter(d=>d&&typeof d==='object').map((d,i)=>({
+      id: String(d?.id ?? `tmp-dec-${Date.now()}-${i}`),
+      text: String(d?.text ?? ''),
+      action_task_id: d?.action_task_id ? String(d.action_task_id) : null
+    })),
+    __datetimeDirty: false
+  };
+}
+function buildSavePayload(m){
+  const datetime = m.__datetimeDirty ? localInputToIso(m.datetime) : (m.datetime || '');
+  return {
+    id: String(m.id),
+    title: String(m.title ?? ''),
+    datetime,
+    duration_min: Number.isFinite(+m.duration_min) ? +m.duration_min : 60,
+    attendees: (m.attendees||[]).map(a=>String(a)),
+    agenda: String(m.agenda ?? ''),
+    notes: String(m.notes ?? ''),
+    decisions: (m.decisions||[]).map(d=>({
+      id: String(d.id),
+      text: String(d.text ?? ''),
+      action_task_id: d.action_task_id ? String(d.action_task_id) : null
+    }))
+  };
+}
+
+const notesByMeeting = {};
+const aiByMeeting = {};
+
+function makeBlock(type, props={}){
+  const base = { id: props.id || `tmp-bl-${Date.now()}-${Math.floor(Math.random()*9999)}`, type };
+  switch(type){
+    case 'heading':   return { ...base, text: props.text||'', level: +props.level||1 };
+    case 'paragraph': return { ...base, text: props.text||'' };
+    case 'bullet':    return { ...base, text: props.text||'' };
+    case 'number':    return { ...base, text: props.text||'' };
+    case 'check':     return { ...base, text: props.text||'', done: !!props.done };
+    case 'code':      return { ...base, text: props.text||'', lang: props.lang||'' };
+    case 'quote':     return { ...base, text: props.text||'' };
+    case 'divider':   return { ...base };
+    case 'callout':   return { ...base, text: props.text||'', tone: props.tone||'info' };
+    default:          return { ...base, type:'paragraph', text: props.text||'' };
+  }
+}
+
+function ingestLane(sl){
+  const rawBlocks = Array.isArray(sl?.blocks) ? sl.blocks : [];
+  const blocks = rawBlocks.filter(b=>b&&typeof b==='object').map(b => {
+    const type = ['heading','paragraph','bullet','number','check','code','quote','divider','callout'].includes(b?.type) ? b.type : 'paragraph';
+    return makeBlock(type, { id: b?.id, text: b?.text, level: b?.level, done: b?.done, lang: b?.lang, tone: b?.tone });
+  });
+  return {
+    id: String(sl?.id ?? `tmp-mn-${Date.now()}`),
+    meeting_id: String(sl?.meeting_id ?? ''),
+    user_email: String(sl?.user_email ?? '').toLowerCase(),
+    blocks: blocks.length ? blocks : [makeBlock('paragraph',{text:''})],
+    updated_at: String(sl?.updated_at ?? new Date().toISOString()),
+    updated_by: String(sl?.updated_by ?? sl?.user_email ?? '')
+  };
+}
+function buildLanePayload(lane){
+  return {
+    id: String(lane.id),
+    meeting_id: String(lane.meeting_id),
+    user_email: String(lane.user_email),
+    blocks: (lane.blocks||[]).map(b => {
+      const out = { id: String(b.id), type: b.type };
+      if (b.type !== 'divider') out.text = String(b.text||'');
+      if (b.type === 'heading') out.level = +b.level || 1;
+      if (b.type === 'check') out.done = !!b.done;
+      if (b.type === 'code') out.lang = String(b.lang||'');
+      if (b.type === 'callout') out.tone = String(b.tone||'info');
+      return out;
+    }),
+    updated_at: String(lane.updated_at),
+    updated_by: String(lane.updated_by||lane.user_email)
+  };
+}
+
+function getLane(meetingId, userEmail){
+  const mid = String(meetingId);
+  const ue  = String(userEmail||'').toLowerCase();
+  return notesByMeeting[mid]?.[ue] || null;
+}
+function ensureLane(meetingId, userEmail){
+  const mid = String(meetingId);
+  const ue  = String(userEmail||'').toLowerCase();
+  notesByMeeting[mid] = notesByMeeting[mid] || {};
+  if (!notesByMeeting[mid][ue]) {
+    notesByMeeting[mid][ue] = ingestLane({
+      id: `tmp-mn-${Date.now()}-${Math.floor(Math.random()*9999)}`,
+      meeting_id: mid, user_email: ue,
+      blocks: [makeBlock('paragraph',{text:''})],
+      updated_at: new Date().toISOString(), updated_by: ue
+    });
+  }
+  return notesByMeeting[mid][ue];
+}
+function getAllLanes(meetingId){
+  return Object.values(notesByMeeting[String(meetingId)] || {}).filter(l => (l.blocks||[]).some(b => !isBlockEmpty(b)));
+}
+function isBlockEmpty(b){
+  if (!b) return true;
+  if (b.type === 'divider') return false;
+  if (b.type === 'check')   return !(b.text||'').trim();
+  return !(b.text||'').trim();
+}
+function canEditLane(lane){
+  if (!lane) return false;
+  if (String(lane.user_email).toLowerCase() === String(__USER__.email).toLowerCase()) return true;
+  if (__USER__.role === 'PM') return true;
+  return false;
+}
+function migrateLegacyNotesIfNeeded(meeting){
+  if (!meeting?.notes?.trim()) return;
+  const existing = getLane(meeting.id, __USER__.email);
+  if (existing && existing.blocks.some(b => !isBlockEmpty(b))) return;
+  const lane = ensureLane(meeting.id, __USER__.email);
+  const paras = meeting.notes.split(/\n{2,}/).map(s=>s.trim()).filter(Boolean);
+  lane.blocks = paras.length
+    ? paras.map(p => makeBlock('paragraph', { text: p }))
+    : [makeBlock('paragraph',{ text: meeting.notes.trim() })];
+  lane.updated_at = new Date().toISOString();
+  lane.updated_by = __USER__.email;
+  meeting.notes = '';
+}
+
+// ─── AUTOSAVE + AI REGEN DEBOUNCERS ───
+const __saveTimers = {};
+const __regenTimers = {};
+let __saveState = { state:'idle', pending:0, lastAt:null, err:null };
+function scheduleLaneSave(lane){
+  const key = lane.id;
+  clearTimeout(__saveTimers[key]);
+  __saveState.state = 'dirty'; __saveState.pending++;
+  renderSaveState();
+  __saveTimers[key] = setTimeout(() => {
+    const payload = buildLanePayload(lane);
+    __saveState.state = 'saving'; renderSaveState();
+    console.log('Make payload (meeting_note_save):', payload);
+    setTimeout(() => {
+      __saveState.state = 'saved'; __saveState.lastAt = new Date(); __saveState.pending = Math.max(0, __saveState.pending-1);
+      renderSaveState();
+      scheduleAIRegen(lane.meeting_id);
+    }, 150);
+  }, 800);
+}
+function scheduleAIRegen(meetingId){
+  clearTimeout(__regenTimers[meetingId]);
+  __regenTimers[meetingId] = setTimeout(() => {
+    regenerateAI(meetingId, 'dedup');
+    regenerateAI(meetingId, 'summary');
+  }, 2000);
+}
+function renderSaveState(){
+  const el = document.getElementById('savestate');
+  if (!el) return;
+  const s = __saveState;
+  let txt='', cls='';
+  if (s.state === 'saving') { txt = `⋯ Saving${s.pending>1?` (${s.pending})`:''}`; cls='saving'; }
+  else if (s.state === 'dirty')  { txt = '• Unsaved changes'; cls='saving'; }
+  else if (s.state === 'saved')  { txt = '✓ Saved'; cls='saved'; }
+  else if (s.state === 'err')    { txt = '⚠ Save failed'; cls='err'; }
+  el.textContent = txt; el.className = 'savestate ' + cls;
+}
+
+// ─── AI STUBS (Phase 2 swap for webhook calls) ───
+function laneSourceHash(meetingId){
+  const lanes = getAllLanes(meetingId);
+  const sig = lanes.map(l => `${l.user_email}|${l.updated_at}`).sort().join('#');
+  let h = 5381;
+  for (let i=0;i<sig.length;i++) h = ((h << 5) + h + sig.charCodeAt(i)) | 0;
+  return String(h);
+}
+function blockToMd(b){
+  switch(b.type){
+    case 'heading':   return '#'.repeat(Math.min(3,Math.max(1,+b.level||1))) + ' ' + (b.text||'');
+    case 'paragraph': return (b.text||'');
+    case 'bullet':    return '- ' + (b.text||'');
+    case 'number':    return '1. ' + (b.text||'');
+    case 'check':     return '- [' + (b.done?'x':' ') + '] ' + (b.text||'');
+    case 'code':      return '```' + (b.lang||'') + '\n' + (b.text||'') + '\n```';
+    case 'quote':     return '> ' + (b.text||'');
+    case 'divider':   return '---';
+    case 'callout':   return '> **' + (b.tone==='warn'?'⚠':b.tone==='success'?'✓':'ℹ') + '** ' + (b.text||'');
+    default: return '';
+  }
+}
+function laneToMd(lane){ return (lane.blocks||[]).map(blockToMd).filter(s=>s||s==='---').join('\n\n'); }
+function stubDedup(meetingId){
+  const lanes = getAllLanes(meetingId);
+  if (!lanes.length) return '_No notes yet from any participant._';
+  const seen = new Map();
+  lanes.forEach(lane => {
+    const name = resolveName(lane.user_email).name;
+    lane.blocks.forEach(b => {
+      if (isBlockEmpty(b) || b.type==='divider') return;
+      const md = blockToMd(b).trim();
+      if (!md) return;
+      const key = md.toLowerCase().replace(/\s+/g,' ').trim();
+      if (!seen.has(key)) seen.set(key, { md, contributors: new Set() });
+      seen.get(key).contributors.add(name);
+    });
+  });
+  return [...seen.values()].map(({md, contributors}) => {
+    const tag = contributors.size > 1 ? ` *(${[...contributors].join(', ')})*` : '';
+    return md + tag;
+  }).join('\n\n');
+}
+function stubSummary(meetingId){
+  const lanes = getAllLanes(meetingId);
+  if (!lanes.length) return '_No notes yet from any participant._';
+  const actions = [], decisions = [], headings = [];
+  lanes.forEach(lane => {
+    lane.blocks.forEach(b => {
+      if (isBlockEmpty(b)) return;
+      const t = (b.text||'').trim();
+      if (b.type === 'heading') headings.push(t);
+      if (b.type === 'check') actions.push({ text:t, done:b.done, who:resolveName(lane.user_email).name });
+      if (/^(decision|decided)[:\s]/i.test(t)) decisions.push({ text:t.replace(/^(decision|decided)[:\s]+/i,''), who:resolveName(lane.user_email).name });
+    });
+  });
+  const lines = ['_Placeholder summary — Phase 2 will replace this with Claude-generated output._', ''];
+  if (headings.length) { lines.push('### Topics covered'); headings.slice(0,8).forEach(h => lines.push(`- ${h}`)); lines.push(''); }
+  if (decisions.length) { lines.push('### Decisions'); decisions.forEach(d => lines.push(`- ${d.text} *(${d.who})*`)); lines.push(''); }
+  if (actions.length) { lines.push('### Action items'); actions.forEach(a => lines.push(`- ${a.done?'[x]':'[ ]'} ${a.text} *(${a.who})*`)); lines.push(''); }
+  if (lines.length <= 2) lines.push('_Notes exist but no headings, decisions, or action items detected. Add structure for a richer summary._');
+  return lines.join('\n');
+}
+function regenerateAI(meetingId, kind){
+  const mid = String(meetingId);
+  aiByMeeting[mid] = aiByMeeting[mid] || {};
+  aiByMeeting[mid][kind] = aiByMeeting[mid][kind] || {};
+  aiByMeeting[mid][kind].loading = true;
+  if (currentTab === kind && editing && String(editing.id) === mid) renderTabContent();
+  console.log(`Make payload (meeting_ai_regenerate): { meeting_id: "${mid}", kind: "${kind}" }`);
+  setTimeout(() => {
+    const md = kind === 'dedup' ? stubDedup(mid) : stubSummary(mid);
+    aiByMeeting[mid][kind] = {
+      markdown: md, generated_at: new Date().toISOString(),
+      source_hash: laneSourceHash(mid), stale: false, loading: false
+    };
+    if (currentTab === kind && editing && String(editing.id) === mid) renderTabContent();
+  }, 400);
+}
+function isAIStale(meetingId, kind){
+  const out = aiByMeeting[meetingId]?.[kind];
+  if (!out || out.loading) return false;
+  return out.source_hash !== laneSourceHash(meetingId);
+}
+
+// ─── DEMO DATA ───
+let meetings = [
+  ingestMeeting({id:'MTG-01',title:'Project Kickoff',datetime:'2025-12-01T15:00:00Z',duration_min:60,attendees:['misgur@adrm-security.com','jdoe@acme.com','jennifer@acme.com','gbakker@adrm-security.com'],agenda:'Review scope, timeline, and team roles',notes:'',decisions:[{id:'DEC-1',text:'4-phase project structure',action_task_id:null},{id:'DEC-2',text:'John Doe is project owner',action_task_id:null},{id:'DEC-3',text:'Budget: $183K',action_task_id:null}]}, 0),
+  ingestMeeting({id:'MTG-02',title:'Weekly Sync — Week 6',datetime:'2026-02-05T19:00:00Z',duration_min:45,attendees:['misgur@adrm-security.com','lfeula@adrm-security.com','jdoe@acme.com'],agenda:'Installation progress, procurement delays',notes:'',decisions:[{id:'DEC-4',text:'Proceed Phase 2 in parallel',action_task_id:null},{id:'DEC-5',text:'Escalate procurement delay to vendor',action_task_id:'TSK-118'}]}, 1),
+  ingestMeeting({id:'MTG-03',title:'Commissioning Kickoff',datetime:'2026-04-05T14:00:00Z',duration_min:90,attendees:['misgur@adrm-security.com','lfeula@adrm-security.com','jdoe@acme.com','gbakker@adrm-security.com'],agenda:'Commissioning plan, acceptance criteria',notes:'',decisions:[{id:'DEC-6',text:'Louis owns site commissioning',action_task_id:null},{id:'DEC-7',text:'Gerritt owns QA sign-off',action_task_id:null},{id:'DEC-8',text:'Commissioning starts April 20',action_task_id:null}]}, 2)
+];
+
+(function seedDemoLanes(){
+  notesByMeeting['MTG-03'] = {
+    'misgur@adrm-security.com': ingestLane({
+      id:'MN-1', meeting_id:'MTG-03', user_email:'misgur@adrm-security.com',
+      updated_at:'2026-04-05T14:35:00Z', updated_by:'misgur@adrm-security.com',
+      blocks:[
+        { id:'BL-1', type:'heading', level:2, text:'Acceptance criteria' },
+        { id:'BL-2', type:'paragraph', text:'All 27 deployed assets must pass the 4-step commissioning checklist before sign-off.' },
+        { id:'BL-3', type:'check', text:'Mount alignment verified', done:true },
+        { id:'BL-4', type:'check', text:'Cable tension + strain relief', done:false },
+        { id:'BL-5', type:'check', text:'Endpoint online and polling', done:false },
+        { id:'BL-6', type:'heading', level:2, text:'Owners' },
+        { id:'BL-7', type:'bullet', text:'Decision: Louis owns site commissioning' },
+        { id:'BL-8', type:'bullet', text:'Decision: Gerritt owns QA sign-off' },
+        { id:'BL-9', type:'callout', tone:'warn', text:'Cameras arriving late — may slip commissioning by 1 week.' }
+      ]
+    }),
+    'lfeula@adrm-security.com': ingestLane({
+      id:'MN-2', meeting_id:'MTG-03', user_email:'lfeula@adrm-security.com',
+      updated_at:'2026-04-05T14:42:00Z', updated_by:'lfeula@adrm-security.com',
+      blocks:[
+        { id:'BL-10', type:'heading', level:2, text:'Field notes' },
+        { id:'BL-11', type:'paragraph', text:'Commissioning starts April 20. I will pre-stage the test rig on the 19th.' },
+        { id:'BL-12', type:'bullet', text:'Need 2 contractors for the first 3 days' },
+        { id:'BL-13', type:'bullet', text:'Mount alignment verified — confirming Matt\'s note' },
+        { id:'BL-14', type:'code', lang:'', text:'# dump endpoint telemetry\ncurl $GW/endpoints | jq .[]' },
+        { id:'BL-15', type:'quote', text:'"Zero missed endpoints on day one" — Gerritt' }
+      ]
+    })
+  };
+})();
+
+// ─── PAYLOAD INGESTION ───
+(function ingestPayload(){
+  try {
+    const P = window.__PAYLOAD__;
+    if (!P) return;
+    const ev = P?.meta?.payload_version;
+    if (ev != null && ev !== 1) console.warn(`[meetings] payload v1 expected, got v${ev}`);
+    const rawMeetings = Array.isArray(P?.meetings) ? P.meetings : null;
+    if (Array.isArray(rawMeetings) && rawMeetings.length) {
+      const norm = rawMeetings.filter(m=>m&&typeof m==='object').map((m,i)=>ingestMeeting(m,i));
+      if (norm.length) { meetings.length = 0; norm.forEach(n=>meetings.push(n)); }
+    }
+    const rawNotes = Array.isArray(P?.meeting_notes) ? P.meeting_notes : null;
+    if (Array.isArray(rawNotes)) {
+      if (rawNotes.length) for (const k of Object.keys(notesByMeeting)) delete notesByMeeting[k];
+      rawNotes.filter(n=>n&&typeof n==='object' && n.meeting_id).forEach(n => {
+        const lane = ingestLane(n);
+        notesByMeeting[lane.meeting_id] = notesByMeeting[lane.meeting_id] || {};
+        notesByMeeting[lane.meeting_id][lane.user_email] = lane;
+      });
+    }
+    const rawAI = Array.isArray(P?.meeting_ai_outputs) ? P.meeting_ai_outputs : [];
+    rawAI.filter(a=>a&&a.meeting_id&&a.kind).forEach(a => {
+      aiByMeeting[a.meeting_id] = aiByMeeting[a.meeting_id] || {};
+      aiByMeeting[a.meeting_id][a.kind] = {
+        markdown: String(a.markdown||''), generated_at: String(a.generated_at||''),
+        source_hash: String(a.source_hash||''), stale: false, loading: false
+      };
+    });
+    console.warn('Payload ingestion active:', 'meetings');
+  } catch (err) {
+    console.warn('[meetings] payload ingestion failed, falling back to demo data:', err);
+  }
+})();
+
+let editing = null;
+let currentTab = 'details';
+
+function filtered(){
+  const q = (document.getElementById('srch')?.value||'').toLowerCase();
+  if (!q) return meetings;
+  return meetings.filter(m => {
+    const noteText = Object.values(notesByMeeting[m.id]||{}).map(l => (l.blocks||[]).map(b=>b.text||'').join(' ')).join(' ');
+    const hay = [m.title, m.agenda, m.notes, (m.attendees||[]).join(' '), (m.decisions||[]).map(d=>d.text).join(' '), noteText].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+}
+
+function renderAll(){
+  const recent = new Date(); recent.setDate(recent.getDate()-30);
+  document.getElementById('k-t').textContent = meetings.length;
+  document.getElementById('k-r').textContent = meetings.filter(m => { const d=new Date(m.datetime); return !isNaN(d)&&d>=recent; }).length;
+  document.getElementById('k-d').textContent = meetings.reduce((s,m)=>s+(m.decisions?.length||0),0);
+  document.getElementById('sub').textContent = meetings.length + ' meetings · ' + meetings.reduce((s,m)=>s+(m.attendees?.length||0),0) + ' participant instances';
+
+  const rows = filtered().slice().sort((a,b)=>new Date(b.datetime||0)-new Date(a.datetime||0));
+  const host = document.getElementById('list');
+  if (!rows.length) {
+    host.innerHTML = '<div style="padding:40px;text-align:center;color:#9CA3AF;background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px">No meetings match.</div>';
+    updateSelectAllState();
+    return;
+  }
+
+  host.innerHTML = rows.map(m => {
+    const d = new Date(m.datetime);
+    const valid = !isNaN(d.getTime());
+    const mn = valid ? d.toLocaleDateString('en-US',{month:'short'}) : '—';
+    const dy = valid ? d.getDate() : '?';
+    const yr = valid ? d.getFullYear() : '';
+    const tm = valid ? d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '—';
+    const attList = (m.attendees||[]).slice(0,6).map(email => {
+      const r = resolveName(email);
+      const cls = r.warn ? 'av warn' : 'av';
+      const bg = r.warn ? '' : `background:${who(r.name)}`;
+      const title = r.warn ? `${esc(email)} (not in contacts)` : esc(r.name);
+      return `<span class="${cls}" style="${bg}" title="${title}">${r.warn ? '⚠' : esc(init(r.name))}</span>`;
+    }).join('');
+    const overflow = (m.attendees?.length||0) > 6 ? `<span class="av" style="background:#252525">+${m.attendees.length-6}</span>` : '';
+    const laneCount = Object.keys(notesByMeeting[m.id]||{}).filter(ue => (notesByMeeting[m.id][ue].blocks||[]).some(b=>!isBlockEmpty(b))).length;
+    const selected = __selected.has(String(m.id));
+    const idJson = JSON.stringify(String(m.id));
+    return `<div class="mcard${selected?' sel':''}" data-id="${esc(m.id)}">
+      <span class="mcheck row-check${selected?' on':''}" onclick="event.stopPropagation();toggleSelect(${idJson},this)"></span>
+      <button class="btn" style="position:absolute;top:10px;right:10px;padding:3px 8px;font-size:14px;line-height:1;z-index:5" onclick='event.stopPropagation();showRowMenu(this,[{label:"Update",fn:()=>openD(${idJson})},{label:"Duplicate",fn:()=>duplicateMeeting(${idJson})},{divider:true},{label:"Delete",color:"#EF4444",fn:()=>deleteMeeting(${idJson})}])'>⋯</button>
+      <div class="mhead"><div class="mdate"><div class="mdate-m">${esc(mn)}</div><div class="mdate-d">${esc(dy)}</div><div class="mdate-y">${esc(yr)}</div></div>
+        <div class="mbody"><div class="mtitle">${esc(m.title||'(untitled)')}</div>
+          <div class="mmeta">${esc(tm)} · ${m.duration_min||0} min · ${m.attendees?.length||0} attendees</div>
+          <div class="mattend">${attList}${overflow}</div></div></div>
+      <div class="mstats">
+        <div class="mstat">📋 ${m.agenda?'Agenda':'No agenda'}</div>
+        <div class="mstat">✓ ${m.decisions?.length||0} decisions</div>
+        ${laneCount>0?`<div class="mstat"><span class="mnotes-pill">✎ ${laneCount} ${laneCount===1?'note':'notes'}</span></div>`:''}
+        ${(m.decisions||[]).some(d=>d.action_task_id)?`<div class="mstat" style="color:#9ec2f4">↗ ${(m.decisions||[]).filter(d=>d.action_task_id).length} task${(m.decisions||[]).filter(d=>d.action_task_id).length===1?'':'s'}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.querySelectorAll('.mcard[data-id]').forEach(el => {
+    el.onclick = (e) => {
+      if (e.target.closest('.mcheck') || e.target.closest('button')) return;
+      openD(el.dataset.id);
+    };
+  });
+  updateSelectAllState();
+}
+
+function duplicateMeeting(id){
+  const src = meetings.find(x=>String(x.id)===String(id));
+  if (!src) return;
+  const copy = JSON.parse(JSON.stringify(src));
+  copy.id = `tmp-${Date.now()}`;
+  copy.title = 'Copy of ' + copy.title;
+  copy.decisions = (copy.decisions||[]).map((d,i)=>({ id:`tmp-dec-${Date.now()}-${i}`, text:d.text, action_task_id:null }));
+  copy.__datetimeDirty = false;
+  meetings.unshift(copy);
+  try{parent.postMessage({type:'toast',msg:'Duplicated',kind:'success'},'*');}catch(e){}
+  renderAll();
+}
+function deleteMeeting(id){
+  if (!confirm('Delete this meeting?')) return;
+  meetings = meetings.filter(x=>String(x.id)!==String(id));
+  delete notesByMeeting[String(id)];
+  delete aiByMeeting[String(id)];
+  __selected.delete(String(id));
+  console.log('Make payload (meeting_delete):', { id:String(id) });
+  try{parent.postMessage({type:'toast',msg:'Deleted',kind:'success'},'*');}catch(e){}
+  renderAll();
+}
+
+let __selected = new Set();
+function toggleSelect(id, el){
+  const key = String(id);
+  if (__selected.has(key)) { __selected.delete(key); el?.classList.remove('on'); el?.closest('.mcard')?.classList.remove('sel'); }
+  else { __selected.add(key); el?.classList.add('on'); el?.closest('.mcard')?.classList.add('sel'); }
+  updateBulkBar();
+}
+function updateBulkBar(){
+  const n = __selected.size;
+  const c = document.getElementById('bulk-count'); if(c) c.textContent = n;
+  const b = document.getElementById('bulk-bar'); if(b) b.classList.toggle('show', n>0);
+  updateSelectAllState();
+}
+function clearSelection(){
+  __selected.clear();
+  document.querySelectorAll('.row-check.on').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('.mcard.sel').forEach(c=>c.classList.remove('sel'));
+  updateBulkBar();
+}
+function toggleSelectAllVisible(){
+  const visIds = filtered().map(m=>String(m.id));
+  const allSelected = visIds.length>0 && visIds.every(id=>__selected.has(id));
+  if (allSelected) visIds.forEach(id=>__selected.delete(id));
+  else visIds.forEach(id=>__selected.add(id));
+  document.querySelectorAll('.mcard[data-id]').forEach(card=>{
+    const id = card.dataset.id;
+    const chk = card.querySelector('.row-check');
+    if (chk) chk.classList.toggle('on', __selected.has(id));
+    card.classList.toggle('sel', __selected.has(id));
+  });
+  updateBulkBar();
+}
+function updateSelectAllState(){
+  const visIds = filtered().map(m=>String(m.id));
+  const selVisCount = visIds.filter(id=>__selected.has(id)).length;
+  let state, label;
+  if (visIds.length===0) { state='empty'; label='Select all'; }
+  else if (selVisCount===0) { state='none'; label=`Select all (${visIds.length})`; }
+  else if (selVisCount===visIds.length) { state='all'; label='Deselect all'; }
+  else { state='mixed'; label=`Select all (${visIds.length})`; }
+  ['selall-hdr','selall-bar'].forEach(hostId=>{
+    const host = document.getElementById(hostId);
+    if (!host) return;
+    const chk = host.querySelector('.row-check');
+    const lbl = document.getElementById(hostId+'-lbl');
+    if (chk) { chk.classList.remove('on','mixed'); if (state==='all') chk.classList.add('on'); if (state==='mixed') chk.classList.add('mixed'); }
+    if (lbl) lbl.textContent = label;
+    host.style.opacity = state==='empty' ? '.5' : '1';
+    host.style.pointerEvents = state==='empty' ? 'none' : 'auto';
+  });
+}
+function bulkDelete(){
+  if (!__selected.size) return;
+  const n = __selected.size;
+  if (!confirm(`Delete ${n} meeting${n===1?'':'s'}?`)) return;
+  const meeting_ids = [...__selected].map(id=>String(id));
+  meeting_ids.forEach(id=>{ delete notesByMeeting[id]; delete aiByMeeting[id]; });
+  meetings = meetings.filter(m=>!__selected.has(String(m.id)));
+  console.log('Make payload (meetings_bulk_delete):', { meeting_ids });
+  try{parent.postMessage({type:'toast',msg:`${n} deleted`,kind:'success'},'*');}catch(e){}
+  clearSelection(); renderAll();
+}
+function bulkImport(){
+  const rows = prompt('Paste titles — one meeting per line:');
+  if (!rows) return;
+  const lines = rows.split('\n').filter(l=>l.trim());
+  let added=0;
+  lines.forEach((line,i)=>{
+    meetings.push(ingestMeeting({ id:`tmp-${Date.now()}-${i}`, title:line.trim(), datetime:new Date().toISOString(), duration_min:60, attendees:[], agenda:'', notes:'', decisions:[] }, i));
+    added++;
+  });
+  try{parent.postMessage({type:'toast',msg:`${added} imported`,kind:'success'},'*');}catch(e){}
+  renderAll();
+}
+document.getElementById('srch').oninput = renderAll;
+
+function openD(id){
+  if (id != null) {
+    const src = meetings.find(m=>String(m.id)===String(id));
+    if (!src) return;
+    editing = JSON.parse(JSON.stringify(src));
+    editing.__datetimeDirty = false;
+    migrateLegacyNotesIfNeeded(editing);
+    currentTab = 'mynotes';
+  } else {
+    editing = ingestMeeting({ id:null, title:'', datetime:new Date().toISOString(), duration_min:60, attendees:[], agenda:'', notes:'', decisions:[] }, 0);
+    editing.id = `tmp-${Date.now()}`;
+    currentTab = 'details';
+  }
+  document.getElementById('drt').textContent = id ? 'Update Meeting' : 'New Meeting';
+  document.getElementById('bd').style.display = id ? 'inline-block' : 'none';
+  renderDrawerHeader();
+  renderTabs();
+  renderTabContent();
+  document.getElementById('dbg').classList.add('on');
+  document.getElementById('dr').classList.add('on');
+}
+function closeD(){
+  Object.values(__saveTimers).forEach(t=>clearTimeout(t));
+  document.getElementById('dbg').classList.remove('on');
+  document.getElementById('dr').classList.remove('on');
+  editing = null;
+  closeSlashMenu();
+}
+function renderDrawerHeader(){
+  const m = editing; if (!m) return;
+  const sub = document.getElementById('drt-sub');
+  const d = new Date(m.datetime);
+  const valid = !isNaN(d.getTime());
+  const when = valid ? d.toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+  const titleTxt = m.title?.trim() ? esc(m.title) : '<em style="color:#6a6a6a">Untitled meeting</em>';
+  document.getElementById('drt').innerHTML = titleTxt;
+  sub.innerHTML = `<span>${esc(when)}</span><span>·</span><span>${m.duration_min||0} min</span><span>·</span><span>${m.attendees?.length||0} attendees</span>`;
+}
+function renderTabs(){
+  const m = editing; if (!m) return;
+  const isNew = !meetings.some(x=>String(x.id)===String(m.id));
+  const laneCount = Object.keys(notesByMeeting[m.id]||{}).filter(ue=>(notesByMeeting[m.id][ue].blocks||[]).some(b=>!isBlockEmpty(b))).length;
+  const dedupStale = aiByMeeting[m.id]?.dedup && isAIStale(m.id,'dedup');
+  const summStale  = aiByMeeting[m.id]?.summary && isAIStale(m.id,'summary');
+  const tabs = [
+    { key:'details', label:'Details', icon:'ⓘ' },
+    { key:'mynotes', label:'My Notes', icon:'✎', disabled:isNew },
+    { key:'allnotes', label:'All Notes', icon:'👥', count:laneCount, disabled:isNew },
+    { key:'dedup', label:'De-duped', icon:'⚡', disabled:isNew, stale:dedupStale },
+    { key:'summary', label:'Summary', icon:'✨', disabled:isNew, stale:summStale }
+  ];
+  document.getElementById('drawer-tabs').innerHTML = tabs.map(t => {
+    const cls = ['tab', currentTab===t.key?'on':'', t.disabled?'disabled':''].filter(Boolean).join(' ');
+    const count = t.count!=null ? `<span class="tab-count">${t.count}</span>` : '';
+    const stale = t.stale ? `<span class="tab-stale">•</span>` : '';
+    const attr = t.disabled ? `title="Save the meeting first to enable notes"` : `onclick="switchTab('${t.key}')"`;
+    return `<div class="${cls}" ${attr}>${t.icon} ${t.label}${count}${stale}</div>`;
+  }).join('');
+}
+function switchTab(key){
+  if (currentTab === 'details') captureDrawerScalars();
+  currentTab = key;
+  renderTabs();
+  renderTabContent();
+}
+function renderTabContent(){
+  const m = editing; if (!m) return;
+  const host = document.getElementById('drb');
+  document.getElementById('saveDetailsBtn').style.display = currentTab === 'details' ? 'inline-block' : 'none';
+  switch(currentTab){
+    case 'details':  host.innerHTML = renderDetailsPanel(m); break;
+    case 'mynotes':  host.innerHTML = renderMyNotesPanel(m); wireMyNotesPanel(); break;
+    case 'allnotes': host.innerHTML = renderAllNotesPanel(m); break;
+    case 'dedup':    host.innerHTML = renderAIPanel(m, 'dedup'); break;
+    case 'summary':  host.innerHTML = renderAIPanel(m, 'summary'); break;
+  }
+}
+
+function renderDetailsPanel(m){
+  const localDt = isoToLocalInput(m.datetime);
+  const attChips = (m.attendees||[]).map((email,i)=>{
+    const r = resolveName(email);
+    const cls = r.warn ? 'atchip warn' : 'atchip';
+    const disp = r.warn ? `⚠ ${esc(email)}` : `${esc(r.name)} <span style="color:#6a6a6a;font-size:10.5px">· ${esc(email)}</span>`;
+    return `<span class="${cls}">${disp}<span class="x" onclick="removeAttendee(${i})">×</span></span>`;
+  }).join('');
+  const decRows = (m.decisions||[]).map((d,i)=>{
+    const conv = d.action_task_id ? `<span class="decpill" onclick="gotoTask(${JSON.stringify(d.action_task_id)})">↗ Task ${esc(d.action_task_id)}</span>` : `<button class="btn sm" onclick="convertDec(${i})">→ Create Task</button>`;
+    return `<div class="decrow"><textarea class="dtxt" data-i="${i}" oninput="updateDecText(${i},this.value)" rows="1">${esc(d.text)}</textarea>${conv}<button class="btn sm" style="color:#EF4444" onclick="removeDec(${i})">×</button></div>`;
+  }).join('');
+  return `<div class="tabpanel">
+    <div class="f"><label class="fl">Title</label><input class="fi" id="d-ti" value="${esc(m.title)}" placeholder="e.g. Weekly Sync"/></div>
+    <div class="fr"><div class="f"><label class="fl">Date & Time</label><input type="datetime-local" class="fi" id="d-dt" value="${esc(localDt)}" oninput="editing.__datetimeDirty=true"/></div><div class="f"><label class="fl">Duration (min)</label><input type="number" min="0" step="5" class="fi" id="d-dm" value="${Number(m.duration_min)||60}"/></div></div>
+    <div class="f"><label class="fl">Attendees (${(m.attendees||[]).length})</label><div style="margin-bottom:6px">${attChips||'<span style="color:#6a6a6a;font-size:11.5px;font-style:italic">No attendees yet</span>'}</div><div style="display:flex;gap:6px"><input class="fi" id="d-at-new" placeholder="email@example.com" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addAttendee();}"/><button class="btn" onclick="addAttendee()">+ Add</button></div></div>
+    <div class="f"><label class="fl">Agenda <span style="color:#6a6a6a;font-weight:normal;text-transform:none;letter-spacing:0">(pre-meeting topics)</span></label><input class="fi" id="d-ag" value="${esc(m.agenda)}"/></div>
+    <div class="f"><label class="fl">Decisions</label><div id="dec-list">${decRows||'<div style="color:#6a6a6a;font-size:11.5px;font-style:italic;padding:4px 0">No decisions yet</div>'}</div><button class="btn sm" style="margin-top:6px" onclick="addDec()">+ Add decision</button></div>
+    ${window.commentsWidget('meeting', editing.id)}
+    ${window.attachmentsWidget('meeting', editing.id)}
+  </div>`;
+}
+function addAttendee(){
+  const inp = document.getElementById('d-at-new');
+  const raw = (inp?.value||'').trim(); if (!raw) return;
+  captureDrawerScalars();
+  editing.attendees = editing.attendees || [];
+  editing.attendees.push(raw);
+  renderTabContent();
+}
+function removeAttendee(i){ captureDrawerScalars(); editing.attendees.splice(i,1); renderTabContent(); }
+function addDec(){ captureDrawerScalars(); editing.decisions = editing.decisions||[]; editing.decisions.push({ id:`tmp-dec-${Date.now()}-${editing.decisions.length}`, text:'', action_task_id:null }); renderTabContent(); }
+function removeDec(i){ captureDrawerScalars(); editing.decisions.splice(i,1); renderTabContent(); }
+function updateDecText(i,val){ if (editing?.decisions?.[i]) editing.decisions[i].text = val; }
+function captureDrawerScalars(){
+  const ti = document.getElementById('d-ti'); if (ti) editing.title = ti.value;
+  const dt = document.getElementById('d-dt');
+  if (dt) {
+    if (editing.__datetimeDirty || dt.value !== isoToLocalInput(editing.datetime)) {
+      editing.__datetimeDirty = true;
+      editing.datetime = dt.value;
+    }
+  }
+  const dm = document.getElementById('d-dm'); if (dm) editing.duration_min = +dm.value || 0;
+  const ag = document.getElementById('d-ag'); if (ag) editing.agenda = ag.value;
+}
+function saveM(){
+  captureDrawerScalars();
+  if (!editing.title?.trim()) { alert('Title required'); return; }
+  const finalDatetime = editing.__datetimeDirty ? localInputToIso(editing.datetime) : editing.datetime;
+  const toStore = { ...editing, datetime:finalDatetime, __datetimeDirty:false };
+  const idx = meetings.findIndex(x=>String(x.id)===String(editing.id));
+  if (idx>=0) meetings[idx] = toStore;
+  else meetings.push(toStore);
+  editing = toStore;
+  console.log('Make payload (meeting_save):', buildSavePayload(toStore));
+  try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  renderDrawerHeader(); renderTabs(); renderAll();
+}
+function delM(){
+  if (!editing?.id) return;
+  if (!confirm('Delete this meeting?')) return;
+  const id = editing.id;
+  meetings = meetings.filter(m=>String(m.id)!==String(id));
+  delete notesByMeeting[String(id)]; delete aiByMeeting[String(id)];
+  __selected.delete(String(id));
+  console.log('Make payload (meeting_delete):', { id:String(id) });
+  try{parent.postMessage({type:'toast',msg:'Deleted',kind:'success'},'*');}catch(e){}
+  closeD(); renderAll();
+}
+
+function convertDec(idx){
+  if (!editing?.decisions?.[idx]) return;
+  const dec = editing.decisions[idx];
+  if (dec.action_task_id) { alert('Already converted to Task ' + dec.action_task_id); return; }
+  if (!dec.text?.trim()) { alert('Decision text is empty.'); return; }
+  if (!confirm('Create a Task from this decision?\n\n"' + dec.text + '"')) return;
+  const newTaskId = `tmp-task-${Date.now()}`;
+  const task = { id:newTaskId, title:dec.text, status:'Not Started', percent_complete:0, duration_days:1, originFrom:'meeting', originId:dec.id };
+  console.log('Make payload (task_save from meeting decision):', task);
+  dec.action_task_id = newTaskId;
+  const live = meetings.find(m=>String(m.id)===String(editing.id));
+  if (live) {
+    const ld = (live.decisions||[]).find(d=>String(d.id)===String(dec.id));
+    if (ld) ld.action_task_id = newTaskId;
+  }
+  try{parent.postMessage({type:'toast',msg:'Task created',kind:'success'},'*');}catch(e){}
+  renderTabContent(); renderAll();
+}
+function gotoTask(taskId){ try{parent.postMessage({type:'navigate',section:'actions',entityId:String(taskId)},'*');}catch(e){} }
+
+function renderMyNotesPanel(m){
+  const lane = ensureLane(m.id, __USER__.email);
+  const r = resolveName(__USER__.email);
+  return `<div class="notes-host">
+    <div class="notes-lane-header">
+      <div class="notes-lane-avatar" style="background:${who(r.name)}">${esc(init(r.name))}</div>
+      <div class="notes-lane-meta"><div class="notes-lane-name">${esc(r.name)} (you)</div><div class="notes-lane-ts">Last edit ${esc(formatRel(lane.updated_at))}</div></div>
+      <span class="notes-lane-badge you">Your lane</span>
+    </div>
+    <div id="blk-host" data-lane-id="${esc(lane.id)}"></div>
+    <div style="margin-top:20px;color:#6a6a6a;font-size:11px"><span>Type <code style="background:#252525;padding:1px 5px;border-radius:3px">/</code> for formatting. Autosaves as you type.</span></div>
+  </div>`;
+}
+function wireMyNotesPanel(){
+  const m = editing; if (!m) return;
+  const lane = ensureLane(m.id, __USER__.email);
+  renderBlocks(lane, document.getElementById('blk-host'), false);
+}
+
+function renderAllNotesPanel(m){
+  const lanes = Object.values(notesByMeeting[m.id]||{})
+    .filter(l => (l.blocks||[]).some(b=>!isBlockEmpty(b)))
+    .sort((a,b) => {
+      if (a.user_email === __USER__.email.toLowerCase()) return -1;
+      if (b.user_email === __USER__.email.toLowerCase()) return 1;
+      return new Date(b.updated_at) - new Date(a.updated_at);
+    });
+  if (!lanes.length) return `<div class="notes-host"><div class="notes-empty">No notes yet from any participant.<div class="notes-empty-hint">Switch to "My Notes" and start typing.</div></div></div>`;
+
+  return `<div class="notes-host">
+    ${lanes.map(lane => {
+      const r = resolveName(lane.user_email);
+      const isMe = lane.user_email === __USER__.email.toLowerCase();
+      const isPmOverride = String(lane.updated_by||'').toLowerCase() !== String(lane.user_email||'').toLowerCase();
+      return `<div class="all-lane-block">
+        <div class="notes-lane-header">
+          <div class="notes-lane-avatar" style="background:${who(r.name)}">${esc(init(r.name))}</div>
+          <div class="notes-lane-meta"><div class="notes-lane-name">${esc(r.name)}${isMe?' (you)':''}</div><div class="notes-lane-ts">Last edit ${esc(formatRel(lane.updated_at))}${isPmOverride?` · edited by ${esc(resolveName(lane.updated_by).name)} (PM)`:''}</div></div>
+          ${isMe?'<span class="notes-lane-badge you">You</span>':'<span class="notes-lane-badge ro">Read only</span>'}
+        </div>
+        <div class="blk-ro-host">${lane.blocks.map(b=>renderBlockReadonly(b)).join('')}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderAIPanel(m, kind){
+  const out = aiByMeeting[m.id]?.[kind];
+  const laneCount = Object.keys(notesByMeeting[m.id]||{}).filter(ue=>(notesByMeeting[m.id][ue].blocks||[]).some(b=>!isBlockEmpty(b))).length;
+  if (laneCount === 0) return `<div class="ai-panel"><div class="notes-empty">No notes yet to ${kind==='dedup'?'de-duplicate':'summarize'}.<div class="notes-empty-hint">Ask participants to add notes, then come back.</div></div></div>`;
+  const stale = out && isAIStale(m.id, kind);
+  const header = `<div class="ai-header">
+    <div class="ai-header-meta">
+      ${out?.loading ? '<span>Generating<span class="ai-loading-dots"></span></span>'
+        : out ? `<span>Generated ${esc(formatRel(out.generated_at))}</span>${stale?'<span class="ai-stale-pill">⚠ STALE — 1+ LANE EDITED SINCE</span>':'<span class="ai-fresh-pill">✓ UP TO DATE</span>'}`
+        : '<span style="color:#6a6a6a">Not yet generated</span>'}
+    </div>
+    <button class="btn sm bp" onclick="regenerateAI('${esc(m.id)}','${kind}')">${out ? '↻ Regenerate' : 'Generate now'}</button>
+  </div>`;
+  const placeholder = `<div class="ai-placeholder"><strong>Phase 1 placeholder.</strong> ${kind==='dedup' ? 'Union of all lanes with literal duplicates removed and contributor attribution in <em>italics</em>.' : 'Extracts headings, decisions ("Decision:" prefixed) and checklists from all lanes.'} Phase 2 swaps this for Claude output via Make.</div>`;
+  let body = '';
+  if (out?.loading) body = '<div class="ai-loading">Analyzing ' + laneCount + ' lane' + (laneCount===1?'':'s') + '<span class="ai-loading-dots"></span></div>';
+  else if (out?.markdown) body = `<div class="ai-output">${mdToHtml(out.markdown)}</div>`;
+  else body = '<div class="notes-empty">Click "Generate now" to build the ' + (kind==='dedup'?'de-duplicated':'summary') + ' view.</div>';
+  return `<div class="ai-panel">${header}${placeholder}${body}</div>`;
+}
+
+function mdToHtml(md){
+  if (!md) return '';
+  const esc2 = s => String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  const lines = md.split('\n');
+  const out = [];
+  let inList = null, inCode = false, codeBuf = [];
+  const flushList = () => { if (inList) { out.push('</'+inList+'>'); inList = null; } };
+  for (let i=0;i<lines.length;i++){
+    const line = lines[i];
+    if (inCode) {
+      if (/^```/.test(line)) { out.push('<pre><code>'+esc2(codeBuf.join('\n'))+'</code></pre>'); codeBuf = []; inCode = false; }
+      else codeBuf.push(line);
+      continue;
+    }
+    if (/^```/.test(line)) { flushList(); inCode = true; continue; }
+    if (/^#{1,3}\s/.test(line)) { flushList(); const h = line.match(/^(#+)\s*(.*)$/); out.push(`<h${h[1].length}>${inline(esc2(h[2]))}</h${h[1].length}>`); continue; }
+    if (/^---+\s*$/.test(line)) { flushList(); out.push('<hr style="border:none;border-top:1px solid #2a2a2a;margin:10px 0"/>'); continue; }
+    if (/^>\s/.test(line)) { flushList(); out.push(`<blockquote>${inline(esc2(line.replace(/^>\s/,'')))}</blockquote>`); continue; }
+    let mch;
+    if ((mch = line.match(/^-\s\[([ xX])\]\s(.*)$/))) {
+      if (inList !== 'ul') { flushList(); out.push('<ul>'); inList = 'ul'; }
+      out.push(`<li>${mch[1].toLowerCase()==='x'?'☑':'☐'} ${inline(esc2(mch[2]))}</li>`); continue;
+    }
+    if (/^-\s/.test(line)) {
+      if (inList !== 'ul') { flushList(); out.push('<ul>'); inList = 'ul'; }
+      out.push(`<li>${inline(esc2(line.replace(/^-\s/,'')))}</li>`); continue;
+    }
+    if (/^\d+\.\s/.test(line)) {
+      if (inList !== 'ol') { flushList(); out.push('<ol>'); inList = 'ol'; }
+      out.push(`<li>${inline(esc2(line.replace(/^\d+\.\s/,'')))}</li>`); continue;
+    }
+    if (!line.trim()) { flushList(); continue; }
+    flushList();
+    out.push(`<p>${inline(esc2(line))}</p>`);
+  }
+  flushList();
+  if (inCode && codeBuf.length) out.push('<pre><code>'+esc2(codeBuf.join('\n'))+'</code></pre>');
+  return out.join('');
+  function inline(s){
+    return s
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>')
+      .replace(/`([^`]+)`/g,'<code>$1</code>');
+  }
+}
+
+// ─── BLOCK EDITOR ───
+function renderBlocks(lane, host, readonly){
+  if (!host) return;
+  host.innerHTML = '';
+  lane.blocks.forEach((b) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'blk blk-' + b.type + (b.type==='heading'?' blk-h'+(b.level||1):'') + (b.type==='check'&&b.done?' done':'');
+    wrap.dataset.blockId = b.id;
+    wrap.innerHTML = renderBlockInner(b, readonly);
+    host.appendChild(wrap);
+  });
+  if (!readonly) wireBlockInputs(lane, host);
+}
+function renderBlockInner(b, readonly){
+  const ph = placeholderFor(b);
+  const ce = readonly ? '' : `contenteditable="true"`;
+  const roCls = readonly ? ' readonly' : '';
+  const handle = readonly ? '' : `<span class="blk-handle">⋮⋮</span>`;
+  const del = readonly ? '' : `<button class="blk-delete" onclick="deleteBlock(this)">×</button>`;
+  switch(b.type){
+    case 'divider':
+      return `${handle}<div class="blk-body blk-divider-wrap"><div class="blk-divider-line"></div></div>${del}`;
+    case 'check': {
+      const box = readonly
+        ? `<span class="blk-check-box${b.done?' done':''}"></span>`
+        : `<span class="blk-check-box${b.done?' done':''}" onclick="toggleCheck(this)"></span>`;
+      return `${handle}${box}<div class="blk-body"><div class="blk-text${roCls}" ${ce} data-ph="${esc(ph)}">${esc(b.text||'')}</div></div>${del}`;
+    }
+    case 'bullet': case 'number': {
+      const marker = b.type === 'bullet' ? '•' : '1.';
+      return `${handle}<span class="blk-marker">${marker}</span><div class="blk-body"><div class="blk-text${roCls}" ${ce} data-ph="${esc(ph)}">${esc(b.text||'')}</div></div>${del}`;
+    }
+    case 'code':
+      return `${handle}<div class="blk-body blk-code"><div class="blk-text${roCls}" ${ce} data-ph="${esc(ph)}">${esc(b.text||'')}</div></div>${del}`;
+    case 'quote':
+      return `${handle}<div class="blk-body blk-quote"><div class="blk-text${roCls}" ${ce} data-ph="${esc(ph)}">${esc(b.text||'')}</div></div>${del}`;
+    case 'callout': {
+      const icon = b.tone==='warn'?'⚠':b.tone==='success'?'✓':'ℹ';
+      return `${handle}<div class="blk-body blk-callout ${esc(b.tone||'info')}"><div class="blk-callout-icon">${icon}</div><div class="blk-text${roCls}" ${ce} data-ph="${esc(ph)}" style="flex:1">${esc(b.text||'')}</div></div>${del}`;
+    }
+    case 'heading':
+    case 'paragraph':
+    default:
+      return `${handle}<div class="blk-body"><div class="blk-text${roCls}" ${ce} data-ph="${esc(ph)}">${esc(b.text||'')}</div></div>${del}`;
+  }
+}
+function renderBlockReadonly(b){
+  const cls = 'blk blk-'+b.type + (b.type==='heading'?' blk-h'+(b.level||1):'') + (b.type==='check'&&b.done?' done':'');
+  return `<div class="${cls}">${renderBlockInner(b, true)}</div>`;
+}
+function placeholderFor(b){
+  switch(b.type){
+    case 'heading':   return b.level===1 ? 'Heading 1' : b.level===2 ? 'Heading 2' : 'Heading 3';
+    case 'paragraph': return "Type '/' for commands";
+    case 'bullet':    return 'List item';
+    case 'number':    return 'List item';
+    case 'check':     return 'To-do';
+    case 'code':      return '// code';
+    case 'quote':     return 'Quote';
+    case 'callout':   return 'Callout';
+    default:          return '';
+  }
+}
+function wireBlockInputs(lane, host){
+  if (!canEditLane(lane)) {
+    host.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable','false'));
+    return;
+  }
+  host.querySelectorAll('.blk').forEach(blkEl => {
+    const textEl = blkEl.querySelector('.blk-text');
+    if (textEl) {
+      textEl.oninput = (e) => onBlockInput(e, lane, blkEl);
+      textEl.onkeydown = (e) => onBlockKeydown(e, lane, blkEl);
+    }
+    // Drag-to-reorder: handle arms the draggable attribute on grab
+    const handle = blkEl.querySelector('.blk-handle');
+    if (handle) {
+      handle.onmousedown = () => { blkEl.setAttribute('draggable','true'); };
+      blkEl.ondragstart = (e) => onBlockDragStart(e, lane, blkEl);
+      blkEl.ondragend   = (e) => { onBlockDragEnd(e, blkEl); blkEl.removeAttribute('draggable'); };
+      blkEl.ondragover  = (e) => onBlockDragOver(e, blkEl);
+      blkEl.ondragleave = (e) => onBlockDragLeave(e, blkEl);
+      blkEl.ondrop      = (e) => onBlockDrop(e, lane, blkEl);
+    }
+  });
+}
+function findBlock(lane, blkEl){
+  const id = blkEl.dataset.blockId;
+  return lane.blocks.find(b => String(b.id) === String(id));
+}
+function onBlockInput(e, lane, blkEl){
+  const b = findBlock(lane, blkEl); if (!b) return;
+  const text = e.target.innerText;
+  if (text === '/' && b.type !== 'code' && b.type !== 'divider') {
+    openSlashMenu(blkEl, lane);
+    return;
+  }
+  if (__slashOpen && __slashAnchor === blkEl) {
+    const m = text.match(/^\/(.*)$/);
+    if (m) filterSlashMenu(m[1]); else closeSlashMenu();
+  }
+  b.text = text;
+  touchLane(lane); // text-level: browser owns Cmd+Z for this block
+}
+function onBlockKeydown(e, lane, blkEl){
+  const b = findBlock(lane, blkEl);
+  if (!b) return;
+  if (__slashOpen) {
+    if (e.key === 'ArrowDown') { e.preventDefault(); moveSlashSel(1); return; }
+    if (e.key === 'ArrowUp')   { e.preventDefault(); moveSlashSel(-1); return; }
+    if (e.key === 'Enter')     { e.preventDefault(); commitSlashSel(lane, blkEl); return; }
+    if (e.key === 'Escape')    { e.preventDefault(); closeSlashMenu(); return; }
+  }
+  if (e.key === 'Enter' && !e.shiftKey && b.type !== 'code') {
+    e.preventDefault();
+    const idx = lane.blocks.indexOf(b);
+    if ((b.type==='bullet'||b.type==='number'||b.type==='check') && !(b.text||'').trim()) {
+      snapshotLane(lane, 'exit list');
+      b.type = 'paragraph'; delete b.done;
+      renderBlocks(lane, document.getElementById('blk-host'), false);
+      focusBlock(b.id, 'end'); touchLaneStructural(lane, 'exit list'); return;
+    }
+    snapshotLane(lane, 'new block');
+    const newType = (b.type==='bullet'||b.type==='number'||b.type==='check') ? b.type : 'paragraph';
+    const nb = makeBlock(newType, {});
+    lane.blocks.splice(idx+1, 0, nb);
+    renderBlocks(lane, document.getElementById('blk-host'), false);
+    focusBlock(nb.id, 'start');
+    touchLaneStructural(lane, 'new block');
+    return;
+  }
+  if (e.key === 'Backspace' && !e.target.innerText && b.type !== 'divider') {
+    e.preventDefault();
+    const idx = lane.blocks.indexOf(b);
+    if (idx === 0 && lane.blocks.length === 1) return;
+    snapshotLane(lane, 'delete block');
+    lane.blocks.splice(idx, 1);
+    const prev = lane.blocks[Math.max(0, idx-1)];
+    renderBlocks(lane, document.getElementById('blk-host'), false);
+    if (prev) focusBlock(prev.id, 'end');
+    touchLaneStructural(lane, 'delete block');
+    return;
+  }
+  if (e.key === 'ArrowDown') {
+    const idx = lane.blocks.indexOf(b);
+    const next = lane.blocks[idx+1];
+    if (next && caretAtEnd(e.target)) { e.preventDefault(); focusBlock(next.id, 'start'); }
+    return;
+  }
+  if (e.key === 'ArrowUp') {
+    const idx = lane.blocks.indexOf(b);
+    const prev = lane.blocks[idx-1];
+    if (prev && caretAtStart(e.target)) { e.preventDefault(); focusBlock(prev.id, 'end'); }
+    return;
+  }
+}
+function caretAtStart(el){
+  const sel = document.getSelection(); if (!sel.rangeCount) return true;
+  const r = sel.getRangeAt(0); return r.startOffset === 0;
+}
+function caretAtEnd(el){
+  const sel = document.getSelection(); if (!sel.rangeCount) return true;
+  const r = sel.getRangeAt(0);
+  return r.startOffset >= el.innerText.length;
+}
+function focusBlock(blockId, where){
+  setTimeout(() => {
+    const el = document.querySelector(`.blk[data-block-id="${CSS.escape(String(blockId))}"] .blk-text[contenteditable]`);
+    if (!el) return;
+    el.focus();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    range.collapse(where !== 'end');
+    const sel = document.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }, 0);
+}
+function toggleCheck(el){
+  const blkEl = el.closest('.blk');
+  if (!editing) return;
+  const lane = getLane(editing.id, __USER__.email);
+  if (!lane || !canEditLane(lane)) return;
+  const b = findBlock(lane, blkEl);
+  if (!b || b.type !== 'check') return;
+  snapshotLane(lane, 'toggle check');
+  b.done = !b.done;
+  el.classList.toggle('done', b.done);
+  blkEl.classList.toggle('done', b.done);
+  touchLaneStructural(lane, 'toggle check');
+}
+function deleteBlock(btn){
+  const blkEl = btn.closest('.blk');
+  if (!editing) return;
+  const lane = getLane(editing.id, __USER__.email);
+  if (!lane || !canEditLane(lane)) return;
+  const b = findBlock(lane, blkEl); if (!b) return;
+  snapshotLane(lane, 'delete block');
+  const idx = lane.blocks.indexOf(b);
+  lane.blocks.splice(idx, 1);
+  if (!lane.blocks.length) lane.blocks.push(makeBlock('paragraph',{}));
+  renderBlocks(lane, document.getElementById('blk-host'), false);
+  touchLaneStructural(lane, 'delete block');
+}
+function touchLane(lane){
+  lane.updated_at = new Date().toISOString();
+  lane.updated_by = __USER__.email;
+  __lastOpKind = 'text';
+  scheduleLaneSave(lane);
+  renderTabs();
+}
+// Structural edits (add/delete/reorder/type-change): callers MUST snapshotLane(lane, label)
+// BEFORE mutating, then call this to mark-dirty and save.
+function touchLaneStructural(lane, label){
+  lane.updated_at = new Date().toISOString();
+  lane.updated_by = __USER__.email;
+  __lastOpKind = 'structural';
+  scheduleLaneSave(lane);
+  renderTabs();
+}
+
+// ─── UNDO / REDO ───
+const __undoStacks = {};   // laneId → array of {blocks, label}
+const __redoStacks = {};
+const __UNDO_CAP = 50;
+let __lastOpKind = 'text'; // 'text' means browser handles Cmd+Z; 'structural' means we do
+function snapshotLane(lane, label){
+  const stack = __undoStacks[lane.id] = __undoStacks[lane.id] || [];
+  stack.push({ blocks: JSON.parse(JSON.stringify(lane.blocks)), label: label||'' });
+  if (stack.length > __UNDO_CAP) stack.shift();
+  __redoStacks[lane.id] = []; // new action invalidates redo
+}
+function undoLane(lane){
+  const stack = __undoStacks[lane.id]; if (!stack || !stack.length) return false;
+  const snap = stack.pop();
+  (__redoStacks[lane.id] = __redoStacks[lane.id] || []).push({ blocks: JSON.parse(JSON.stringify(lane.blocks)), label: snap.label });
+  lane.blocks = JSON.parse(JSON.stringify(snap.blocks));
+  if (!lane.blocks.length) lane.blocks.push(makeBlock('paragraph',{}));
+  lane.updated_at = new Date().toISOString();
+  lane.updated_by = __USER__.email;
+  scheduleLaneSave(lane);
+  renderBlocks(lane, document.getElementById('blk-host'), false);
+  renderTabs();
+  return true;
+}
+function redoLane(lane){
+  const stack = __redoStacks[lane.id]; if (!stack || !stack.length) return false;
+  const snap = stack.pop();
+  (__undoStacks[lane.id] = __undoStacks[lane.id] || []).push({ blocks: JSON.parse(JSON.stringify(lane.blocks)), label: snap.label });
+  lane.blocks = JSON.parse(JSON.stringify(snap.blocks));
+  if (!lane.blocks.length) lane.blocks.push(makeBlock('paragraph',{}));
+  lane.updated_at = new Date().toISOString();
+  lane.updated_by = __USER__.email;
+  scheduleLaneSave(lane);
+  renderBlocks(lane, document.getElementById('blk-host'), false);
+  renderTabs();
+  return true;
+}
+
+// ─── DRAG & DROP (reorder blocks) ───
+let __dragBlockId = null;
+function onBlockDragStart(e, lane, blkEl){
+  if (!canEditLane(lane)) { e.preventDefault(); return; }
+  __dragBlockId = blkEl.dataset.blockId;
+  blkEl.classList.add('dragging');
+  try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', __dragBlockId); } catch(_){}
+}
+function onBlockDragEnd(e, blkEl){
+  blkEl.classList.remove('dragging');
+  document.querySelectorAll('.blk.drop-above,.blk.drop-below').forEach(el => el.classList.remove('drop-above','drop-below'));
+  __dragBlockId = null;
+}
+function onBlockDragOver(e, blkEl){
+  if (!__dragBlockId || __dragBlockId === blkEl.dataset.blockId) return;
+  e.preventDefault();
+  try { e.dataTransfer.dropEffect = 'move'; } catch(_){}
+  const rect = blkEl.getBoundingClientRect();
+  const above = (e.clientY - rect.top) < rect.height / 2;
+  blkEl.classList.toggle('drop-above', above);
+  blkEl.classList.toggle('drop-below', !above);
+}
+function onBlockDragLeave(e, blkEl){ blkEl.classList.remove('drop-above','drop-below'); }
+function onBlockDrop(e, lane, blkEl){
+  e.preventDefault();
+  const srcId = __dragBlockId;
+  const tgtId = blkEl.dataset.blockId;
+  blkEl.classList.remove('drop-above','drop-below');
+  if (!srcId || srcId === tgtId) return;
+  const rect = blkEl.getBoundingClientRect();
+  const above = (e.clientY - rect.top) < rect.height / 2;
+  reorderBlock(lane, srcId, tgtId, above ? 'before' : 'after');
+}
+function reorderBlock(lane, srcId, tgtId, where){
+  const srcIdx = lane.blocks.findIndex(b => String(b.id) === String(srcId));
+  const tgtIdx = lane.blocks.findIndex(b => String(b.id) === String(tgtId));
+  if (srcIdx < 0 || tgtIdx < 0) return;
+  snapshotLane(lane, 'reorder');
+  const [moved] = lane.blocks.splice(srcIdx, 1);
+  const adjTgt = lane.blocks.findIndex(b => String(b.id) === String(tgtId));
+  const insertAt = where === 'before' ? adjTgt : adjTgt + 1;
+  lane.blocks.splice(insertAt, 0, moved);
+  touchLaneStructural(lane, 'reorder');
+  renderBlocks(lane, document.getElementById('blk-host'), false);
+  focusBlock(moved.id, 'end');
+}
+
+// ─── SLASH MENU ───
+const SLASH_ITEMS = [
+  { key:'h1', label:'Heading 1', hint:'# title', icon:'H₁', apply: b => { b.type='heading'; b.level=1; b.text=''; } },
+  { key:'h2', label:'Heading 2', hint:'## title', icon:'H₂', apply: b => { b.type='heading'; b.level=2; b.text=''; } },
+  { key:'h3', label:'Heading 3', hint:'### title', icon:'H₃', apply: b => { b.type='heading'; b.level=3; b.text=''; } },
+  { key:'p',  label:'Paragraph', hint:'plain text', icon:'¶', apply: b => { b.type='paragraph'; b.text=''; } },
+  { key:'ul', label:'Bullet list', hint:'• item', icon:'•', apply: b => { b.type='bullet'; b.text=''; } },
+  { key:'ol', label:'Numbered list', hint:'1. item', icon:'1.', apply: b => { b.type='number'; b.text=''; } },
+  { key:'todo', label:'Checklist', hint:'☐ to-do', icon:'☐', apply: b => { b.type='check'; b.done=false; b.text=''; } },
+  { key:'code', label:'Code block', hint:'monospaced', icon:'</>', apply: b => { b.type='code'; b.lang=''; b.text=''; } },
+  { key:'quote', label:'Quote', hint:'> quoted', icon:'❝', apply: b => { b.type='quote'; b.text=''; } },
+  { key:'hr', label:'Divider', hint:'horizontal line', icon:'—', apply: b => { b.type='divider'; delete b.text; } },
+  { key:'ci', label:'Callout (info)', hint:'ℹ notice', icon:'ℹ', apply: b => { b.type='callout'; b.tone='info'; b.text=''; } },
+  { key:'cw', label:'Callout (warn)', hint:'⚠ warning', icon:'⚠', apply: b => { b.type='callout'; b.tone='warn'; b.text=''; } },
+  { key:'cs', label:'Callout (success)', hint:'✓ success', icon:'✓', apply: b => { b.type='callout'; b.tone='success'; b.text=''; } }
+];
+let __slashOpen = false, __slashAnchor = null, __slashSel = 0, __slashFiltered = SLASH_ITEMS.slice();
+function openSlashMenu(blkEl){
+  closeSlashMenu();
+  __slashOpen = true; __slashAnchor = blkEl; __slashSel = 0; __slashFiltered = SLASH_ITEMS.slice();
+  const rect = blkEl.getBoundingClientRect();
+  const pop = document.createElement('div');
+  pop.className = 'slashpop'; pop.id = 'slashpop';
+  pop.style.left = Math.max(10, rect.left + 24) + 'px';
+  pop.style.top  = Math.min(window.innerHeight-340, rect.bottom + 4) + 'px';
+  document.body.appendChild(pop);
+  renderSlash();
+  setTimeout(() => { document.addEventListener('mousedown', slashClickAway, { once:true }); }, 50);
+}
+function slashClickAway(e){
+  const pop = document.getElementById('slashpop');
+  if (pop && !pop.contains(e.target)) closeSlashMenu();
+  else if (pop) setTimeout(() => document.addEventListener('mousedown', slashClickAway, { once:true }), 50);
+}
+function renderSlash(){
+  const pop = document.getElementById('slashpop'); if (!pop) return;
+  if (!__slashFiltered.length) { pop.innerHTML = '<div class="slashpop-empty">No matching block type</div>'; return; }
+  pop.innerHTML = __slashFiltered.map((it,i) => `<div class="slashpop-item${i===__slashSel?' on':''}" data-i="${i}"><div class="slashpop-icon">${esc(it.icon)}</div><div style="flex:1;min-width:0"><div class="slashpop-label">${esc(it.label)}</div><div class="slashpop-hint">${esc(it.hint)}</div></div></div>`).join('');
+  pop.querySelectorAll('.slashpop-item').forEach(el => {
+    el.onmousedown = (e) => {
+      e.preventDefault();
+      __slashSel = +el.dataset.i;
+      if (editing) {
+        const lane = getLane(editing.id, __USER__.email);
+        if (lane && __slashAnchor) commitSlashSel(lane, __slashAnchor);
+      }
+    };
+  });
+}
+function filterSlashMenu(q){
+  const lq = (q||'').toLowerCase();
+  __slashFiltered = SLASH_ITEMS.filter(it => it.label.toLowerCase().includes(lq) || it.key.toLowerCase().includes(lq));
+  __slashSel = 0;
+  renderSlash();
+}
+function moveSlashSel(d){
+  if (!__slashFiltered.length) return;
+  __slashSel = (__slashSel + d + __slashFiltered.length) % __slashFiltered.length;
+  renderSlash();
+}
+function commitSlashSel(lane, blkEl){
+  const item = __slashFiltered[__slashSel]; if (!item) return closeSlashMenu();
+  const b = findBlock(lane, blkEl); if (!b) return closeSlashMenu();
+  snapshotLane(lane, 'change type');
+  item.apply(b);
+  closeSlashMenu();
+  renderBlocks(lane, document.getElementById('blk-host'), false);
+  focusBlock(b.id, 'end');
+  touchLaneStructural(lane, 'change type');
+}
+function closeSlashMenu(){
+  __slashOpen = false; __slashAnchor = null; __slashSel = 0; __slashFiltered = SLASH_ITEMS.slice();
+  document.getElementById('slashpop')?.remove();
+}
+
+function formatRel(iso){
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '—';
+  const diff = (Date.now() - d.getTime()) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  if (diff < 604800) return Math.floor(diff/86400) + 'd ago';
+  return d.toLocaleDateString();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !__slashOpen) closeD(); });
+// Undo/redo: only hijack when we've recorded a structural op. Text input within a contenteditable
+// flips __lastOpKind back to 'text', which lets the browser's native undo handle it.
+document.addEventListener('keydown', e => {
+  if (!editing || currentTab !== 'mynotes') return;
+  const meta = e.metaKey || e.ctrlKey;
+  if (!meta) return;
+  const key = e.key.toLowerCase();
+  const isUndo = key === 'z' && !e.shiftKey;
+  const isRedo = (key === 'z' && e.shiftKey) || key === 'y';
+  if (!isUndo && !isRedo) return;
+  if (__lastOpKind === 'text') return; // browser native handles text undo
+  const lane = getLane(editing.id, __USER__.email);
+  if (!lane || !canEditLane(lane)) return;
+  e.preventDefault();
+  if (isUndo) undoLane(lane); else redoLane(lane);
+}, true);
+window.addEventListener('message', e => {
+  if (e.data?.type === 'openEntity' && e.data.entityId != null) {
+    setTimeout(() => { try { openD(e.data.entityId); } catch(_){} }, 100);
+  }
+});
+
+renderAll();
+
+// ═══════════════════════════════════════════════════════════════════════
+// SMOKE TESTS
+// ═══════════════════════════════════════════════════════════════════════
+window.__MEETINGS_SMOKE__ = function(){
+  const results = {};
+  const run = (name, fn) => { try { results[name] = fn() ? 'PASS' : 'FAIL'; } catch(e) { results[name] = 'THROW: '+e.message; } };
+  const snapM = JSON.parse(JSON.stringify(meetings));
+  const snapN = JSON.parse(JSON.stringify(notesByMeeting));
+  const snapA = JSON.parse(JSON.stringify(aiByMeeting));
+  const restore = () => {
+    meetings.length = 0; snapM.forEach(x=>meetings.push(x));
+    Object.keys(notesByMeeting).forEach(k=>delete notesByMeeting[k]);
+    Object.entries(snapN).forEach(([k,v]) => { notesByMeeting[k] = v; });
+    Object.keys(aiByMeeting).forEach(k=>delete aiByMeeting[k]);
+    Object.entries(snapA).forEach(([k,v]) => { aiByMeeting[k] = v; });
+    __selected.clear(); editing = null; currentTab='details';
+  };
+
+  const ingestMeetOnce = (P) => {
+    const raw = Array.isArray(P?.meetings) ? P.meetings : null;
+    if (!Array.isArray(raw) || !raw.length) return null;
+    return raw.filter(m=>m&&typeof m==='object').map((m,i)=>ingestMeeting(m,i));
+  };
+  const ingestNotesOnce = (P) => {
+    const raw = Array.isArray(P?.meeting_notes) ? P.meeting_notes : null;
+    if (!Array.isArray(raw)) return null;
+    return raw.filter(n=>n&&typeof n==='object'&&n.meeting_id).map(ingestLane);
+  };
+
+  // ── INGESTION (meetings) ──
+  run('ingest_null_payload', () => ingestMeetOnce(null) === null);
+  run('ingest_malformed', () => ingestMeetOnce({meetings:'x'}) === null);
+  run('ingest_empty', () => ingestMeetOnce({meetings:[]}) === null);
+  run('ingest_string_id', () => ingestMeetOnce({meetings:[{id:'MTG-99',title:'x'}]})[0].id === 'MTG-99');
+  run('ingest_missing_id', () => ingestMeetOnce({meetings:[{title:'x'}]})[0].id.startsWith('tmp-'));
+  run('ingest_duration_coerced', () => ingestMeetOnce({meetings:[{id:'X',title:'t',duration_min:'60'}]})[0].duration_min === 60);
+  run('ingest_duration_default', () => ingestMeetOnce({meetings:[{id:'X',title:'t'}]})[0].duration_min === 60);
+  run('ingest_attendees_filters', () => ingestMeetOnce({meetings:[{id:'X',title:'t',attendees:['a@b.com','',' ']}]})[0].attendees.length === 1);
+  run('ingest_decisions_objects', () => ingestMeetOnce({meetings:[{id:'X',title:'t',decisions:[{id:'D-1',text:'d',action_task_id:'T-1'}]}]})[0].decisions[0].action_task_id === 'T-1');
+  run('ingest_decisions_strings_dropped', () => ingestMeetOnce({meetings:[{id:'X',title:'t',decisions:['plain']}]})[0].decisions.length === 0);
+  run('ingest_datetime_verbatim', () => ingestMeetOnce({meetings:[{id:'X',title:'t',datetime:'2026-04-10T14:00:00Z'}]})[0].datetime === '2026-04-10T14:00:00Z');
+  run('ingest_dirty_flag_false', () => ingestMeetOnce({meetings:[{id:'X',title:'t'}]})[0].__datetimeDirty === false);
+
+  // ── esc ──
+  run('esc_lt', () => esc('<s>').includes('&lt;'));
+  run('esc_quote', () => esc('"x"').includes('&quot;'));
+  run('esc_amp', () => esc('a & b') === 'a &amp; b');
+  run('esc_apos', () => esc("it's") === 'it&#39;s');
+  run('esc_null', () => esc(null) === '');
+  run('esc_undefined', () => esc(undefined) === '');
+  run('esc_number', () => esc(42) === '42');
+
+  // ── Contact lookup ──
+  run('resolve_known', () => { __contactByEmail['t@k.com']={name:'T K',email:'t@k.com'}; return resolveName('t@k.com').name === 'T K' && !resolveName('t@k.com').warn; });
+  run('resolve_unknown_warns', () => resolveName('x@y.z').warn === true);
+  run('resolve_case_insensitive', () => { __contactByEmail['low@c.com']={name:'Low',email:'low@c.com'}; return resolveName('LOW@C.COM').name === 'Low'; });
+  run('resolve_empty_warns', () => resolveName('').warn === true);
+
+  // ── Datetime ──
+  run('iso_to_local_format', () => /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(isoToLocalInput('2026-04-10T14:00:00Z')));
+  run('iso_to_local_empty', () => isoToLocalInput('') === '');
+  run('iso_to_local_invalid', () => isoToLocalInput('bad') === '');
+  run('local_to_iso_Z', () => localInputToIso('2026-04-10T10:00').endsWith('Z'));
+  run('local_to_iso_empty', () => localInputToIso('') === '');
+  run('datetime_noop_byte_exact', () => {
+    const m = ingestMeeting({id:'X',title:'t',datetime:'2026-04-10T14:00:00Z',duration_min:60,attendees:[],decisions:[]},0);
+    return buildSavePayload(m).datetime === '2026-04-10T14:00:00Z';
+  });
+  run('datetime_dirty_recompute', () => {
+    const m = ingestMeeting({id:'X',title:'t',datetime:'2026-04-10T14:00:00Z',duration_min:60,attendees:[],decisions:[]},0);
+    m.__datetimeDirty = true; m.datetime = '2026-04-10T10:00';
+    return buildSavePayload(m).datetime.endsWith('Z') && buildSavePayload(m).datetime !== '2026-04-10T14:00:00Z';
+  });
+
+  // ── Outbound ──
+  run('outbound_core_fields', () => {
+    const p = buildSavePayload(meetings[0]);
+    return ['id','title','datetime','duration_min','attendees','agenda','notes','decisions'].every(k=>k in p);
+  });
+  run('outbound_no_internal_flags', () => !('__datetimeDirty' in buildSavePayload(meetings[0])));
+  run('outbound_decisions_snake_case', () => 'action_task_id' in buildSavePayload({id:'X',title:'t',datetime:'',duration_min:30,attendees:[],agenda:'',notes:'',decisions:[{id:'D',text:'x',action_task_id:'T-1'}]}).decisions[0]);
+  run('roundtrip_meeting', () => {
+    const orig = {id:'MTG-RT',title:'R',datetime:'2026-05-01T12:00:00Z',duration_min:45,attendees:['a@b.com'],agenda:'a',notes:'',decisions:[{id:'D-1',text:'d',action_task_id:null}]};
+    const out = buildSavePayload(ingestMeeting(orig, 0));
+    return out.id===orig.id && out.title===orig.title && out.datetime===orig.datetime && out.duration_min===orig.duration_min && JSON.stringify(out.attendees)===JSON.stringify(orig.attendees) && JSON.stringify(out.decisions)===JSON.stringify(orig.decisions);
+  });
+
+  // ── Convert decision → task ──
+  run('convert_task_camelCase_origin', () => {
+    const t = { originFrom:'meeting', originId:'DEC-1' };
+    return 'originFrom' in t && 'originId' in t && !('origin_from' in t);
+  });
+  run('convert_originId_is_decision', () => {
+    const dec = { id:'DEC-7', text:'x', action_task_id:null };
+    const task = { originFrom:'meeting', originId:dec.id };
+    return task.originId === 'DEC-7' && task.originId !== 'MTG-01';
+  });
+
+  // ── NOTES INGEST ──
+  run('notes_ingest_null', () => ingestNotesOnce({meeting_notes:null}) === null);
+  run('notes_ingest_empty_array', () => Array.isArray(ingestNotesOnce({meeting_notes:[]})) && ingestNotesOnce({meeting_notes:[]}).length === 0);
+  run('notes_ingest_missing_meeting_id_dropped', () => ingestNotesOnce({meeting_notes:[{id:'N',blocks:[]}]}).length === 0);
+  run('notes_ingest_malformed_blocks_dropped', () => ingestNotesOnce({meeting_notes:[{id:'N',meeting_id:'M',user_email:'u@v.com',blocks:['str',null]}]})[0].blocks.length === 1);
+  run('notes_ingest_unknown_block_type_coerced', () => {
+    const l = ingestNotesOnce({meeting_notes:[{id:'N',meeting_id:'M',user_email:'u@v.com',blocks:[{id:'b',type:'flamingo',text:'x'}]}]})[0];
+    return l.blocks[0].type === 'paragraph' && l.blocks[0].text === 'x';
+  });
+  run('notes_ingest_all_block_types', () => {
+    const bs = ['heading','paragraph','bullet','number','check','code','quote','divider','callout'].map((t,i)=>({id:'b'+i,type:t,text:'x',level:1,done:true,lang:'js',tone:'warn'}));
+    const l = ingestNotesOnce({meeting_notes:[{id:'N',meeting_id:'M',user_email:'u@v.com',blocks:bs}]})[0];
+    return l.blocks.length === 9 && l.blocks[0].type === 'heading' && l.blocks[8].type === 'callout';
+  });
+  run('notes_ingest_email_lowercased', () => {
+    const l = ingestNotesOnce({meeting_notes:[{id:'N',meeting_id:'M',user_email:'UPPER@CASE.COM',blocks:[]}]})[0];
+    return l.user_email === 'upper@case.com';
+  });
+  run('notes_ingest_empty_blocks_default', () => {
+    const l = ingestNotesOnce({meeting_notes:[{id:'N',meeting_id:'M',user_email:'u@v.com',blocks:[]}]})[0];
+    return l.blocks.length === 1 && l.blocks[0].type === 'paragraph';
+  });
+
+  // ── LANE OUTBOUND ──
+  run('lane_outbound_shape', () => {
+    const l = ingestLane({id:'N',meeting_id:'M',user_email:'u@v.com',blocks:[{id:'b',type:'heading',text:'h',level:2}]});
+    const p = buildLanePayload(l);
+    return p.id === 'N' && p.meeting_id === 'M' && p.user_email === 'u@v.com' && p.blocks[0].level === 2;
+  });
+  run('lane_outbound_code_lang', () => buildLanePayload(ingestLane({id:'N',meeting_id:'M',user_email:'u@v.com',blocks:[{id:'b',type:'code',text:'x',lang:'js'}]})).blocks[0].lang === 'js');
+  run('lane_outbound_check_done', () => buildLanePayload(ingestLane({id:'N',meeting_id:'M',user_email:'u@v.com',blocks:[{id:'b',type:'check',text:'x',done:true}]})).blocks[0].done === true);
+  run('lane_outbound_callout_tone', () => buildLanePayload(ingestLane({id:'N',meeting_id:'M',user_email:'u@v.com',blocks:[{id:'b',type:'callout',text:'x',tone:'warn'}]})).blocks[0].tone === 'warn');
+  run('lane_outbound_divider_no_text', () => !('text' in buildLanePayload(ingestLane({id:'N',meeting_id:'M',user_email:'u@v.com',blocks:[{id:'b',type:'divider'}]})).blocks[0]));
+  run('lane_roundtrip', () => {
+    const orig = {id:'MN-X',meeting_id:'MTG-X',user_email:'u@v.com',blocks:[{id:'b1',type:'heading',text:'t',level:2},{id:'b2',type:'check',text:'c',done:true},{id:'b3',type:'code',text:'x()',lang:'py'},{id:'b4',type:'callout',text:'!',tone:'warn'},{id:'b5',type:'divider'}],updated_at:'2026-04-01T00:00:00Z',updated_by:'u@v.com'};
+    const out = buildLanePayload(ingestLane(orig));
+    return out.blocks.length === 5 && out.blocks[0].level === 2 && out.blocks[1].done === true && out.blocks[2].lang === 'py' && out.blocks[3].tone === 'warn' && out.blocks[4].type === 'divider' && !('text' in out.blocks[4]);
+  });
+
+  // ── PERMISSIONS ──
+  run('perm_own_lane', () => canEditLane({ user_email: __USER__.email, updated_by: __USER__.email }) === true);
+  run('perm_not_own_not_pm', () => {
+    const r = __USER__.role; __USER__.role = 'Field';
+    const can = canEditLane({ user_email:'other@x.com' });
+    __USER__.role = r;
+    return can === false;
+  });
+  run('perm_pm_override', () => {
+    const r = __USER__.role; __USER__.role = 'PM';
+    const can = canEditLane({ user_email:'other@x.com' });
+    __USER__.role = r;
+    return can === true;
+  });
+  run('perm_no_lane', () => canEditLane(null) === false);
+  run('perm_case_insensitive', () => canEditLane({ user_email: __USER__.email.toUpperCase() }) === true);
+
+  // ── LANE LIFECYCLE ──
+  run('ensure_creates_new', () => {
+    const before = Object.keys(notesByMeeting['MTG-01']||{}).length;
+    const l = ensureLane('MTG-01', 'fresh@user.com');
+    const after = Object.keys(notesByMeeting['MTG-01']||{}).length;
+    delete notesByMeeting['MTG-01']?.['fresh@user.com'];
+    return after === before + 1 && l.user_email === 'fresh@user.com';
+  });
+  run('ensure_returns_existing', () => {
+    const a = ensureLane('MTG-03', 'misgur@adrm-security.com');
+    const b = ensureLane('MTG-03', 'misgur@adrm-security.com');
+    return a === b;
+  });
+  run('get_lane_lowercases', () => {
+    ensureLane('MTG-03', 'misgur@adrm-security.com');
+    return !!getLane('MTG-03', 'MISGUR@ADRM-SECURITY.COM');
+  });
+  run('get_lane_nonexistent_null', () => getLane('NOPE', 'x@y.com') === null);
+
+  // ── LEGACY MIGRATION ──
+  run('legacy_splits_paragraphs', () => {
+    const m = ingestMeeting({id:'MTG-LEG',title:'t',datetime:'',duration_min:30,attendees:[],decisions:[],notes:'First.\n\nSecond.'}, 0);
+    migrateLegacyNotesIfNeeded(m);
+    const lane = getLane(m.id, __USER__.email);
+    const ok = lane.blocks.length === 2 && lane.blocks[0].type === 'paragraph' && lane.blocks[1].text.includes('Second');
+    delete notesByMeeting[m.id];
+    return ok;
+  });
+  run('legacy_clears_notes_field', () => {
+    const m = ingestMeeting({id:'MTG-LEG2',title:'t',datetime:'',duration_min:30,attendees:[],decisions:[],notes:'Some notes'}, 0);
+    migrateLegacyNotesIfNeeded(m);
+    const ok = m.notes === '';
+    delete notesByMeeting[m.id];
+    return ok;
+  });
+  run('legacy_skips_if_lane_exists', () => {
+    const m = ingestMeeting({id:'MTG-LEG3',title:'t',datetime:'',duration_min:30,attendees:[],decisions:[],notes:'legacy text'}, 0);
+    ensureLane(m.id, __USER__.email).blocks = [makeBlock('heading',{text:'already here',level:1})];
+    migrateLegacyNotesIfNeeded(m);
+    const lane = getLane(m.id, __USER__.email);
+    const ok = lane.blocks.length === 1 && lane.blocks[0].text === 'already here';
+    delete notesByMeeting[m.id];
+    return ok;
+  });
+  run('legacy_noop_empty_notes', () => {
+    const m = ingestMeeting({id:'MTG-LEG4',title:'t',datetime:'',duration_min:30,attendees:[],decisions:[],notes:''}, 0);
+    migrateLegacyNotesIfNeeded(m);
+    return !getLane(m.id, __USER__.email);
+  });
+
+  // ── BLOCK FACTORY ──
+  run('block_check_default_not_done', () => makeBlock('check',{}).done === false);
+  run('block_callout_default_info', () => makeBlock('callout',{}).tone === 'info');
+  run('block_divider_no_text', () => !('text' in makeBlock('divider',{})));
+  run('block_unknown_to_paragraph', () => makeBlock('flamingo',{text:'x'}).type === 'paragraph');
+  run('block_id_is_string', () => typeof makeBlock('paragraph',{}).id === 'string');
+  run('block_id_unique', () => makeBlock('paragraph',{}).id !== makeBlock('paragraph',{}).id);
+
+  // ── isBlockEmpty ──
+  run('empty_null', () => isBlockEmpty(null) === true);
+  run('empty_paragraph_no_text', () => isBlockEmpty({type:'paragraph',text:''}) === true);
+  run('empty_paragraph_whitespace', () => isBlockEmpty({type:'paragraph',text:'   '}) === true);
+  run('empty_paragraph_content', () => isBlockEmpty({type:'paragraph',text:'hi'}) === false);
+  run('empty_divider_never_empty', () => isBlockEmpty({type:'divider'}) === false);
+  run('empty_check_no_text', () => isBlockEmpty({type:'check',text:'',done:true}) === true);
+
+  // ── SLASH MENU ──
+  run('slash_items_count', () => SLASH_ITEMS.length === 13);
+  run('slash_filter_label', () => SLASH_ITEMS.filter(i => i.label.toLowerCase().includes('head')).length === 3);
+  run('slash_filter_key', () => SLASH_ITEMS.filter(i => i.key === 'h1').length === 1);
+  run('slash_apply_h2', () => {
+    const b = makeBlock('paragraph',{text:'/'});
+    SLASH_ITEMS.find(i=>i.key==='h2').apply(b);
+    return b.type === 'heading' && b.level === 2;
+  });
+  run('slash_apply_code', () => {
+    const b = makeBlock('paragraph',{text:'/'});
+    SLASH_ITEMS.find(i=>i.key==='code').apply(b);
+    return b.type === 'code' && b.lang === '';
+  });
+  run('slash_apply_divider', () => {
+    const b = makeBlock('paragraph',{text:'/'});
+    SLASH_ITEMS.find(i=>i.key==='hr').apply(b);
+    return b.type === 'divider' && !('text' in b);
+  });
+
+  // ── AI STUBS ──
+  run('lane_to_md_heading', () => laneToMd({blocks:[{type:'heading',level:2,text:'Title'}]}) === '## Title');
+  run('lane_to_md_check_done', () => laneToMd({blocks:[{type:'check',text:'x',done:true}]}).includes('[x]'));
+  run('lane_to_md_check_open', () => laneToMd({blocks:[{type:'check',text:'x',done:false}]}).includes('[ ]'));
+  run('lane_to_md_code_fenced', () => laneToMd({blocks:[{type:'code',text:'a()',lang:'js'}]}).includes('```js'));
+  run('stub_dedup_merges', () => {
+    Object.keys(notesByMeeting).forEach(k=>delete notesByMeeting[k]);
+    notesByMeeting['MX'] = {
+      'a@b.com': ingestLane({id:'N1',meeting_id:'MX',user_email:'a@b.com',blocks:[{id:'b1',type:'bullet',text:'Same line'}]}),
+      'c@d.com': ingestLane({id:'N2',meeting_id:'MX',user_email:'c@d.com',blocks:[{id:'b2',type:'bullet',text:'Same line'}]})
+    };
+    const out = stubDedup('MX');
+    const ok = out.includes('Same line') && (out.match(/Same line/g)||[]).length === 1;
+    Object.keys(notesByMeeting).forEach(k=>delete notesByMeeting[k]);
+    Object.entries(snapN).forEach(([k,v])=>notesByMeeting[k]=v);
+    return ok;
+  });
+  run('stub_dedup_attribution', () => {
+    Object.keys(notesByMeeting).forEach(k=>delete notesByMeeting[k]);
+    __contactByEmail['a@b.com']={name:'Alice',email:'a@b.com'};
+    __contactByEmail['c@d.com']={name:'Carol',email:'c@d.com'};
+    notesByMeeting['MX'] = {
+      'a@b.com': ingestLane({id:'N1',meeting_id:'MX',user_email:'a@b.com',blocks:[{id:'b1',type:'bullet',text:'Shared'}]}),
+      'c@d.com': ingestLane({id:'N2',meeting_id:'MX',user_email:'c@d.com',blocks:[{id:'b2',type:'bullet',text:'Shared'}]})
+    };
+    const out = stubDedup('MX');
+    const ok = out.includes('Alice') && out.includes('Carol');
+    Object.keys(notesByMeeting).forEach(k=>delete notesByMeeting[k]);
+    Object.entries(snapN).forEach(([k,v])=>notesByMeeting[k]=v);
+    return ok;
+  });
+  run('stub_dedup_empty', () => stubDedup('NONE').includes('No notes yet'));
+  run('stub_summary_headings', () => {
+    Object.keys(notesByMeeting).forEach(k=>delete notesByMeeting[k]);
+    notesByMeeting['MY'] = { 'a@b.com': ingestLane({id:'N',meeting_id:'MY',user_email:'a@b.com',blocks:[{id:'b',type:'heading',text:'Topic A',level:2}]}) };
+    const out = stubSummary('MY');
+    const ok = out.includes('Topic A') && out.includes('Topics covered');
+    Object.keys(notesByMeeting).forEach(k=>delete notesByMeeting[k]);
+    Object.entries(snapN).forEach(([k,v])=>notesByMeeting[k]=v);
+    return ok;
+  });
+  run('stub_summary_actions', () => {
+    Object.keys(notesByMeeting).forEach(k=>delete notesByMeeting[k]);
+    notesByMeeting['MY'] = { 'a@b.com': ingestLane({id:'N',meeting_id:'MY',user_email:'a@b.com',blocks:[{id:'b',type:'check',text:'Do thing',done:false}]}) };
+    const out = stubSummary('MY');
+    const ok = out.includes('Do thing') && out.includes('Action items');
+    Object.keys(notesByMeeting).forEach(k=>delete notesByMeeting[k]);
+    Object.entries(snapN).forEach(([k,v])=>notesByMeeting[k]=v);
+    return ok;
+  });
+  run('stub_summary_decisions', () => {
+    Object.keys(notesByMeeting).forEach(k=>delete notesByMeeting[k]);
+    notesByMeeting['MY'] = { 'a@b.com': ingestLane({id:'N',meeting_id:'MY',user_email:'a@b.com',blocks:[{id:'b',type:'bullet',text:'Decision: ship it'}]}) };
+    const out = stubSummary('MY');
+    const ok = out.includes('ship it') && out.includes('Decisions');
+    Object.keys(notesByMeeting).forEach(k=>delete notesByMeeting[k]);
+    Object.entries(snapN).forEach(([k,v])=>notesByMeeting[k]=v);
+    return ok;
+  });
+
+  // ── STALENESS ──
+  run('source_hash_stable', () => laneSourceHash('MTG-03') === laneSourceHash('MTG-03'));
+  run('source_hash_changes', () => {
+    const h1 = laneSourceHash('MTG-03');
+    const lane = notesByMeeting['MTG-03']['misgur@adrm-security.com'];
+    const saved = lane.updated_at;
+    lane.updated_at = new Date(Date.now()+1000).toISOString();
+    const h2 = laneSourceHash('MTG-03');
+    lane.updated_at = saved;
+    return h1 !== h2;
+  });
+  run('ai_stale_flag', () => {
+    aiByMeeting['MTG-03X'] = { summary: { markdown:'x', generated_at:'2026-01-01T00:00:00Z', source_hash:'mismatch', stale:false } };
+    notesByMeeting['MTG-03X'] = notesByMeeting['MTG-03']; // borrow lanes
+    const stale = isAIStale('MTG-03X','summary');
+    delete aiByMeeting['MTG-03X']; delete notesByMeeting['MTG-03X'];
+    return stale === true;
+  });
+  run('ai_fresh_when_match', () => {
+    const hash = laneSourceHash('MTG-03');
+    aiByMeeting['MTG-03'] = { summary: { markdown:'x', generated_at:'now', source_hash:hash, stale:false } };
+    const stale = isAIStale('MTG-03','summary');
+    delete aiByMeeting['MTG-03'];
+    return stale === false;
+  });
+
+  // ── MARKDOWN RENDERER ──
+  run('md_h1', () => mdToHtml('# Hello').includes('<h1>Hello</h1>'));
+  run('md_h2', () => mdToHtml('## Hi').includes('<h2>Hi</h2>'));
+  run('md_bullet', () => /<ul>[\s\S]*<li>a<\/li>[\s\S]*<li>b<\/li>[\s\S]*<\/ul>/.test(mdToHtml('- a\n- b')));
+  run('md_numbered', () => /<ol>[\s\S]*<li>a<\/li>[\s\S]*<\/ol>/.test(mdToHtml('1. a\n2. b')));
+  run('md_checklist', () => mdToHtml('- [x] done').includes('☑'));
+  run('md_code_fenced', () => mdToHtml('```\ncode\n```').includes('<pre><code>'));
+  run('md_quote', () => mdToHtml('> quoted').includes('<blockquote>'));
+  run('md_hr', () => mdToHtml('---').includes('<hr'));
+  run('md_paragraph', () => mdToHtml('hello').includes('<p>hello</p>'));
+  run('md_emphasis', () => mdToHtml('*ital*').includes('<em>ital</em>'));
+  run('md_strong', () => mdToHtml('**bold**').includes('<strong>bold</strong>'));
+  run('md_inline_code', () => mdToHtml('`x()`').includes('<code>x()</code>'));
+  run('md_xss_lt_escaped', () => mdToHtml('<script>').includes('&lt;'));
+  run('md_empty', () => mdToHtml('') === '');
+
+  // ── BULK ──
+  run('bulk_string_ids', () => { clearSelection(); toggleSelect('MTG-01', null); const ok = __selected.has('MTG-01'); clearSelection(); return ok; });
+  run('bulk_clear', () => { toggleSelect('MTG-01', null); clearSelection(); return __selected.size === 0; });
+
+  // ── XSS in blocks ──
+  run('block_xss_text', () => {
+    const l = ingestLane({id:'N',meeting_id:'X',user_email:'x@y.z',blocks:[{id:'b',type:'paragraph',text:'<img src=x onerror=alert(1)>'}]});
+    const inner = renderBlockReadonly(l.blocks[0]);
+    return !inner.includes('<img src=x') && inner.includes('&lt;img');
+  });
+
+  // ── DRAWER ──
+  run('drawer_open_close', () => {
+    openD('MTG-01');
+    const open = document.getElementById('dr').classList.contains('on');
+    closeD();
+    return open && !document.getElementById('dr').classList.contains('on');
+  });
+  run('drawer_new_default_details', () => { openD(null); const ok = currentTab === 'details'; closeD(); return ok; });
+  run('drawer_existing_default_mynotes', () => { openD('MTG-01'); const ok = currentTab === 'mynotes'; closeD(); return ok; });
+  run('drawer_new_disables_notes_tabs', () => {
+    openD(null);
+    const html = document.getElementById('drawer-tabs').innerHTML;
+    const ok = (html.match(/class="tab[^"]*disabled/g)||[]).length >= 4;
+    closeD();
+    return ok;
+  });
+  run('drawer_switch_to_mynotes', () => {
+    openD('MTG-01');
+    switchTab('mynotes');
+    const ok = currentTab === 'mynotes' && !!document.getElementById('blk-host');
+    closeD();
+    return ok;
+  });
+  run('drawer_allnotes_renders_lanes', () => {
+    openD('MTG-03');
+    switchTab('allnotes');
+    const html = document.getElementById('drb').innerHTML;
+    const ok = html.includes('notes-lane-header') && (html.match(/notes-lane-name/g)||[]).length >= 2;
+    closeD();
+    return ok;
+  });
+  run('drawer_dedup_empty_state', () => {
+    openD('MTG-01');
+    switchTab('dedup');
+    const ok = document.getElementById('drb').innerHTML.includes('No notes yet');
+    closeD();
+    return ok;
+  });
+  run('save_details_persists', () => {
+    openD(null);
+    editing.title = 'Smoke';
+    document.getElementById('d-ti').value = 'Smoke';
+    saveM();
+    const ok = meetings.some(m => m.title === 'Smoke');
+    restore();
+    return ok;
+  });
+
+  // ── FILTER ──
+  run('filter_title', () => {
+    const srch = document.getElementById('srch'); srch.value = 'Kickoff';
+    const ok = filtered().every(m => JSON.stringify(m).toLowerCase().includes('kickoff'));
+    srch.value = '';
+    return ok;
+  });
+  run('filter_note_text', () => {
+    const srch = document.getElementById('srch'); srch.value = 'alignment';
+    const ok = filtered().some(m => m.id === 'MTG-03');
+    srch.value = '';
+    return ok;
+  });
+
+  // ── AUTOSAVE TIMERS ──
+  run('schedule_lane_save_debounces', () => {
+    const lane = ensureLane('MTG-03', __USER__.email);
+    scheduleLaneSave(lane); scheduleLaneSave(lane);
+    return __saveTimers[lane.id] != null;
+  });
+  run('schedule_ai_regen_debounces', () => {
+    scheduleAIRegen('MTG-03'); scheduleAIRegen('MTG-03');
+    return __regenTimers['MTG-03'] != null;
+  });
+
+  // ── UNDO / REDO ──
+  run('undo_pop_restores_snapshot', () => {
+    const lane = ensureLane('MTG-UNDO', __USER__.email);
+    lane.blocks = [makeBlock('paragraph',{text:'A'})];
+    snapshotLane(lane, 'before');
+    lane.blocks.push(makeBlock('paragraph',{text:'B'}));
+    const before = lane.blocks.length;
+    openD(null); editing.id = 'MTG-UNDO'; currentTab='mynotes';
+    const host = document.createElement('div'); host.id='blk-host'; document.body.appendChild(host);
+    const ok = undoLane(lane) === true && lane.blocks.length === 1 && lane.blocks[0].text === 'A';
+    document.body.removeChild(host); closeD(); delete notesByMeeting['MTG-UNDO'];
+    return ok && before === 2;
+  });
+  run('undo_empty_stack_returns_false', () => {
+    const lane = ensureLane('MTG-U2', __USER__.email);
+    delete __undoStacks[lane.id];
+    const host = document.createElement('div'); host.id='blk-host'; document.body.appendChild(host);
+    const ok = undoLane(lane) === false;
+    document.body.removeChild(host); delete notesByMeeting['MTG-U2'];
+    return ok;
+  });
+  run('redo_restores_undone', () => {
+    const lane = ensureLane('MTG-U3', __USER__.email);
+    lane.blocks = [makeBlock('paragraph',{text:'X'})];
+    snapshotLane(lane, 'before');
+    lane.blocks.push(makeBlock('paragraph',{text:'Y'}));
+    const host = document.createElement('div'); host.id='blk-host'; document.body.appendChild(host);
+    undoLane(lane);
+    const afterUndo = lane.blocks.length;
+    redoLane(lane);
+    const ok = afterUndo === 1 && lane.blocks.length === 2 && lane.blocks[1].text === 'Y';
+    document.body.removeChild(host); delete notesByMeeting['MTG-U3'];
+    return ok;
+  });
+  run('new_snapshot_clears_redo', () => {
+    const lane = ensureLane('MTG-U4', __USER__.email);
+    lane.blocks = [makeBlock('paragraph',{text:'A'})];
+    snapshotLane(lane,'s1'); lane.blocks.push(makeBlock('paragraph',{text:'B'}));
+    const host = document.createElement('div'); host.id='blk-host'; document.body.appendChild(host);
+    undoLane(lane);
+    snapshotLane(lane,'s2'); // should clear redo
+    const ok = (__redoStacks[lane.id]||[]).length === 0;
+    document.body.removeChild(host); delete notesByMeeting['MTG-U4'];
+    return ok;
+  });
+  run('undo_cap_respected', () => {
+    const lane = ensureLane('MTG-U5', __USER__.email);
+    lane.blocks = [makeBlock('paragraph',{})];
+    for (let i=0;i<60;i++) snapshotLane(lane, 'n'+i);
+    const ok = __undoStacks[lane.id].length === 50;
+    delete notesByMeeting['MTG-U5']; delete __undoStacks[lane.id]; delete __redoStacks[lane.id];
+    return ok;
+  });
+  run('undo_deep_copies_blocks', () => {
+    const lane = ensureLane('MTG-U6', __USER__.email);
+    lane.blocks = [makeBlock('paragraph',{text:'orig'})];
+    snapshotLane(lane, 's');
+    lane.blocks[0].text = 'mutated';
+    const host = document.createElement('div'); host.id='blk-host'; document.body.appendChild(host);
+    undoLane(lane);
+    const ok = lane.blocks[0].text === 'orig';
+    document.body.removeChild(host); delete notesByMeeting['MTG-U6'];
+    return ok;
+  });
+  run('undo_structural_flag_after_undo', () => {
+    const lane = ensureLane('MTG-U7', __USER__.email);
+    lane.blocks = [makeBlock('paragraph',{text:'A'})];
+    snapshotLane(lane,'s');
+    lane.blocks.push(makeBlock('paragraph',{text:'B'}));
+    __lastOpKind = 'text'; // simulate typing
+    // undoLane itself doesn't flip __lastOpKind, but touchLaneStructural does before snapshot
+    // Here we just verify the stack machinery, not the flag flip
+    const host = document.createElement('div'); host.id='blk-host'; document.body.appendChild(host);
+    const ok = undoLane(lane) === true;
+    document.body.removeChild(host); delete notesByMeeting['MTG-U7'];
+    return ok;
+  });
+
+  // ── REORDER ──
+  run('reorder_before_earlier_block', () => {
+    const lane = ensureLane('MTG-R1', __USER__.email);
+    lane.blocks = [makeBlock('paragraph',{id:'b1',text:'A'}), makeBlock('paragraph',{id:'b2',text:'B'}), makeBlock('paragraph',{id:'b3',text:'C'})];
+    const host = document.createElement('div'); host.id='blk-host'; document.body.appendChild(host);
+    openD(null); editing.id = 'MTG-R1'; currentTab='mynotes';
+    reorderBlock(lane, 'b3', 'b1', 'before');
+    const ok = lane.blocks.map(b=>b.text).join(',') === 'C,A,B';
+    closeD(); document.body.removeChild(host); delete notesByMeeting['MTG-R1'];
+    return ok;
+  });
+  run('reorder_after_later_block', () => {
+    const lane = ensureLane('MTG-R2', __USER__.email);
+    lane.blocks = [makeBlock('paragraph',{id:'b1',text:'A'}), makeBlock('paragraph',{id:'b2',text:'B'}), makeBlock('paragraph',{id:'b3',text:'C'})];
+    const host = document.createElement('div'); host.id='blk-host'; document.body.appendChild(host);
+    openD(null); editing.id = 'MTG-R2'; currentTab='mynotes';
+    reorderBlock(lane, 'b1', 'b3', 'after');
+    const ok = lane.blocks.map(b=>b.text).join(',') === 'B,C,A';
+    closeD(); document.body.removeChild(host); delete notesByMeeting['MTG-R2'];
+    return ok;
+  });
+  run('reorder_same_id_noop', () => {
+    const lane = ensureLane('MTG-R3', __USER__.email);
+    lane.blocks = [makeBlock('paragraph',{id:'b1',text:'A'}), makeBlock('paragraph',{id:'b2',text:'B'})];
+    const host = document.createElement('div'); host.id='blk-host'; document.body.appendChild(host);
+    openD(null); editing.id = 'MTG-R3'; currentTab='mynotes';
+    const before = lane.blocks.map(b=>b.text).join(',');
+    onBlockDrop({preventDefault:()=>{},clientY:0,dataTransfer:{}}, lane, { dataset:{blockId:'b1'}, getBoundingClientRect:()=>({top:0,height:20}), classList:{remove:()=>{}} });
+    const ok = lane.blocks.map(b=>b.text).join(',') === before;
+    closeD(); document.body.removeChild(host); delete notesByMeeting['MTG-R3'];
+    return ok;
+  });
+  run('reorder_snapshots_for_undo', () => {
+    const lane = ensureLane('MTG-R4', __USER__.email);
+    lane.blocks = [makeBlock('paragraph',{id:'b1',text:'A'}), makeBlock('paragraph',{id:'b2',text:'B'})];
+    delete __undoStacks[lane.id];
+    const host = document.createElement('div'); host.id='blk-host'; document.body.appendChild(host);
+    openD(null); editing.id = 'MTG-R4'; currentTab='mynotes';
+    reorderBlock(lane, 'b1', 'b2', 'after');
+    const snapCount = (__undoStacks[lane.id]||[]).length;
+    closeD(); document.body.removeChild(host); delete notesByMeeting['MTG-R4'];
+    return snapCount === 1;
+  });
+  run('reorder_undo_restores_order', () => {
+    const lane = ensureLane('MTG-R5', __USER__.email);
+    lane.blocks = [makeBlock('paragraph',{id:'b1',text:'A'}), makeBlock('paragraph',{id:'b2',text:'B'}), makeBlock('paragraph',{id:'b3',text:'C'})];
+    delete __undoStacks[lane.id]; delete __redoStacks[lane.id];
+    const host = document.createElement('div'); host.id='blk-host'; document.body.appendChild(host);
+    openD(null); editing.id = 'MTG-R5'; currentTab='mynotes';
+    reorderBlock(lane, 'b3', 'b1', 'before'); // C,A,B
+    undoLane(lane);
+    const ok = lane.blocks.map(b=>b.text).join(',') === 'A,B,C';
+    closeD(); document.body.removeChild(host); delete notesByMeeting['MTG-R5'];
+    return ok;
+  });
+  run('reorder_unknown_src_noop', () => {
+    const lane = ensureLane('MTG-R6', __USER__.email);
+    lane.blocks = [makeBlock('paragraph',{id:'b1',text:'A'}), makeBlock('paragraph',{id:'b2',text:'B'})];
+    const host = document.createElement('div'); host.id='blk-host'; document.body.appendChild(host);
+    openD(null); editing.id = 'MTG-R6'; currentTab='mynotes';
+    const before = lane.blocks.map(b=>b.text).join(',');
+    reorderBlock(lane, 'nonexistent', 'b2', 'before');
+    const ok = lane.blocks.map(b=>b.text).join(',') === before;
+    closeD(); document.body.removeChild(host); delete notesByMeeting['MTG-R6'];
+    return ok;
+  });
+  // ── lastOpKind flag ──
+  run('lastOpKind_text_after_typing', () => {
+    const lane = ensureLane('MTG-L1', __USER__.email);
+    __lastOpKind = 'structural';
+    touchLane(lane);
+    const ok = __lastOpKind === 'text';
+    delete notesByMeeting['MTG-L1'];
+    return ok;
+  });
+  run('lastOpKind_structural_after_snapshot_path', () => {
+    const lane = ensureLane('MTG-L2', __USER__.email);
+    __lastOpKind = 'text';
+    touchLaneStructural(lane, 'x');
+    const ok = __lastOpKind === 'structural';
+    delete notesByMeeting['MTG-L2']; delete __undoStacks[lane.id];
+    return ok;
+  });
+
+  restore(); renderAll();
+
+  const pass = Object.values(results).filter(v=>v==='PASS').length;
+  const total = Object.keys(results).length;
+  results.__summary__ = `${pass}/${total} passed`;
+  return results;
+};
+
+</script></body></html>

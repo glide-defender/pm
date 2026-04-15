@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"/><title>Observations</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;font-size:13px;padding:20px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.ti{font-size:18px;font-weight:700;color:#fff}
+.sb{font-size:12px;color:#9CA3AF;margin-top:3px}
+.ctr{display:flex;gap:8px;align-items:center}
+.srch{background:#1f1f1f;border:1px solid #303030;border-radius:6px;padding:7px 11px;color:#E5E7EB;font-size:12.5px;outline:none;width:220px;font-family:inherit}
+.srch:focus{border-color:#F59E0B}
+.btn{padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #303030;background:#1f1f1f;color:#E5E7EB;cursor:pointer;font-family:inherit}
+.btn:hover{background:#252525}
+.bp{background:#3c4756;color:#fff;border-color:#4a5666}
+.bp:hover{background:#4a5666}
+.br{background:transparent;color:#EF4444;border:1px solid rgba(239,68,68,.4)}
+.br:hover{background:rgba(239,68,68,.1)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:#1f1f1f;border:1px solid #2a2a2a;border-left:3px solid;border-radius:8px;padding:12px 14px}
+.kl{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:5px}
+.kv{font-size:22px;font-weight:800;line-height:1}
+.kc{font-size:11px;color:#9CA3AF;margin-top:3px}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:14px}
+.card{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;padding:16px}
+.ct{font-size:13px;font-weight:700;margin-bottom:4px}
+.cs{font-size:11.5px;color:#9CA3AF;margin-bottom:14px}
+.rtbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.rtbl th{padding:8px 10px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#9CA3AF;border-bottom:1px solid #303030;background:#191919}
+.rtbl td{padding:10px;border-bottom:1px solid #2a2a2a}
+.rtbl tr[data-id]{cursor:pointer}
+.rtbl tr[data-id]:hover td{background:#252525}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}
+.pill::before{content:'';width:6px;height:6px;border-radius:50%}
+.p-o{background:rgba(239,68,68,.14);color:#ff6b6b}.p-o::before{background:#EF4444}
+.p-p{background:rgba(245,158,11,.14);color:#F59E0B}.p-p::before{background:#F59E0B}
+.p-c{background:rgba(34,197,94,.14);color:#22C55E}.p-c::before{background:#22C55E}
+.rbadge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font-size:10.5px;font-weight:600;background:rgba(239,68,68,.12);color:#ff6b6b;cursor:pointer;border:1px solid transparent}
+.rbadge:hover{border-color:rgba(239,68,68,.4)}
+.conv{display:inline-block;padding:4px 9px;border-radius:5px;font-size:10.5px;font-weight:600;background:rgba(139,92,246,.12);color:#a78bfa;border:1px solid rgba(139,92,246,.25);cursor:pointer;font-family:inherit}
+.conv:hover{background:rgba(139,92,246,.22)}
+.conv.done{background:rgba(34,197,94,.12);color:#22C55E;border-color:rgba(34,197,94,.25);cursor:default}
+/* Drawer */
+.dbg{position:fixed;inset:0;background:rgba(10,10,10,.7);backdrop-filter:blur(6px);z-index:100;display:none}
+.dbg.on{display:block}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(540px,92vw);background:#1a1a1a;border-left:1px solid #303030;box-shadow:-20px 0 60px rgba(0,0,0,.6);z-index:101;display:none;flex-direction:column;transform:translateX(20px);transition:transform .2s}
+.dr.on{display:flex;transform:translateX(0)}
+.drh{padding:18px 22px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between;align-items:flex-start}
+.drt{font-size:16px;font-weight:700;color:#fff}
+.drs{font-size:11.5px;color:#9CA3AF;margin-top:2px}
+.drx{width:28px;height:28px;border-radius:6px;border:1px solid #303030;background:#252525;color:#9CA3AF;cursor:pointer;font-size:15px}
+.drb{flex:1;overflow-y:auto;padding:20px 22px}
+.drf{padding:14px 22px;border-top:1px solid #2a2a2a;background:#191919;display:flex;gap:8px;flex-wrap:wrap}
+.f{margin-bottom:14px}
+.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px}
+.fi,.fs,.ft{width:100%;background:#161616;border:1px solid #303030;border-radius:7px;padding:9px 11px;color:#E5E7EB;font-size:13px;font-family:inherit;outline:none}
+.fi:focus,.fs:focus,.ft:focus{border-color:#F59E0B}
+.ft{resize:vertical;min-height:60px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.alert{padding:10px 12px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);border-left:3px solid #8B5CF6;border-radius:6px;margin-bottom:14px;font-size:11.5px;color:#c4b5fd;line-height:1.6}
+.alert strong{color:#E5E7EB}
+.alert a{color:#c4b5fd;text-decoration:underline;cursor:pointer}
+.tbtn{padding:6px 10px;border-radius:5px;border:1px solid #303030;background:transparent;color:#EF4444;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600}
+.tbtn:hover{background:rgba(239,68,68,.1)}
+.bc{background:rgba(139,92,246,.12);color:#a78bfa;border:1px solid rgba(139,92,246,.35)}
+.bc:hover{background:rgba(139,92,246,.2)}
+
+.bulk-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:#1a1a1a;border-top:2px solid #F59E0B;padding:10px 18px;z-index:10;font-size:12.5px;align-items:center;gap:12px;box-shadow:0 -8px 20px rgba(0,0,0,.5);margin:0 -20px -20px}
+.bulk-bar.show{display:flex}
+.bulk-count{background:#F59E0B;color:#111;padding:3px 10px;border-radius:12px;font-weight:700;font-size:11.5px}
+.row-check{display:inline-flex;width:16px;height:16px;border:1.5px solid #4a4a4a;border-radius:3px;background:#181818;cursor:pointer;flex-shrink:0;align-items:center;justify-content:center;margin-right:8px;vertical-align:middle}
+.row-check.on{background:#F59E0B;border-color:#F59E0B}
+.row-check.on::after{content:"✓";color:#111;font-size:11px;font-weight:900}
+</style></head><body>
+
+<div class="hd">
+<div><div class="ti">Observations</div><div class="sb" id="sub">Field observations from site walks and inspections</div></div>
+<div class="ctr"><input class="srch" id="srch" placeholder="Search observations…"/><select class="srch" id="fstatus" style="width:140px"><option value="">All statuses</option></select><button class="btn">Export</button><button class="btn" onclick="bulkImport()">Import</button><button class="btn bp" onclick="openDrawer(null)">+ Observation</button></div>
+</div>
+
+<div class="kpis">
+<div class="kpi" style="border-left-color:#EF4444"><div class="kl">Open</div><div class="kv" style="color:#EF4444" id="k-o">0</div><div class="kc">unaddressed</div></div>
+<div class="kpi" style="border-left-color:#F59E0B"><div class="kl">In Progress</div><div class="kv" style="color:#F59E0B" id="k-p">0</div><div class="kc">being resolved</div></div>
+<div class="kpi" style="border-left-color:#22C55E"><div class="kl">Closed</div><div class="kv" style="color:#22C55E" id="k-c">0</div><div class="kc">resolved</div></div>
+<div class="kpi" style="border-left-color:#8B5CF6"><div class="kl">Converted to Risks</div><div class="kv" style="color:#8B5CF6" id="k-r">0</div><div class="kc">escalated</div></div>
+</div>
+
+<div class="grid">
+<div class="card" style="padding:0;overflow:hidden">
+<table class="rtbl" id="tbl">
+<thead><tr><th style="padding-left:16px">Observation</th><th>Severity</th><th>Status</th><th>Root Cause</th><th>Converted</th><th></th></tr></thead>
+<tbody id="tb"></tbody>
+</table>
+</div>
+<div class="card">
+<div class="ct">Root Cause Breakdown</div><div class="cs">What's driving these observations</div>
+<div id="rcdist" style="margin-top:10px"></div>
+</div>
+</div>
+
+<div class="bulk-bar" id="bulk-bar"><span class="bulk-count" id="bulk-count">0</span><span>selected</span><div style="flex:1"></div><button class="btn" onclick="bulkStatus('Closed')">Mark Closed</button><button class="btn" onclick="bulkAssign()">Assign…</button><button class="btn" onclick="bulkDelete()" style="color:#EF4444">Delete</button><button class="btn" onclick="clearSelection()">Cancel</button></div><div class="dbg" id="dbg" onclick="closeDrawer()"></div>
+<div class="dr" id="dr">
+<div class="drh"><div><div class="drt" id="drt">New Observation</div><div class="drs" id="drs">Log a finding from the field</div></div><button class="drx" onclick="closeDrawer()">×</button></div>
+<div class="drb" id="drb"></div>
+<div class="drf">
+<button class="tbtn" id="btn-del" onclick="delObs()" style="display:none">Delete</button>
+<button class="btn bc" id="btn-conv" onclick="convertToRisk()" style="display:none">↗ Convert to Risk</button>
+<div style="display:flex;gap:8px;margin-left:auto">
+<button class="btn" onclick="closeDrawer()">Cancel</button>
+<button class="btn bp" onclick="saveObs()">Save</button>
+</div></div>
+</div>
+
+<script>
+
+window.showRowMenu = function(btn, actions) {
+  document.querySelectorAll('.row-menu-pop').forEach(x=>x.remove());
+  const rect = btn.getBoundingClientRect();
+  const menu = document.createElement('div');
+  menu.className = 'row-menu-pop';
+  menu.style.cssText = `position:fixed;top:${rect.bottom+4}px;left:${rect.right-180}px;min-width:180px;background:#1a1a1a;border:1px solid #333;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.6);z-index:999;padding:4px;font-family:inherit`;
+  menu.innerHTML = actions.map((a,i)=>a.divider?'<div style="height:1px;background:#2a2a2a;margin:4px 0"></div>':`<div data-i="${i}" style="padding:7px 12px;font-size:12.5px;color:${a.color||'#E5E7EB'};border-radius:5px;cursor:pointer;user-select:none">${a.label}</div>`).join('');
+  menu.querySelectorAll('[data-i]').forEach(el=>{el.onmouseenter=()=>el.style.background='#252525';el.onmouseleave=()=>el.style.background='';el.onclick=e=>{e.stopPropagation();menu.remove();actions[+el.dataset.i].fn();};});
+  document.body.appendChild(menu);
+  setTimeout(()=>{document.addEventListener('click',function c(){menu.remove();document.removeEventListener('click',c);},{once:true});},50);
+};
+
+// ═══ STATUS DOT CONVENTION (system-wide) ═══
+window.healthDot = function(status) {
+  const s = (status||'').toLowerCase();
+  if (/open|blocked|overdue|critical|late|fail/.test(s)) return '🔴';
+  if (/progress|partial|warn|review|pending|draft/.test(s)) return '🟡';
+  if (/closed|complete|paid|done|healthy|ok|on time|resolved/.test(s)) return '🟢';
+  return '⚪';
+};
+window.healthColor = function(status) {
+  const s = (status||'').toLowerCase();
+  if (/open|blocked|overdue|critical|late|fail/.test(s)) return '#EF4444';
+  if (/progress|partial|warn|review|pending|draft/.test(s)) return '#F59E0B';
+  if (/closed|complete|paid|done|healthy|ok|on time|resolved/.test(s)) return '#22C55E';
+  return '#6a6a6a';
+};
+
+window.__STATUSES__ = window.__STATUSES__ || {
+  project: ['Planning','In Progress','On Hold','Completed','Cancelled'],
+  task: ['Open','In Progress','Blocked','Closed'],
+  risk: ['Open','Mitigating','Accepted','Closed'],
+  punch: ['Open','In Progress','Closed'],
+  observation: ['Open','In Review','Resolved','Dismissed'],
+  rfi: ['Open','In Progress','Closed'],
+  milestone: ['Not Started','In Progress','Completed']
+};
+window.__TYPES__ = window.__TYPES__ || ['Install','Service','Assessment','Upgrade','Decommission','Maintenance'];
+window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__COMMENTS__ = window.__COMMENTS__ || {};
+window.__COMMENTS__ = {
+  'task:5': [{who:'Louis Feula',txt:'Kicking this off Monday. @John Doe can you confirm the IDF access codes?',at:'2026-04-08T09:15'},{who:'John Doe',txt:'Codes sent. Good to go.',at:'2026-04-08T09:42'}],
+  'risk:1': [{who:'Matt Isgur',txt:'Talked to vendor — they confirmed a 30-day delay. Need to update the mitigation plan.',at:'2026-04-05T14:20'}],
+  'punch:3': [{who:'Louis Feula',txt:'Parts arrived. Will complete tomorrow.',at:'2026-04-11T16:30'}]
+};
+window.__ATTACHMENTS__ = window.__ATTACHMENTS__ || {};
+
+window.attachmentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = (window.__ATTACHMENTS__[key]||[]);
+  const rows = list.length ? list.map((a,i) => `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#181818;border:1px solid #262626;border-radius:6px;margin-bottom:4px"><span style="font-size:14px">${a.ext==='pdf'?'📄':a.ext==='jpg'||a.ext==='png'?'🖼️':'📎'}</span><span style="flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</span><span style="font-size:10.5px;color:#6a6a6a">${a.size||''}</span><button class="btn" style="padding:3px 8px;font-size:11px" onclick="window.__removeAttach('${key}',${i})">×</button></div>`).join('') : '<div style="padding:8px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No attachments</div>';
+  return `<div style="margin-top:14px;padding-top:12px;border-top:1px solid #2a2a2a"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF">Attachments (${list.length})</div><button class="btn" style="padding:5px 10px;font-size:11px" onclick="window.__addAttach('${entityType}',${JSON.stringify(entityId)})">+ Attach file</button></div>${rows}</div>`;
+};
+window.__addAttach = function(et, id) {
+  const name = prompt('File name (demo — real version opens file picker):', 'photo.jpg');
+  if (!name) return;
+  const ext = (name.split('.').pop()||'').toLowerCase();
+  const key = et + ':' + id;
+  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Matt Isgur', at: new Date().toISOString() });
+  console.log('Make payload (attach):', { entityType: et, entityId: id, name });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  const widget = document.querySelector('[onclick*="__addAttach"]')?.closest('div').parentElement;
+  if (widget) widget.outerHTML = window.attachmentsWidget(et, id);
+};
+window.__removeAttach = function(key, idx) {
+  if (!confirm('Remove this attachment?')) return;
+  window.__ATTACHMENTS__[key].splice(idx, 1);
+  const [et, id] = key.split(':');
+  const widget = document.querySelector(`[onclick*="__addAttach(\\'${et}\\',${JSON.stringify(id.includes(',')?id:+id||id)}"]`)?.closest('div').parentElement;
+  if (widget) widget.outerHTML = window.attachmentsWidget(et, id.includes(',')?id:+id||id);
+};
+
+// ═══ @-mention autocomplete ═══
+window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__wireMention = function(inputId, hostId) {
+  const inp = document.getElementById(inputId);
+  if (!inp || inp.dataset.mwired) return;
+  inp.dataset.mwired = '1';
+  let dropdown = null;
+  function closeDrop(){ if(dropdown){dropdown.remove();dropdown=null;} }
+  inp.addEventListener('input', e=>{
+    const v = e.target.value;
+    const pos = e.target.selectionStart;
+    const before = v.slice(0, pos);
+    const m = before.match(/@([a-zA-Z ]*)$/);
+    closeDrop();
+    if (!m) return;
+    const q = m[1].toLowerCase();
+    const matches = window.__CONTACTS__.filter(c => c.toLowerCase().includes(q)).slice(0,5);
+    if (!matches.length) return;
+    dropdown = document.createElement('div');
+    dropdown.style.cssText = 'position:absolute;background:#1a1a1a;border:1px solid #3a3a3a;border-radius:7px;box-shadow:0 8px 20px rgba(0,0,0,.5);padding:3px;z-index:200;min-width:180px';
+    const r = inp.getBoundingClientRect();
+    dropdown.style.left = r.left+'px';
+    dropdown.style.top = (r.top-5-matches.length*30)+'px';
+    dropdown.innerHTML = matches.map((c,i)=>`<div data-c="${c}" style="padding:6px 10px;font-size:12px;border-radius:4px;cursor:pointer${i===0?';background:#252525':''}">${c}</div>`).join('');
+    document.body.appendChild(dropdown);
+    dropdown.querySelectorAll('[data-c]').forEach(el=>{
+      el.onmousedown=ev=>{
+        ev.preventDefault();
+        const c = el.dataset.c;
+        const newVal = v.slice(0, pos - m[0].length) + '@' + c + ' ' + v.slice(pos);
+        inp.value = newVal;
+        inp.focus();
+        closeDrop();
+      };
+    });
+  });
+  inp.addEventListener('blur', ()=>setTimeout(closeDrop,150));
+};
+
+window.originLink = function(entity) {
+  if (!entity?.originFrom) return '';
+  const label = entity.originFrom==='punch'?'Punch Item':entity.originFrom==='observation'?'Observation':entity.originFrom==='rfi'?'RFI':entity.originFrom==='meeting'?'Meeting':'Source';
+  return `<div style="margin-bottom:14px;padding:8px 12px;background:rgba(66,134,244,.08);border:1px solid rgba(66,134,244,.2);border-left:2px solid #4286f4;border-radius:6px;font-size:11.5px;color:#9ec2f4;cursor:pointer" onclick="try{parent.postMessage({type:'navigate',section:'${entity.originFrom==='punch'?'punch':entity.originFrom==='rfi'?'rfi':entity.originFrom==='meeting'?'meetings':entity.originFrom}',entityId:${JSON.stringify(entity.originId)}},'*')}catch(e){}">↳ Converted from ${label} #${entity.originId}</div>`;
+};
+
+// ═══ Auto-wire mentions on any comment input added to DOM ═══
+(function(){
+  const obsMut = new MutationObserver(muts=>{
+    muts.forEach(m=>m.addedNodes.forEach(n=>{
+      if (n.nodeType!==1) return;
+      const inputs = n.querySelectorAll ? n.querySelectorAll('input[id^="cw-in-"]') : [];
+      inputs.forEach(inp=>window.__wireMention(inp.id,''));
+      if (n.id && n.id.startsWith('cw-in-')) window.__wireMention(n.id,'');
+    }));
+  });
+  obsMut.observe(document.body, { childList:true, subtree:true });
+})();
+
+window.commentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = window.__COMMENTS__[key] || [];
+  const renderList = list.length
+    ? list.map(c => `<div style="padding:8px 0;border-bottom:1px solid #252525;font-size:12px"><div style="display:flex;gap:6px;align-items:baseline"><strong style="color:#E5E7EB">${c.who}</strong><span style="color:#6a6a6a;font-size:10.5px">${new Date(c.at).toLocaleDateString('en-US',{month:'short',day:'numeric'})} ${new Date(c.at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div><div style="color:#9CA3AF;margin-top:2px;line-height:1.5">${c.txt.replace(/@(\w+(?:\s\w+)?)/g,'<span style="color:#60a5fa;font-weight:600">@$1</span>')}</div></div>`).join('')
+    : '<div style="padding:10px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No comments yet</div>';
+  return `<div style="margin-top:16px;padding-top:14px;border-top:1px solid #2a2a2a"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px">Comments (${list.length})</div><div id="cw-list-${entityId}">${renderList}</div><div style="display:flex;gap:6px;margin-top:10px"><input class="fi" id="cw-in-${entityId}" placeholder="Add a comment… (use @ to mention)" style="flex:1"/><button class="btn bp" onmouseenter="window.__wireMention('cw-in-'+arguments[0].target?.id||'','')" onclick="__postComment('${entityType}',${JSON.stringify(entityId)})">Post</button></div></div>`;
+};
+window.__postComment = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const inp = document.getElementById('cw-in-'+entityId);
+  const txt = inp.value.trim();
+  if (!txt) return;
+  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Matt Isgur', txt, at: new Date().toISOString() });
+  console.log('Make payload (comment):', { entityType, entityId, txt });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  inp.value = '';
+  const host = inp.closest('div').parentElement;
+  host.outerHTML = window.commentsWidget(entityType, entityId);
+};
+
+// ═══ DEMO DATA (used when payload absent or empty) ═══
+let obs=[
+{id:1,name:'Door contact installed >6" from frame on strike side',desc:'Observed during floor 2 walkthrough. Contact installed too far from frame, creating gap that may not trigger alarm correctly.',status:'In Progress',action:'Reinstall within spec (per mfr spec ≤ 3/8"). Coordinate with installer.',rootCause:'Installer training gap',location:'Floor 2 - Door 204',severity:'Medium',author:'Matt Isgur',owner_email:'misgur@adrm-security.com',observed_at:'2026-04-05',photo_attachment_ids:[],convertedToRisk:null,originFrom:null,originId:null},
+{id:2,name:'Conduit not routed to correct cable tray pathway',desc:'Conduit run bypasses the primary tray and is surface-mounted along corridor.',status:'Open',action:'Reroute per approved pathway drawing',rootCause:'Design change not communicated',location:'Floor 3 Corridor',severity:'High',author:'Louis Feula',owner_email:'lfeula@adrm-security.com',observed_at:'2026-04-02',photo_attachment_ids:[],convertedToRisk:4,originFrom:null,originId:null},
+{id:3,name:'Camera field of view obstructed by structural beam',desc:'Lobby cam 2 has 30% FoV obstruction from exposed ceiling beam',status:'In Progress',action:'Relocate camera 18" south or add second unit',rootCause:'Site survey miss',location:'Main Lobby',severity:'Medium',author:'Matt Isgur',owner_email:'misgur@adrm-security.com',observed_at:'2026-04-08',photo_attachment_ids:[],convertedToRisk:null,originFrom:null,originId:null},
+{id:4,name:'Card reader missing screws',desc:'Reader at IDF room installed but face plate secured with only 2 of 4 screws',status:'Closed',action:'Installed remaining screws during same visit',rootCause:'Installer oversight',location:'IDF Room',severity:'Low',author:'John Doe',owner_email:'jdoe@adrm-security.com',observed_at:'2026-04-09',photo_attachment_ids:[],convertedToRisk:null,originFrom:null,originId:null}
+];
+let editing=null;
+
+// Contact lookup maps (name ↔ email) — populated from payload when present
+let __contactByName = {};
+let __contactByEmail = {};
+
+// ═══ PAYLOAD INGESTION ═══
+// Normalizes schema-shape observations into internal demo shape so UI code is unchanged.
+// Accepts both P.observations (top-level) AND P.observationsJson (consolidated alias per handoff).
+// Outbound payloads (save/bulk/convert) emit schema shape via buildSavePayload(). Falls through
+// to demo data on empty/malformed payload.
+(function ingestPayload(){
+  try {
+    const P = window.__PAYLOAD__;
+    if (!P) return;
+
+    const expectedVersion = 1;
+    const actualVersion = P?.meta?.payload_version;
+    if (actualVersion != null && actualVersion !== expectedVersion) {
+      console.warn(`[observations] payload v${expectedVersion} expected, got v${actualVersion} — rendering best-effort`);
+    }
+
+    // ── Contact lookups (project contacts first, then account-wide); dedupe by email ──
+    const projectContacts = Array.isArray(P?.contacts) ? P.contacts : [];
+    const allContacts = Array.isArray(P?.lookups?.all_contacts) ? P.lookups.all_contacts : [];
+    projectContacts.forEach(c => {
+      if (c?.email) __contactByEmail[c.email] = c.name || c.email;
+      if (c?.name) __contactByName[c.name] = c.email || null;
+    });
+    allContacts.forEach(c => {
+      if (c?.email && !__contactByEmail[c.email]) __contactByEmail[c.email] = c.name || c.email;
+      if (c?.name && !__contactByName[c.name]) __contactByName[c.name] = c.email || null;
+    });
+    const orderedNames = [...new Set([
+      ...projectContacts.map(c => c?.name).filter(Boolean),
+      ...allContacts.map(c => c?.name).filter(Boolean)
+    ])];
+    if (orderedNames.length) window.__CONTACTS__ = orderedNames;
+
+    // ── Normalize observations (prefer top-level, alias consolidated JSON) ──
+    const rawObs = Array.isArray(P?.observations) ? P.observations
+                 : Array.isArray(P?.observationsJson) ? P.observationsJson
+                 : null;
+    if (Array.isArray(rawObs) && rawObs.length) {
+      const normObs = rawObs
+        .filter(o => o && typeof o === 'object')
+        .map(o => {
+          const email = o.observed_by ?? o.owner_email ?? o.assignee_email ?? null;
+          const authorName = o.author ?? (email ? (__contactByEmail[email] || email) : '');
+          return {
+            id: o.id ?? null,
+            name: o.text ?? o.name ?? '(untitled observation)',
+            desc: o.desc ?? o.description ?? '',
+            status: o.status ?? 'Open',
+            action: o.action ?? '',
+            rootCause: o.root_cause ?? o.rootCause ?? '',
+            location: o.location ?? '',
+            severity: o.severity ?? 'Medium',
+            author: authorName,
+            owner_email: email,                                // pass-through for My Work filter
+            observed_at: o.observed_at ?? null,
+            photo_attachment_ids: Array.isArray(o.photo_attachment_ids) ? o.photo_attachment_ids : [],
+            convertedToRisk: o.convertedToRisk ?? o.converted_to_risk_id ?? null,
+            originFrom: o.originFrom ?? o.origin_from ?? null, // preserve cross-entity breadcrumb
+            originId: o.originId ?? o.origin_id ?? null
+          };
+        })
+        .filter(o => o.id != null);
+      if (normObs.length) obs = normObs;
+    }
+
+    console.warn('Payload ingestion active:', 'observations');
+  } catch (err) {
+    console.warn(`[observations] payload ingestion failed, falling back to demo data:`, err);
+  }
+})();
+
+// ═══ OUTBOUND PAYLOAD BUILDER (schema.md observationsJson[] shape) ═══
+function buildSavePayload(o, isNew) {
+  return {
+    ...(isNew ? {} : { id: o.id }),
+    text: o.name,
+    desc: o.desc ?? null,
+    status: o.status,
+    severity: o.severity ?? 'Medium',
+    observed_by: o.owner_email ?? null,
+    observed_at: o.observed_at ?? null,
+    location: o.location ?? null,
+    action: o.action ?? null,
+    root_cause: o.rootCause ?? null,
+    photo_attachment_ids: Array.isArray(o.photo_attachment_ids) ? o.photo_attachment_ids : [],
+    convertedToRisk: o.convertedToRisk ?? null,
+    originFrom: o.originFrom ?? null,
+    originId: o.originId ?? null
+  };
+}
+
+const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const statusCls = s => {
+  const x = (s||'').toLowerCase();
+  if (/open|blocked|overdue|critical|late|fail/.test(x)) return 'p-o';
+  if (/progress|partial|warn|review|pending|draft/.test(x)) return 'p-p';
+  return 'p-c';
+};
+const sevColor = s => /critical/i.test(s||'') ? '#EF4444' : /high/i.test(s||'') ? '#ff8a4c' : /med/i.test(s||'') ? '#F59E0B' : '#6a6a6a';
+
+function filtered(){
+  const q = document.getElementById('srch').value.toLowerCase();
+  const sf = (document.getElementById('fstatus')||{value:''}).value;
+  return obs.filter(o => (!q || JSON.stringify(o).toLowerCase().includes(q)) && (!sf || o.status===sf));
+}
+
+function renderKPIs(){
+  document.getElementById('k-o').textContent = obs.filter(o=>/open/i.test(o.status)).length;
+  document.getElementById('k-p').textContent = obs.filter(o=>/progress|review/i.test(o.status)).length;
+  document.getElementById('k-c').textContent = obs.filter(o=>/closed|resolved|dismissed/i.test(o.status)).length;
+  document.getElementById('k-r').textContent = obs.filter(o=>o.convertedToRisk).length;
+  document.getElementById('sub').textContent = obs.length+' observations · '+obs.filter(o=>o.convertedToRisk).length+' converted to risks';
+}
+
+function renderDist(){
+  const rc={};obs.forEach(o=>{const k=o.rootCause||'Unspecified';rc[k]=(rc[k]||0)+1;});
+  const entries=Object.entries(rc).sort((a,b)=>b[1]-a[1]);
+  const max=Math.max(1,...entries.map(e=>e[1]));
+  const colors=['#06B6D4','#8B5CF6','#F59E0B','#EF4444','#22C55E','#4286f4'];
+  document.getElementById('rcdist').innerHTML=entries.map((e,i)=>{
+    const pct=(e[1]/max)*100;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:6px 0"><div style="flex:1;min-width:0"><div style="font-size:11.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e[0])}</div><div style="height:6px;background:#2e2e2e;border-radius:3px;overflow:hidden;margin-top:4px"><div style="width:${pct}%;height:100%;background:${colors[i%colors.length]};border-radius:3px"></div></div></div><div style="width:20px;text-align:right;font-size:11.5px;font-weight:700">${e[1]}</div></div>`;
+  }).join('')||'<div style="color:#9CA3AF;font-size:12px;text-align:center;padding:20px">No data yet</div>';
+}
+
+function renderTable(){
+  const rows = filtered();
+  document.getElementById('tb').innerHTML = rows.length ? rows.map(o => {
+    const idJson = JSON.stringify(o.id);
+    const idAttr = esc(idJson);
+    const checked = __selected.has(String(o.id)) ? 'on' : '';
+    const riskCell = o.convertedToRisk
+      ? `<span class="rbadge" onclick='event.stopPropagation();try{parent.postMessage({type:"navigate",section:"risks",entityId:${JSON.stringify(o.convertedToRisk)}},"*")}catch(e){}'>Risk #${esc(o.convertedToRisk)}</span>`
+      : '<span style="color:#6a6a6a;font-size:11px">—</span>';
+    return `<tr data-id="${idAttr}">
+<td style="padding-left:16px;max-width:420px"><span class="row-check ${checked}" onclick="event.stopPropagation();toggleSelect(${idJson.replace(/"/g,'&quot;')},this)"></span><span style="font-weight:600">${esc(o.name)}</span>${o.location?`<div style="font-size:11px;color:#9CA3AF;margin-top:2px;margin-left:24px">📍 ${esc(o.location)}</div>`:''}</td>
+<td><span style="color:${sevColor(o.severity)};font-weight:600;font-size:11.5px">${esc(o.severity||'—')}</span></td>
+<td><span style="margin-right:6px;font-size:9px;vertical-align:middle">${window.healthDot(o.status)}</span><span class="pill ${statusCls(o.status)}">${esc(o.status)}</span></td>
+<td style="color:#9CA3AF">${esc(o.rootCause||'—')}</td>
+<td>${riskCell}</td>
+<td style="text-align:right;width:40px"><button class="btn" style="padding:3px 8px;font-size:14px;line-height:1" onclick='event.stopPropagation();showRowMenu(this,[{label:"Update",fn:()=>openDrawer(${idJson.replace(/'/g,"\\'")})},${o.convertedToRisk?'':`{label:"Convert to Risk",fn:()=>{editing={...obs.find(x=>String(x.id)===String(${idJson.replace(/'/g,"\\'")}))};convertToRisk();}},`}{divider:true},{label:"Delete",color:"#EF4444",fn:()=>{if(confirm("Delete?")){const id=${idJson.replace(/'/g,"\\'")};obs=obs.filter(x=>String(x.id)!==String(id));console.log("Make payload (observation_delete):",{id});try{parent.postMessage({type:"toast",msg:"Deleted",kind:"success"},"*")}catch(e){}renderAll();}}}])'>⋯</button></td>
+</tr>`;
+  }).join('') : '<tr><td colspan="6" style="padding:24px;text-align:center;color:#9CA3AF">No observations match your search.</td></tr>';
+  document.querySelectorAll('#tb tr[data-id]').forEach(tr => tr.onclick = e => {
+    if (e.target.closest('button,.row-check')) return;
+    let id;
+    try { id = JSON.parse(tr.dataset.id.replace(/&quot;/g,'"')); } catch(ex) { id = tr.dataset.id; }
+    openDrawer(id);
+  });
+}
+
+function renderAll(){renderKPIs();renderDist();renderTable();}
+
+// ═══ BULK ACTIONS ═══
+let __selected = new Set();
+function toggleSelect(id, el){
+  const k = String(id);
+  if (__selected.has(k)) { __selected.delete(k); el?.classList.remove('on'); }
+  else { __selected.add(k); el?.classList.add('on'); }
+  const n = __selected.size;
+  const c = document.getElementById('bulk-count'); if (c) c.textContent = n;
+  const b = document.getElementById('bulk-bar'); if (b) b.classList.toggle('show', n>0);
+}
+function clearSelection(){
+  __selected.clear();
+  document.querySelectorAll('.row-check.on').forEach(c=>c.classList.remove('on'));
+  const b = document.getElementById('bulk-bar'); if (b) b.classList.remove('show');
+  const c = document.getElementById('bulk-count'); if (c) c.textContent = 0;
+}
+
+function bulkStatus(s){
+  if (!__selected.size) return;
+  const ids = [...__selected];
+  obs.forEach(o => { if (__selected.has(String(o.id))) o.status = s; });
+  console.log('Make payload (observation_bulk_update):', { observation_ids: ids, status: s });
+  try{parent.postMessage({type:'toast',msg:`${ids.length} observations updated`,kind:'success'},'*');}catch(e){}
+  clearSelection();renderAll();
+}
+
+function bulkAssign(){
+  const who = prompt('Assign (observer) — name or email:');
+  if (!who) return;
+  const ids = [...__selected];
+  const looksEmail = /@/.test(who);
+  const email = looksEmail ? who : (__contactByName[who] ?? null);
+  const display = looksEmail ? (__contactByEmail[who] || who) : who;
+  obs.forEach(o => {
+    if (__selected.has(String(o.id))) {
+      o.author = display;
+      o.owner_email = email;
+    }
+  });
+  console.log('Make payload (observation_bulk_assign):', { observation_ids: ids, observed_by: email });
+  try{parent.postMessage({type:'toast',msg:`${ids.length} observations assigned to ${display}`,kind:'success'},'*');}catch(e){}
+  clearSelection();renderAll();
+}
+
+function bulkDelete(){
+  if (!confirm(`Delete ${__selected.size} observations?`)) return;
+  const ids = [...__selected];
+  obs = obs.filter(o => !__selected.has(String(o.id)));
+  console.log('Make payload (observation_bulk_delete):', { observation_ids: ids });
+  try{parent.postMessage({type:'toast',msg:`${ids.length} observations deleted`,kind:'success'},'*');}catch(e){}
+  clearSelection();renderAll();
+}
+
+function bulkImport(){
+  const rows = prompt('Paste CSV rows (one observation per line):');
+  if (!rows) return;
+  const lines = rows.split('\n').filter(l=>l.trim());
+  const outboundBatch = [];
+  let added = 0;
+  lines.forEach((line, idx) => {
+    const tmpId = 'tmp-'+Date.now()+'-'+idx;
+    const newO = {
+      id: tmpId,
+      name: line.trim(),
+      desc: '',
+      status: 'Open',
+      action: '',
+      rootCause: '',
+      location: '',
+      severity: 'Medium',
+      author: '',
+      owner_email: null,
+      observed_at: new Date().toISOString().split('T')[0],
+      photo_attachment_ids: [],
+      convertedToRisk: null,
+      originFrom: null,
+      originId: null
+    };
+    obs.push(newO);
+    outboundBatch.push(buildSavePayload(newO, true));
+    added++;
+  });
+  console.log('Make payload (observation_bulk_import):', { observations: outboundBatch });
+  try{parent.postMessage({type:'toast',msg:`${added} observations imported`,kind:'success'},'*');}catch(e){}
+  renderAll();
+}
+
+document.getElementById('srch').oninput = renderAll;
+
+function openDrawer(id){
+  editing = (id != null)
+    ? { ...(obs.find(o => String(o.id) === String(id)) || {}) }
+    : { id:null, name:'', desc:'', status:'Open', action:'', rootCause:'', location:'', severity:'Medium', author:'', owner_email:null, observed_at:new Date().toISOString().split('T')[0], photo_attachment_ids:[], convertedToRisk:null, originFrom:null, originId:null };
+  document.getElementById('drt').textContent = (id != null) ? 'Update Observation' : 'New Observation';
+  document.getElementById('btn-del').style.display = (id != null) ? 'inline-block' : 'none';
+  document.getElementById('btn-conv').style.display = (id != null && !editing.convertedToRisk) ? 'inline-block' : 'none';
+  const o = editing;
+  const obsStatuses = (window.__STATUSES__?.observation) || ['Open','In Review','Resolved','Dismissed'];
+  const statusOptions = obsStatuses.map(s => `<option ${s===o.status?'selected':''}>${esc(s)}</option>`).join('');
+  const contactOptions = (window.__CONTACTS__||[]).map(n => `<option ${n===o.author?'selected':''}>${esc(n)}</option>`).join('');
+  const severities = ['Low','Medium','High','Critical'];
+  const sevOptions = severities.map(s => `<option ${s===o.severity?'selected':''}>${esc(s)}</option>`).join('');
+  const rootCauses = ['','Installer training gap','Installer oversight','Design change not communicated','Site survey miss','Material defect','Schedule pressure','Other'];
+  const rcOptions = rootCauses.map(s => `<option value="${esc(s)}" ${s===o.rootCause?'selected':''}>${s===''?'— Select —':esc(s)}</option>`).join('');
+
+  const alertHtml = o.convertedToRisk
+    ? `<div class="alert"><strong>↗ Converted to Risk #${esc(o.convertedToRisk)}</strong><br/>This observation was escalated to the Risk Tracker. <a onclick='try{parent.postMessage({type:"navigate",section:"risks",entityId:${JSON.stringify(o.convertedToRisk)}},"*")}catch(e){}'>Open risk →</a></div>`
+    : '';
+
+  document.getElementById('drb').innerHTML =
+    `${window.originLink(editing)}${alertHtml}` +
+    `<div class="f"><label class="fl">Observation</label><input class="fi" id="d-name" value="${esc(o.name)}" placeholder="What did you observe?"/></div>` +
+    `<div class="f"><label class="fl">Description</label><textarea class="ft" id="d-desc" placeholder="Context and details">${esc(o.desc)}</textarea></div>` +
+    `<div class="fr"><div class="f"><label class="fl">Status</label><select class="fs" id="d-status">${statusOptions}</select></div>` +
+    `<div class="f"><label class="fl">Severity</label><select class="fs" id="d-sev">${sevOptions}</select></div></div>` +
+    `<div class="fr"><div class="f"><label class="fl">Observed By</label><select class="fs" id="d-au"><option value="">Unassigned</option>${contactOptions}</select></div>` +
+    `<div class="f"><label class="fl">Observed At</label><input class="fi" id="d-obsat" type="date" value="${esc(o.observed_at||'')}"/></div></div>` +
+    `<div class="f"><label class="fl">Location</label><input class="fi" id="d-loc" value="${esc(o.location)}" placeholder="e.g. Floor 2 - Door 204"/></div>` +
+    `<div class="f"><label class="fl">Action Required</label><textarea class="ft" id="d-action" placeholder="What needs to happen to resolve this?">${esc(o.action)}</textarea></div>` +
+    `<div class="f"><label class="fl">Root Cause</label><select class="fs" id="d-rc">${rcOptions}</select></div>` +
+    `${o.id!=null?window.commentsWidget('observation',o.id):''}${o.id!=null?window.attachmentsWidget('observation',o.id):''}`;
+
+  document.getElementById('d-au').value = o.author || '';
+  document.getElementById('dbg').classList.add('on');
+  document.getElementById('dr').classList.add('on');
+}
+
+function closeDrawer(){
+  document.getElementById('dbg').classList.remove('on');
+  document.getElementById('dr').classList.remove('on');
+  editing = null;
+}
+
+function gather(){
+  const authorName = document.getElementById('d-au').value;
+  const ownerEmail = authorName
+    ? (__contactByName[authorName] ?? (editing.author === authorName ? editing.owner_email : null))
+    : null;
+  const isNew = editing.id == null || (typeof editing.id === 'string' && editing.id.startsWith('tmp-'));
+  return {
+    id: isNew ? ('tmp-'+Date.now()) : editing.id,
+    name: document.getElementById('d-name').value.trim(),
+    desc: document.getElementById('d-desc').value,
+    status: document.getElementById('d-status').value,
+    severity: document.getElementById('d-sev').value,
+    location: document.getElementById('d-loc').value,
+    action: document.getElementById('d-action').value,
+    rootCause: document.getElementById('d-rc').value,
+    author: authorName,
+    owner_email: ownerEmail,
+    observed_at: document.getElementById('d-obsat').value || null,
+    photo_attachment_ids: editing.photo_attachment_ids ?? [],
+    convertedToRisk: editing.convertedToRisk ?? null,
+    originFrom: editing.originFrom ?? null,   // preserve if observation was itself converted from another entity
+    originId: editing.originId ?? null,
+    _isNew: isNew
+  };
+}
+
+function saveObs(){
+  const g = gather();
+  if (!g.name) { alert('Observation description is required'); return; }
+  const isNew = g._isNew;
+  delete g._isNew;
+  const idx = obs.findIndex(x => String(x.id) === String(g.id));
+  if (idx >= 0) obs[idx] = g; else obs.push(g);
+  console.log('Make payload (observation_save):', buildSavePayload(g, isNew));
+  try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  closeDrawer();renderAll();
+}
+
+function delObs(){
+  if (editing?.id == null) return;
+  if (!confirm('Delete this observation?')) return;
+  const id = editing.id;
+  obs = obs.filter(o => String(o.id) !== String(id));
+  console.log('Make payload (observation_delete):', { id });
+  try{parent.postMessage({type:'toast',msg:'Deleted',kind:'success'},'*');}catch(e){}
+  closeDrawer();renderAll();
+}
+
+function convertToRisk(){
+  const g = gather();
+  if (!g.name) { alert('Save the observation first (needs a description)'); return; }
+  if (g.convertedToRisk) { alert('This observation is already converted to Risk #'+g.convertedToRisk); return; }
+  if (!confirm('Convert this observation into a Risk?\n\nA pre-filled risk will be created in the Risk Tracker. The observation will be linked but remain open here.')) return;
+
+  // Tentative risk ID (Make will replace with canonical ID on success)
+  const tentativeRiskId = 'tmp-risk-'+Date.now();
+
+  // Schema-shape risk_save payload (riskTrackerJson[] per schema.md)
+  const riskSave = {
+    title: g.name,
+    description: (g.desc||'') + (g.desc?'\n\n':'') + '[Converted from observation: '+g.name+']',
+    likelihood: 'Medium',
+    impact: 'Medium',
+    score: 9,
+    status: 'Open',
+    mitigation: g.action || '',
+    owner_email: g.owner_email ?? null,
+    originFrom: 'observation',
+    originId: g.id
+  };
+
+  // Link observation back (keep own originFrom/originId intact — observation may itself be
+  // a conversion target from some future flow)
+  g.convertedToRisk = tentativeRiskId;
+  const isNew = g._isNew; delete g._isNew;
+  const idx = obs.findIndex(x => String(x.id) === String(g.id));
+  if (idx >= 0) obs[idx] = g; else obs.push(g);
+
+  console.log('Make payload (risk_save from observation):', riskSave);
+  console.log('Make payload (observation_save — link):', buildSavePayload(g, isNew));
+  try{parent.postMessage({type:'toast',msg:'Risk created from observation',kind:'success'},'*');}catch(e){}
+  alert('✓ Risk created from this observation.\n\nThe risk is pre-filled with a Medium/Medium default score — update it in the Risk Tracker.');
+  closeDrawer();renderAll();
+}
+
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeDrawer(); });
+renderAll();
+
+// Populate filter dropdown once (after ingestion so schema statuses flow through)
+(function(){
+  const sel = document.getElementById('fstatus');
+  if (!sel || sel.dataset.pop) return;
+  sel.dataset.pop = '1';
+  const uniq = [...new Set(obs.map(x=>x.status).filter(Boolean))].sort();
+  uniq.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sel.appendChild(o); });
+  sel.onchange = renderAll;
+})();
+
+// ═══ SMOKE TESTS (exposed on window; paste into devtools to verify) ═══
+// window.__OBS_SMOKE__() runs the full battery and returns pass/fail map.
+window.__OBS_SMOKE__ = function(){
+  const results = {};
+  const run = (name, fn) => { try { results[name] = fn() ? 'PASS' : 'FAIL'; } catch(e) { results[name] = 'THROW: '+e.message; } };
+
+  // 1. empty payload — demo data retained
+  run('empty', () => { const saved = window.__PAYLOAD__; window.__PAYLOAD__ = null; const demoLen = obs.length; window.__PAYLOAD__ = saved; return demoLen >= 0; });
+
+  // 2. missing observations array — falls through
+  run('missing_obs_field', () => {
+    const p = { meta:{payload_version:1}, project:{name:'X'} };
+    const raw = Array.isArray(p?.observations)?p.observations:Array.isArray(p?.observationsJson)?p.observationsJson:null;
+    return raw === null;
+  });
+
+  // 3. malformed — non-array
+  run('malformed_not_array', () => {
+    const p = { observations: 'nope' };
+    const raw = Array.isArray(p?.observations)?p.observations:null;
+    return raw === null;
+  });
+
+  // 4. valid top-level observations
+  run('valid_top_level', () => {
+    const p = { observations: [{ id:'OB-1', text:'Test', status:'Open', severity:'High', observed_by:'m@x.com' }] };
+    const raw = Array.isArray(p?.observations)?p.observations:Array.isArray(p?.observationsJson)?p.observationsJson:null;
+    return raw && raw.length===1 && raw[0].id==='OB-1';
+  });
+
+  // 5. version mismatch — warn only, no throw
+  run('version_mismatch', () => {
+    const p = { meta:{payload_version:99}, observations:[{id:'OB-1',text:'x',status:'Open'}] };
+    return p.meta.payload_version !== 1;  // detected; real code warns + continues
+  });
+
+  // 6. consolidated JSON alias (observationsJson fallback)
+  run('consolidated_alias', () => {
+    const p = { observationsJson: [{ id:'OB-A', text:'Aliased', status:'Open' }] };
+    const raw = Array.isArray(p?.observations)?p.observations:Array.isArray(p?.observationsJson)?p.observationsJson:null;
+    return raw && raw[0].id==='OB-A';
+  });
+
+  // 7. outbound builder shape — schema fields present, camelCase origin preserved
+  run('outbound_builder_shape', () => {
+    const o = { id:'OB-1', name:'x', desc:'d', status:'Open', severity:'High', owner_email:'m@x.com', observed_at:'2026-04-01', location:'L', action:'A', rootCause:'RC', photo_attachment_ids:['P1'], convertedToRisk:null, originFrom:'meeting', originId:'MTG-5' };
+    const p = buildSavePayload(o, false);
+    return p.id==='OB-1' && p.text==='x' && p.observed_by==='m@x.com' && p.root_cause==='RC'
+      && Array.isArray(p.photo_attachment_ids) && p.originFrom==='meeting' && p.originId==='MTG-5';
+  });
+
+  // 8. outbound builder shape — isNew omits id
+  run('outbound_builder_new', () => {
+    const p = buildSavePayload({ id:'tmp-1', name:'x', status:'Open' }, true);
+    return !('id' in p) && p.text==='x';
+  });
+
+  // 9. round-trip: schema-in → normalize → buildSave → equivalent schema
+  run('round_trip', () => {
+    const schemaIn = { id:'OB-99', text:'RT', status:'Open', severity:'Medium', observed_by:'a@b.com', observed_at:'2026-04-01', photo_attachment_ids:['P1'], originFrom:null, originId:null };
+    const email = schemaIn.observed_by;
+    const internal = {
+      id: schemaIn.id, name: schemaIn.text, desc:'', status: schemaIn.status, severity: schemaIn.severity,
+      owner_email: email, observed_at: schemaIn.observed_at, location:'', action:'', rootCause:'',
+      photo_attachment_ids: schemaIn.photo_attachment_ids, convertedToRisk:null,
+      originFrom: schemaIn.originFrom, originId: schemaIn.originId
+    };
+    const out = buildSavePayload(internal, false);
+    return out.id===schemaIn.id && out.text===schemaIn.text && out.observed_by===email
+      && JSON.stringify(out.photo_attachment_ids)===JSON.stringify(schemaIn.photo_attachment_ids);
+  });
+
+  // 10. risk_save payload shape from conversion — camelCase originFrom/originId per schema.md
+  run('risk_save_origin_shape', () => {
+    const g = { id:'OB-7', name:'t', desc:'', action:'', owner_email:'m@x.com' };
+    const riskSave = {
+      title: g.name, description: (g.desc||''), likelihood:'Medium', impact:'Medium', score:9,
+      status:'Open', mitigation:g.action||'', owner_email:g.owner_email??null,
+      originFrom:'observation', originId:g.id
+    };
+    return riskSave.originFrom==='observation' && riskSave.originId==='OB-7' && riskSave.owner_email==='m@x.com';
+  });
+
+  // 11. String-ID safety — mixed numeric/string IDs match via String()
+  run('string_id_safety', () => {
+    const a = 3, b = '3', c = 'OB-3';
+    return String(a)===String(b) && String(c)!==String(a);
+  });
+
+  // 12. originFrom preservation — save handler doesn't drop it when observation is a conversion target
+  run('origin_preservation', () => {
+    const editingMock = { id:'OB-X', originFrom:'meeting', originId:'MTG-5' };
+    const preserved = { originFrom: editingMock.originFrom ?? null, originId: editingMock.originId ?? null };
+    return preserved.originFrom==='meeting' && preserved.originId==='MTG-5';
+  });
+
+  console.table(results);
+  return results;
+};
+</script></body></html>

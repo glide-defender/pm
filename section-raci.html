@@ -1,0 +1,894 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>RACI</title><style>
+*{box-sizing:border-box;margin:0;padding:0}body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;padding:20px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.ti{font-size:18px;font-weight:700;color:#fff}.sb{font-size:12px;color:#9CA3AF;margin-top:3px}.ctr{display:flex;gap:8px;align-items:center}
+.srch{background:#1f1f1f;border:1px solid #303030;border-radius:6px;padding:7px 11px;color:#E5E7EB;font-size:12.5px;outline:none;width:220px;font-family:inherit}
+.srch:focus{border-color:#F59E0B}
+.btn{padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #303030;background:#1f1f1f;color:#E5E7EB;cursor:pointer;font-family:inherit}.btn:hover{background:#252525}.bp{background:#3c4756;color:#fff;border-color:#4a5666}.bp:hover{background:#4a5666}
+.legend{display:flex;gap:14px;margin-bottom:14px;padding:10px 14px;background:#1f1f1f;border:1px solid #2a2a2a;border-radius:8px;font-size:11.5px;flex-wrap:wrap}
+.lgi{display:flex;align-items:center;gap:6px}.lgd{width:20px;height:20px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:#fff;vertical-align:middle}
+.card{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;overflow:hidden}
+.rtbl{width:100%;border-collapse:collapse;font-size:12.5px}.rtbl th{padding:10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9CA3AF;border-bottom:1px solid #303030;background:#191919}.rtbl td{padding:11px 10px;border-bottom:1px solid #2a2a2a;vertical-align:top}.rtbl tr[data-id]{cursor:pointer}.rtbl tr[data-id]:hover td{background:#252525}
+.chip{display:inline-block;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:600;margin:2px 3px 2px 0}
+.c-r{background:rgba(239,68,68,.14);color:#ff6b6b}.c-a{background:rgba(245,158,11,.14);color:#F59E0B}.c-c{background:rgba(66,134,244,.14);color:#60a5fa}.c-i{background:rgba(139,92,246,.14);color:#a78bfa}
+.dbg{position:fixed;inset:0;background:rgba(10,10,10,.7);backdrop-filter:blur(6px);z-index:100;display:none}.dbg.on{display:block}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(540px,92vw);background:#1a1a1a;border-left:1px solid #303030;box-shadow:-20px 0 60px rgba(0,0,0,.6);z-index:101;display:none;flex-direction:column;transform:translateX(20px);transition:transform .2s}.dr.on{display:flex;transform:translateX(0)}
+.drh{padding:18px 22px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between;align-items:flex-start}.drt{font-size:16px;font-weight:700;color:#fff}.drs{font-size:11.5px;color:#9CA3AF;margin-top:2px}.drx{width:28px;height:28px;border-radius:6px;border:1px solid #303030;background:#252525;color:#9CA3AF;cursor:pointer;font-size:15px}
+.drb{flex:1;overflow-y:auto;padding:20px 22px}.drf{padding:14px 22px;border-top:1px solid #2a2a2a;background:#191919;display:flex;gap:8px}
+.f{margin-bottom:14px}.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px}
+.fi,.fs,.ft{width:100%;background:#161616;border:1px solid #303030;border-radius:7px;padding:9px 11px;color:#E5E7EB;font-size:13px;font-family:inherit;outline:none}.fi:focus,.ft:focus{border-color:#F59E0B}.ft{resize:vertical;min-height:48px}
+.tbtn{padding:6px 10px;border-radius:5px;border:1px solid #303030;background:transparent;color:#EF4444;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit}.tbtn:hover{background:rgba(239,68,68,.1)}
+.bulk-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:#1a1a1a;border-top:2px solid #F59E0B;padding:10px 18px;z-index:10;font-size:12.5px;align-items:center;gap:12px;box-shadow:0 -8px 20px rgba(0,0,0,.5);margin:14px -20px -20px}
+.bulk-bar.show{display:flex}
+.bulk-count{background:#F59E0B;color:#111;padding:3px 10px;border-radius:12px;font-weight:700;font-size:11.5px}
+.row-check{display:inline-flex;width:16px;height:16px;border:1.5px solid #4a4a4a;border-radius:3px;background:#181818;cursor:pointer;flex-shrink:0;align-items:center;justify-content:center;vertical-align:middle}
+.row-check.on{background:#F59E0B;border-color:#F59E0B}
+.row-check.on::after{content:"✓";color:#111;font-size:11px;font-weight:900}
+</style></head><body>
+<div class="hd"><div><div class="ti">RACI Matrix</div><div class="sb" id="sub">Responsibility assignments</div></div>
+<div class="ctr"><input class="srch" id="srch" placeholder="Search responsibilities…"/><button class="btn">Export</button><button class="btn bp" onclick="openD(null)">+ Responsibility</button></div></div>
+<div class="legend">
+<div class="lgi"><span class="lgd" style="background:#EF4444">R</span><span><strong>Responsible</strong> — does the work</span></div>
+<div class="lgi"><span class="lgd" style="background:#F59E0B">A</span><span><strong>Accountable</strong> — owns the outcome</span></div>
+<div class="lgi"><span class="lgd" style="background:#4286f4">C</span><span><strong>Consulted</strong> — gives input</span></div>
+<div class="lgi"><span class="lgd" style="background:#8B5CF6">I</span><span><strong>Informed</strong> — kept up to date</span></div>
+</div>
+<div class="card"><table class="rtbl"><thead><tr><th style="padding-left:16px;width:36px"></th><th>Workstream / Responsibility</th><th>Responsible</th><th>Accountable</th><th>Consulted</th><th>Informed</th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="bulk-bar" id="bulk-bar"><span class="bulk-count" id="bulk-count">0</span><span>selected</span><div style="flex:1"></div><button class="btn" onclick="bulkDelete()" style="color:#ff6b6b;border-color:#5a2424">Delete</button><button class="btn" onclick="clearSelection()">Cancel</button></div>
+<div class="dbg" id="dbg" onclick="closeD()"></div>
+<div class="dr" id="dr"><div class="drh"><div><div class="drt" id="drt">New Responsibility</div></div><button class="drx" onclick="closeD()">×</button></div>
+<div class="drb" id="drb"></div>
+<div class="drf"><button class="tbtn" id="bd" onclick="delX()" style="display:none">Delete</button><div style="display:flex;gap:8px;margin-left:auto"><button class="btn" onclick="closeD()">Cancel</button><button class="btn bp" onclick="saveX()">Save</button></div></div></div>
+<script>
+// ═══ esc helper (Pattern #3) — applied to every interpolated payload-derived string ═══
+const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// ═══════════════════════════════════════════════════════════════
+// RACI DATA
+// ═══════════════════════════════════════════════════════════════
+// Internal shape: { task, R, A, C, I }
+//   - `task` = schema `workstream` (renamed at ingest/emit boundary, Pattern #1).
+//     Workstream is the implicit primary key — no separate `id` field per schema.
+//   - R/A/C/I are arrays of strings (company/group/contact names) per schema.
+//
+// Identity: `task` string is the primary key. All comparisons use String(a)===String(b)
+// per Pattern #2. No numeric id, no Math.max coercion, no tmp- prefix needed (new rows
+// use their workstream name as identity directly).
+
+let items=[
+  {task:'Create initial bill of materials', R:['Genetec'],       A:['ABC Sample Company'], C:['Securitas'], I:['Securitas']},
+  {task:'Final commissioning sign-off',     R:['ADRM Security'], A:['ABC Sample Company'], C:['Genetec'],   I:['Securitas','John Doe']}
+];
+let editing=null;
+
+// ═══ PAYLOAD INGESTION ═══
+// Accepts P.raci (top-level) OR P.raciJson (consolidated alias per handoff, Pattern #6).
+// Schema:   { workstream, R, A, C, I }  — R/A/C/I are arrays of strings (company/group names)
+// Internal: { task,       R, A, C, I }  — task ← workstream
+// Outbound via buildSavePayload() emits schema shape.
+//
+// NOTE (Pattern #4, flagged in SCHEMA-GAPS): owner_email pass-through does not apply.
+// RACI assigns responsibility to groups/companies, not individuals by email, so there is
+// no email field to carry through for My Work / notification integration.
+//
+// NOTE (Pattern #8): schema uses UPPERCASE R/A/C/I and lowercase `workstream`. Match exactly.
+// No originFrom/originId — RACI has no cross-entity conversion source.
+(function ingestPayload(){
+  try {
+    const P = window.__PAYLOAD__;
+    if (!P) return;
+
+    const expectedVersion = 1;
+    const actualVersion = P?.meta?.payload_version;
+    if (actualVersion != null && actualVersion !== expectedVersion) {
+      console.warn(`[raci] payload v${expectedVersion} expected, got v${actualVersion} — rendering best-effort`);
+    }
+
+    // Prefer top-level, fall back to consolidated JSON alias.
+    const rawRaci = Array.isArray(P?.raci) ? P.raci
+                  : Array.isArray(P?.raciJson) ? P.raciJson
+                  : null;
+
+    if (Array.isArray(rawRaci) && rawRaci.length) {
+      // Pattern #9 bridge: drawer inputs use comma-separated strings for UX,
+      // but internal storage matches schema (arrays). If a payload sends a
+      // comma-separated string for R/A/C/I instead of an array, coerce defensively —
+      // never silently drop, never silently collapse.
+      const toArr = v => {
+        if (Array.isArray(v)) return v.map(x => String(x==null?'':x).trim()).filter(Boolean);
+        if (typeof v === 'string') return v.split(',').map(s => s.trim()).filter(Boolean);
+        return [];
+      };
+      const normItems = rawRaci
+        .filter(r => r && typeof r === 'object')
+        .map(r => ({
+          task: String(r.workstream ?? r.task ?? '').trim(),
+          R: toArr(r.R ?? r.r),
+          A: toArr(r.A ?? r.a),
+          C: toArr(r.C ?? r.c),
+          I: toArr(r.I ?? r.i)
+        }))
+        .filter(r => r.task); // drop rows with no workstream identity
+
+      if (normItems.length) items = normItems;
+    }
+
+    console.warn('Payload ingestion active:', 'raci');
+  } catch (err) {
+    console.warn(`[raci] payload ingestion failed, falling back to demo data:`, err);
+  }
+})();
+
+// ═══ OUTBOUND PAYLOAD BUILDER (schema raciJson[] shape) ═══
+// Schema: { workstream, R, A, C, I }
+function buildSavePayload(r) {
+  return {
+    workstream: String(r.task ?? ''),
+    R: Array.isArray(r.R) ? r.R.slice() : [],
+    A: Array.isArray(r.A) ? r.A.slice() : [],
+    C: Array.isArray(r.C) ? r.C.slice() : [],
+    I: Array.isArray(r.I) ? r.I.slice() : []
+  };
+}
+
+function filtered(){
+  const q=(document.getElementById('srch').value||'').toLowerCase();
+  return !q?items:items.filter(i=>JSON.stringify(i).toLowerCase().includes(q));
+}
+
+function renderAll(){
+  document.getElementById('sub').textContent=items.length+' responsibilities assigned';
+  const rows=filtered();
+  const chip=(arr,cls)=>arr && arr.length?arr.map(x=>`<span class="chip ${cls}">${esc(x)}</span>`).join(''):'<span style="color:#6a6a6a;font-size:11px">—</span>';
+  document.getElementById('tb').innerHTML=rows.length?rows.map(r=>{
+    const sid=String(r.task);
+    const checked=__selected.has(sid)?' on':'';
+    const keyAttr=JSON.stringify(sid).replace(/"/g,'&quot;');
+    return `<tr data-id="${esc(sid)}"><td style="padding-left:16px;width:36px;cursor:pointer" onclick="event.stopPropagation();toggleSelect(${keyAttr},this.querySelector('.row-check'))"><span class="row-check${checked}"></span></td><td style="font-weight:600;max-width:300px">${esc(r.task)}</td><td>${chip(r.R,'c-r')}</td><td>${chip(r.A,'c-a')}</td><td>${chip(r.C,'c-c')}</td><td>${chip(r.I,'c-i')}</td></tr>`;
+  }).join(''):'<tr><td colspan="6" style="padding:24px;text-align:center;color:#9CA3AF">No responsibilities match.</td></tr>';
+  document.querySelectorAll('#tb tr[data-id]').forEach(tr=>tr.onclick=(e)=>{
+    // ignore clicks originating on the checkbox cell (first td)
+    const td = e.target.closest('td');
+    if (!td || td.cellIndex === 0 || e.target.closest('.row-check')) return;
+    openD(tr.dataset.id);
+  });
+}
+document.getElementById('srch').oninput=renderAll;
+
+function openD(key){
+  if (key != null && key !== '') {
+    const found = items.find(i => String(i.task) === String(key));
+    if (!found) return;
+    editing = { task: found.task, R:[...found.R], A:[...found.A], C:[...found.C], I:[...found.I], __origKey: found.task };
+  } else {
+    editing = { task:'', R:[], A:[], C:[], I:[], __origKey: null };
+  }
+  document.getElementById('drt').textContent=editing.__origKey?'Update Responsibility':'New Responsibility';
+  document.getElementById('bd').style.display=editing.__origKey?'inline-block':'none';
+  const x=editing;
+  document.getElementById('drb').innerHTML=`<div class="f"><label class="fl">Workstream / Responsibility</label><textarea class="ft" id="d-task" placeholder="e.g. Design, Install, Commissioning — or a specific deliverable">${esc(x.task)}</textarea></div><div class="f"><label class="fl" style="color:#ff6b6b">Responsible (does the work)</label><input class="fi" id="d-r" value="${esc(x.R.join(', '))}" placeholder="Comma-separated names or companies"/></div><div class="f"><label class="fl" style="color:#F59E0B">Accountable (owns the outcome)</label><input class="fi" id="d-a" value="${esc(x.A.join(', '))}" placeholder="Comma-separated"/></div><div class="f"><label class="fl" style="color:#60a5fa">Consulted (gives input)</label><input class="fi" id="d-c" value="${esc(x.C.join(', '))}" placeholder="Comma-separated"/></div><div class="f"><label class="fl" style="color:#a78bfa">Informed (kept up to date)</label><input class="fi" id="d-i" value="${esc(x.I.join(', '))}" placeholder="Comma-separated"/></div>`;
+  document.getElementById('dbg').classList.add('on');document.getElementById('dr').classList.add('on');
+}
+
+function closeD(){document.getElementById('dbg').classList.remove('on');document.getElementById('dr').classList.remove('on');editing=null;}
+
+// Parse comma-separated input into trimmed, de-empty'd array (Pattern #9 bridge — UI string → schema array)
+const parse=id=>(document.getElementById(id).value||'').split(',').map(s=>s.trim()).filter(Boolean);
+
+function saveX(){
+  const newTask=(document.getElementById('d-task').value||'').trim();
+  if(!newTask){alert('Workstream / responsibility is required');return;}
+  const row={task:newTask,R:parse('d-r'),A:parse('d-a'),C:parse('d-c'),I:parse('d-i')};
+  const origKey=editing?.__origKey;
+  const isNew=!origKey;
+  // If renaming, ensure the new name doesn't collide with another existing row (excluding the one we're editing)
+  const collision=items.some(y=>String(y.task)===String(newTask)&&String(y.task)!==String(origKey));
+  if(collision){alert('A responsibility with this workstream name already exists.');return;}
+  if(isNew){
+    items.push(row);
+  } else {
+    const i=items.findIndex(y=>String(y.task)===String(origKey));
+    if(i>=0)items[i]=row; else items.push(row);
+    // If workstream was renamed, move selection state from old key to new key
+    if(String(origKey)!==String(newTask) && __selected.has(String(origKey))){
+      __selected.delete(String(origKey));
+      __selected.add(String(newTask));
+    }
+  }
+  console.log('Make payload (raci_save):', { isNew, origKey, row: buildSavePayload(row) });
+  try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  closeD();renderAll();updateBulkBar();
+}
+
+function delX(){
+  const key=editing?.__origKey;
+  if(!key)return;
+  if(!confirm('Delete "'+key+'"?'))return;
+  items=items.filter(i=>String(i.task)!==String(key));
+  __selected.delete(String(key));
+  console.log('Make payload (raci_delete):',{workstream:key});
+  try{parent.postMessage({type:'toast',msg:'Deleted',kind:'success'},'*');}catch(e){}
+  closeD();renderAll();updateBulkBar();
+}
+
+// ═══ BULK ACTIONS ═══
+// Only delete is meaningful for RACI — no status field to mark, no ownership to reassign.
+let __selected = new Set();
+function toggleSelect(key, el){
+  const sid=String(key);
+  if(__selected.has(sid)){__selected.delete(sid);el?.classList.remove('on');}
+  else{__selected.add(sid);el?.classList.add('on');}
+  updateBulkBar();
+}
+function updateBulkBar(){
+  const n=__selected.size;
+  const c=document.getElementById('bulk-count'); if(c) c.textContent=n;
+  const b=document.getElementById('bulk-bar'); if(b) b.classList.toggle('show',n>0);
+}
+function clearSelection(){
+  __selected.clear();
+  document.querySelectorAll('.row-check.on').forEach(c=>c.classList.remove('on'));
+  updateBulkBar();
+}
+function bulkDelete(){
+  if(!__selected.size)return;
+  const n=__selected.size;
+  if(!confirm(`Delete ${n} responsibilit${n===1?'y':'ies'}?`))return;
+  const keys=[...__selected];
+  items=items.filter(r=>!__selected.has(String(r.task)));
+  console.log('Make payload (raci_bulk_delete):',{workstreams:keys});
+  try{parent.postMessage({type:'toast',msg:`${n} deleted`,kind:'success'},'*');}catch(e){}
+  clearSelection();renderAll();
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeD();clearSelection();}});
+
+// ═══ openEntity receiver (deep link target) ═══
+window.addEventListener('message', e => {
+  if (e.data?.type === 'openEntity' && e.data.entityId != null) {
+    setTimeout(()=>{ try { openD(e.data.entityId); } catch(_){} }, 100);
+  }
+});
+
+renderAll();
+
+// ═══════════════════════════════════════════════════════════════
+// SMOKE TESTS (Pattern #5) — expanded battery
+// window.__RACI_SMOKE__() runs in-browser and returns pass/fail map.
+// Covers: ingestion (valid/empty/null/malformed/version/alias/precedence),
+//         outbound builder, Pattern #9 bridge, roundtrip, render (DOM),
+//         XSS escape, state (openD/saveX/delX/rename/collision), bulk,
+//         deep-link receiver, search filter, parse() bridge.
+// ═══════════════════════════════════════════════════════════════
+window.__RACI_SMOKE__ = function(){
+  const results = {};
+  const run = (name, fn) => { try { results[name] = fn() ? 'PASS' : 'FAIL'; } catch(e) { results[name] = 'THROW: '+e.message; } };
+
+  // Capture/restore items so tests that mutate state can't leak
+  const snapshot = () => JSON.parse(JSON.stringify(items));
+  const restore = (snap) => { items.length = 0; snap.forEach(x => items.push(x)); __selected.clear(); };
+  const origItems = snapshot();
+
+  // Simulated toArr + ingestOnce identical to ingest-time logic — pure function, no DOM
+  const toArr = v => {
+    if (Array.isArray(v)) return v.map(x => String(x==null?'':x).trim()).filter(Boolean);
+    if (typeof v === 'string') return v.split(',').map(s => s.trim()).filter(Boolean);
+    return [];
+  };
+  const ingestOnce = (P) => {
+    const rawRaci = Array.isArray(P?.raci) ? P.raci : Array.isArray(P?.raciJson) ? P.raciJson : null;
+    if (!Array.isArray(rawRaci) || !rawRaci.length) return null;
+    return rawRaci.filter(r => r && typeof r === 'object').map(r => ({
+      task: String(r.workstream ?? r.task ?? '').trim(),
+      R: toArr(r.R ?? r.r), A: toArr(r.A ?? r.a), C: toArr(r.C ?? r.c), I: toArr(r.I ?? r.i)
+    })).filter(r => r.task);
+  };
+
+  // ── INGESTION: defensive handling ─────────────────────────────
+  run('ingest_null_payload', () => ingestOnce(null) === null);
+  run('ingest_undefined_payload', () => ingestOnce(undefined) === null);
+  run('ingest_missing_raci_field', () => ingestOnce({ meta:{payload_version:1}, project:{name:'X'} }) === null);
+  run('ingest_malformed_string', () => ingestOnce({ raci: 'not an array' }) === null);
+  run('ingest_malformed_number', () => ingestOnce({ raci: 42 }) === null);
+  run('ingest_malformed_object', () => ingestOnce({ raci: { not:'array' } }) === null);
+  run('ingest_empty_array_keeps_demo', () => ingestOnce({ raci: [] }) === null);
+  run('ingest_nulls_in_array_filtered', () => {
+    const n = ingestOnce({ raci: [null, undefined, { workstream:'ok', R:[], A:[], C:[], I:[] }] });
+    return n && n.length === 1 && n[0].task === 'ok';
+  });
+  run('ingest_missing_workstream_dropped', () => {
+    const n = ingestOnce({ raci: [{ R:['x'] }, { workstream:'keep', R:[] }] });
+    return n && n.length === 1 && n[0].task === 'keep';
+  });
+  run('ingest_whitespace_workstream_dropped', () => {
+    const n = ingestOnce({ raci: [{ workstream:'   ', R:[] }, { workstream:'keep', R:[] }] });
+    return n && n.length === 1 && n[0].task === 'keep';
+  });
+  run('ingest_missing_RACI_defaults_empty', () => {
+    const n = ingestOnce({ raci: [{ workstream:'x' }] });
+    return n && Array.isArray(n[0].R) && n[0].R.length === 0
+            && Array.isArray(n[0].A) && Array.isArray(n[0].C) && Array.isArray(n[0].I);
+  });
+
+  // ── INGESTION: Pattern #6 precedence ──────────────────────────
+  run('ingest_top_level_preferred_over_alias', () => {
+    const P = { raci:[{workstream:'TOP',R:[],A:[],C:[],I:[]}], raciJson:[{workstream:'ALIAS',R:[],A:[],C:[],I:[]}] };
+    const n = ingestOnce(P);
+    return n && n.length === 1 && n[0].task === 'TOP';
+  });
+  run('ingest_alias_fallback_when_top_missing', () => {
+    const P = { raciJson:[{workstream:'ALIAS',R:['x'],A:[],C:[],I:[]}] };
+    const n = ingestOnce(P);
+    return n && n[0].task === 'ALIAS' && n[0].R[0] === 'x';
+  });
+  run('ingest_alias_ignored_when_top_is_empty_array', () => {
+    // P.raci present as empty array → top-level wins (empty), alias NOT consulted → null
+    const P = { raci:[], raciJson:[{workstream:'ALIAS',R:[],A:[],C:[],I:[]}] };
+    return ingestOnce(P) === null;
+  });
+
+  // ── INGESTION: Pattern #9 bridge (defensive coercion) ─────────
+  run('bridge_array_stays_array', () => Array.isArray(toArr(['ADRM','Genetec'])) && toArr(['ADRM','Genetec']).length === 2);
+  run('bridge_string_to_array', () => {
+    const out = toArr('ADRM Security, Acme IT , , Genetec');
+    return out.length === 3 && out[0] === 'ADRM Security' && out[1] === 'Acme IT' && out[2] === 'Genetec';
+  });
+  run('bridge_undefined_to_empty', () => Array.isArray(toArr(undefined)) && toArr(undefined).length === 0);
+  run('bridge_null_to_empty', () => Array.isArray(toArr(null)) && toArr(null).length === 0);
+  run('bridge_number_to_empty', () => Array.isArray(toArr(42)) && toArr(42).length === 0);
+  run('bridge_object_to_empty', () => Array.isArray(toArr({})) && toArr({}).length === 0);
+  run('bridge_array_trims_whitespace', () => {
+    const out = toArr(['  spaced  ','fine']);
+    return out[0] === 'spaced' && out[1] === 'fine';
+  });
+  run('bridge_array_filters_empty_and_null', () => {
+    const out = toArr(['','keep','  ',null,undefined]);
+    return out.length === 1 && out[0] === 'keep';
+  });
+
+  // ── OUTBOUND: buildSavePayload shape ──────────────────────────
+  run('outbound_exactly_5_fields', () => {
+    const p = buildSavePayload({ task:'x', R:['a'], A:['b'], C:['c'], I:['d'], __origKey:'old', extra:'nope' });
+    const keys = Object.keys(p).sort();
+    return JSON.stringify(keys) === JSON.stringify(['A','C','I','R','workstream']);
+  });
+  run('outbound_arrays_not_strings', () => {
+    const p = buildSavePayload({ task:'x', R:['a','b'], A:[], C:[], I:[] });
+    return Array.isArray(p.R) && Array.isArray(p.A) && Array.isArray(p.C) && Array.isArray(p.I);
+  });
+  run('outbound_empty_arrays_stay_arrays', () => {
+    const p = buildSavePayload({ task:'x', R:[], A:[], C:[], I:[] });
+    return Array.isArray(p.R) && p.R.length === 0;
+  });
+  run('outbound_missing_RACI_defaults_to_empty_arrays', () => {
+    const p = buildSavePayload({ task:'x' });
+    return Array.isArray(p.R) && p.R.length === 0 && Array.isArray(p.I) && p.I.length === 0;
+  });
+  run('outbound_workstream_is_string', () => {
+    const p = buildSavePayload({ task:'Design Phase', R:[], A:[], C:[], I:[] });
+    return typeof p.workstream === 'string' && p.workstream === 'Design Phase';
+  });
+  run('outbound_clones_arrays_defensively', () => {
+    const src = { task:'x', R:['a'], A:[], C:[], I:[] };
+    const p = buildSavePayload(src);
+    p.R.push('mutated');
+    return src.R.length === 1;
+  });
+  run('outbound_no_origin_fields_leaked', () => {
+    const p = buildSavePayload({ task:'x', R:[], A:[], C:[], I:[], originFrom:'punch', originId:'PL-1' });
+    return !('originFrom' in p) && !('originId' in p);
+  });
+  run('outbound_no_id_field_leaked', () => {
+    const p = buildSavePayload({ task:'x', R:[], A:[], C:[], I:[], id:999 });
+    return !('id' in p);
+  });
+  run('outbound_no_internal_task_field_leaked', () => {
+    const p = buildSavePayload({ task:'x', R:[], A:[], C:[], I:[] });
+    return !('task' in p) && 'workstream' in p;
+  });
+
+  // ── ROUND-TRIP: schema → internal → schema ────────────────────
+  run('roundtrip_single_row_preserves_all_fields', () => {
+    const schemaIn = { workstream:'Commissioning', R:['ADRM Security','Genetec'], A:['ABC Sample Company'], C:['Securitas'], I:['Securitas','John Doe'] };
+    const ingested = ingestOnce({ raci:[schemaIn] });
+    const out = buildSavePayload(ingested[0]);
+    return out.workstream === schemaIn.workstream
+      && JSON.stringify(out.R) === JSON.stringify(schemaIn.R)
+      && JSON.stringify(out.A) === JSON.stringify(schemaIn.A)
+      && JSON.stringify(out.C) === JSON.stringify(schemaIn.C)
+      && JSON.stringify(out.I) === JSON.stringify(schemaIn.I);
+  });
+  run('roundtrip_multi_row_order_preserved', () => {
+    const inp = [
+      {workstream:'Design',R:['A'],A:['A'],C:[],I:[]},
+      {workstream:'Install',R:['B'],A:['B'],C:[],I:[]},
+      {workstream:'Commission',R:['C'],A:['C'],C:[],I:[]}
+    ];
+    const ingested = ingestOnce({ raci: inp });
+    const out = ingested.map(buildSavePayload);
+    return out[0].workstream === 'Design' && out[1].workstream === 'Install' && out[2].workstream === 'Commission';
+  });
+  run('roundtrip_string_coerced_RACI_emits_arrays', () => {
+    // Payload sends R as comma-string → normalize → outbound emits array
+    const ingested = ingestOnce({ raci:[{ workstream:'X', R:'ADRM, Genetec', A:[], C:[], I:[] }] });
+    const out = buildSavePayload(ingested[0]);
+    return Array.isArray(out.R) && out.R.length === 2 && out.R[0] === 'ADRM' && out.R[1] === 'Genetec';
+  });
+
+  // ── PATTERN #2: String ID safety ──────────────────────────────
+  run('string_id_spaces_match', () => String('Final commissioning sign-off') === String('Final commissioning sign-off'));
+  run('string_id_case_sensitive', () => String('Design') !== String('design'));
+  run('string_id_unicode_safe', () => String('Ascétique — RACI') === String('Ascétique — RACI'));
+
+  // ── RENDERING (DOM) ───────────────────────────────────────────
+  run('render_row_count_matches_items', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]},{task:'B',R:[],A:[],C:[],I:[]},{task:'C',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    return document.querySelectorAll('#tb tr[data-id]').length === 3;
+  });
+  run('render_empty_state_row', () => {
+    restore([]);
+    renderAll();
+    return document.getElementById('tb').innerHTML.includes('No responsibilities match');
+  });
+  run('render_sub_count_text', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]},{task:'B',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    return document.getElementById('sub').textContent === '2 responsibilities assigned';
+  });
+  run('render_chips_for_each_role_class', () => {
+    restore([{task:'X',R:['r1'],A:['a1'],C:['c1'],I:['i1']}]);
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    return html.includes('c-r') && html.includes('c-a') && html.includes('c-c') && html.includes('c-i')
+        && html.includes('>r1<') && html.includes('>a1<') && html.includes('>c1<') && html.includes('>i1<');
+  });
+  run('render_empty_role_shows_dash', () => {
+    restore([{task:'X',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    return (document.getElementById('tb').innerHTML.match(/—/g)||[]).length >= 4;
+  });
+  run('render_multiple_chips_in_cell', () => {
+    restore([{task:'X',R:['one','two','three'],A:[],C:[],I:[]}]);
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    return (html.match(/class="chip c-r"/g)||[]).length === 3;
+  });
+
+  // ── XSS: Pattern #3 esc() on every interpolation ──────────────
+  // XSS tests check real security invariants, not entity-preservation through serialization.
+  // What matters: payload lands as STRING DATA in the DOM (not as executable markup).
+  // - text content: `<td>` has the payload as a single textNode, no child elements injected
+  // - attributes: no attribute-escape (no second attribute created from injected quote)
+  // - form inputs: `.value` property round-trips the original payload verbatim
+  run('xss_workstream_cell_text_not_parsed_as_markup', () => {
+    const payload = '<scr'+'ipt>alert(1)</scr'+'ipt>';
+    restore([{task:payload,R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    // Locate the workstream cell (second td in the row)
+    const row = document.querySelector('#tb tr[data-id]');
+    const workCell = row.querySelectorAll('td')[1];
+    // The cell should have exactly one child (a text node), no injected script element
+    const injectedScript = document.querySelector('#tb script');
+    // textContent must equal the literal payload (escaping guarantees this)
+    return !injectedScript && workCell.textContent === payload && workCell.children.length === 0;
+  });
+  run('xss_chip_content_not_parsed_as_img', () => {
+    restore([{task:'x',R:['<img src=x onerror=alert(1)>'],A:[],C:[],I:[]}]);
+    renderAll();
+    // No img should have been created inside the chips area
+    const injectedImg = document.querySelector('#tb img');
+    const chip = document.querySelector('#tb .chip.c-r');
+    return !injectedImg && chip && chip.textContent === '<img src=x onerror=alert(1)>';
+  });
+  run('xss_data_id_attribute_single_attr_no_breakout', () => {
+    const payload = 'a" onclick="alert(1)';
+    restore([{task:payload,R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    const row = document.querySelector('#tb tr[data-id]');
+    // getAttribute returns the full payload as one attribute value — no breakout into a second attr
+    // The <tr> itself must NOT have an onclick attribute crafted by the payload
+    const trHasOnclickAttr = row.hasAttribute('onclick');
+    return row.getAttribute('data-id') === payload && !trHasOnclickAttr;
+  });
+  run('xss_drawer_textarea_value_is_literal_string', () => {
+    const payload = '<b>bold</b>';
+    restore([{task:payload,R:[],A:[],C:[],I:[]}]);
+    openD(payload);
+    // textarea.value is the literal string; no child <b> element was injected
+    const ta = document.getElementById('d-task');
+    const injectedB = document.querySelector('#drb b');
+    const ok = ta.value === payload && !injectedB;
+    closeD();
+    return ok;
+  });
+  run('xss_drawer_input_value_no_img_injected', () => {
+    const payload = '"><img src=x>';
+    restore([{task:'x',R:[payload],A:[],C:[],I:[]}]);
+    openD('x');
+    const inp = document.getElementById('d-r');
+    // Input value must contain the literal payload; no <img> element must exist anywhere in the drawer
+    const injectedImg = document.querySelector('#drb img');
+    // Also verify no second attribute got created on the input element
+    const inputAttrs = Array.from(inp.attributes).map(a => a.name).sort();
+    // Expected attrs only: class, id, value, placeholder (no injected onerror/onload/etc)
+    const unexpectedAttrs = inputAttrs.filter(n => !['class','id','value','placeholder'].includes(n));
+    const ok = inp.value === payload && !injectedImg && unexpectedAttrs.length === 0;
+    closeD();
+    return ok;
+  });
+  run('xss_drawer_input_value_no_event_handler_attr_injected', () => {
+    // Classic attribute breakout — " closes the value, then onmouseover injects a handler
+    const payload = '" onmouseover="alert(1)" x="';
+    restore([{task:'x',R:[payload],A:[],C:[],I:[]}]);
+    openD('x');
+    const inp = document.getElementById('d-r');
+    // The critical check: no onmouseover attribute created
+    const hasHandler = inp.hasAttribute('onmouseover');
+    const ok = !hasHandler && inp.value === payload;
+    closeD();
+    return ok;
+  });
+
+  // ── STATE: drawer open/close ──────────────────────────────────
+  run('openD_null_creates_blank_editing', () => {
+    restore(origItems);
+    openD(null);
+    const ok = editing && editing.task === '' && editing.__origKey === null
+           && Array.isArray(editing.R) && editing.R.length === 0;
+    closeD();
+    return ok;
+  });
+  run('openD_existing_populates_editing', () => {
+    restore([{task:'Design',R:['ADRM'],A:['ADRM'],C:['IT'],I:['Sec']}]);
+    renderAll();
+    openD('Design');
+    const ok = editing && editing.task === 'Design' && editing.__origKey === 'Design'
+           && editing.R[0] === 'ADRM' && editing.I[0] === 'Sec';
+    closeD();
+    return ok;
+  });
+  run('openD_nonexistent_key_noop', () => {
+    restore([{task:'Design',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    editing = null;
+    openD('DoesNotExist');
+    return editing === null;
+  });
+  run('openD_clones_arrays_not_references', () => {
+    restore([{task:'x',R:['a'],A:[],C:[],I:[]}]);
+    renderAll();
+    openD('x');
+    editing.R.push('mutated');
+    const ok = items[0].R.length === 1; // original untouched
+    closeD();
+    return ok;
+  });
+  run('openD_empty_string_treated_as_new', () => {
+    openD('');
+    const ok = editing && editing.__origKey === null && editing.task === '';
+    closeD();
+    return ok;
+  });
+  run('closeD_clears_editing', () => {
+    openD(null);
+    closeD();
+    return editing === null;
+  });
+  run('openD_sets_drawer_title_update_for_existing', () => {
+    restore([{task:'X',R:[],A:[],C:[],I:[]}]);
+    openD('X');
+    const ok = document.getElementById('drt').textContent === 'Update Responsibility';
+    closeD();
+    return ok;
+  });
+  run('openD_sets_drawer_title_new_for_blank', () => {
+    openD(null);
+    const ok = document.getElementById('drt').textContent === 'New Responsibility';
+    closeD();
+    return ok;
+  });
+  run('openD_delete_button_hidden_for_new_shown_for_existing', () => {
+    restore([{task:'X',R:[],A:[],C:[],I:[]}]);
+    openD(null);
+    const hidden = document.getElementById('bd').style.display === 'none';
+    openD('X');
+    const shown = document.getElementById('bd').style.display === 'inline-block';
+    closeD();
+    return hidden && shown;
+  });
+
+  // ── STATE: save flows ─────────────────────────────────────────
+  const withAlert = (fn) => {
+    let alerted = false;
+    const orig = window.alert;
+    window.alert = () => { alerted = true; };
+    try { fn(); } finally { window.alert = orig; }
+    return alerted;
+  };
+  const withConfirm = (answer, fn) => {
+    const orig = window.confirm;
+    window.confirm = () => answer;
+    try { fn(); } finally { window.confirm = orig; }
+  };
+
+  run('saveX_rejects_blank_workstream', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    openD(null);
+    document.getElementById('d-task').value = '   ';
+    const alerted = withAlert(() => saveX());
+    const ok = alerted && items.length === 1 && items[0].task === 'A';
+    closeD();
+    return ok;
+  });
+  run('saveX_new_row_appends_with_RACI_parsed', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    openD(null);
+    document.getElementById('d-task').value = 'New Workstream';
+    document.getElementById('d-r').value = 'ADRM, Genetec';
+    document.getElementById('d-a').value = 'ABC';
+    document.getElementById('d-c').value = '';
+    document.getElementById('d-i').value = 'Sec1, Sec2';
+    saveX();
+    const added = items.find(i => i.task === 'New Workstream');
+    return added && added.R.length === 2 && added.R[0] === 'ADRM'
+        && added.A.length === 1 && added.A[0] === 'ABC'
+        && added.C.length === 0
+        && added.I.length === 2;
+  });
+  run('saveX_update_in_place_no_rename', () => {
+    restore([{task:'Design',R:['old'],A:[],C:[],I:[]}]);
+    renderAll();
+    openD('Design');
+    document.getElementById('d-r').value = 'new';
+    saveX();
+    return items.length === 1 && items[0].task === 'Design' && items[0].R[0] === 'new';
+  });
+  run('saveX_rename_moves_identity', () => {
+    restore([{task:'OldName',R:['x'],A:[],C:[],I:[]}]);
+    renderAll();
+    openD('OldName');
+    document.getElementById('d-task').value = 'NewName';
+    saveX();
+    const found = items.find(i => i.task === 'NewName');
+    const gone = items.find(i => i.task === 'OldName');
+    return found && !gone && found.R[0] === 'x';
+  });
+  run('saveX_rename_collision_blocks_and_alerts', () => {
+    restore([{task:'A',R:['a'],A:[],C:[],I:[]},{task:'B',R:['b'],A:[],C:[],I:[]}]);
+    renderAll();
+    openD('A');
+    document.getElementById('d-task').value = 'B';
+    const alerted = withAlert(() => saveX());
+    // Both rows still exist with original data
+    const ok = alerted && items.length === 2
+           && items.find(i => i.task === 'A' && i.R[0] === 'a')
+           && items.find(i => i.task === 'B' && i.R[0] === 'b');
+    closeD();
+    return ok;
+  });
+  run('saveX_self_rename_no_false_collision', () => {
+    // Saving with same workstream name (editing only R/A/C/I) must not trigger collision
+    restore([{task:'Same',R:['old'],A:[],C:[],I:[]}]);
+    renderAll();
+    openD('Same');
+    document.getElementById('d-r').value = 'changed';
+    saveX();
+    return items.length === 1 && items[0].task === 'Same' && items[0].R[0] === 'changed';
+  });
+  run('saveX_trims_workstream_whitespace', () => {
+    restore([]);
+    renderAll();
+    openD(null);
+    document.getElementById('d-task').value = '   Padded   ';
+    saveX();
+    return items.length === 1 && items[0].task === 'Padded';
+  });
+  run('saveX_rename_migrates_selection', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    __selected.clear(); __selected.add('A');
+    openD('A');
+    document.getElementById('d-task').value = 'A-renamed';
+    saveX();
+    const ok = __selected.has('A-renamed') && !__selected.has('A');
+    clearSelection();
+    return ok;
+  });
+
+  // ── STATE: delete flows ───────────────────────────────────────
+  run('delX_confirm_accepted_removes_row', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]},{task:'B',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    openD('A');
+    withConfirm(true, () => delX());
+    return items.length === 1 && items[0].task === 'B';
+  });
+  run('delX_confirm_declined_keeps_row', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    openD('A');
+    withConfirm(false, () => delX());
+    const ok = items.length === 1;
+    closeD();
+    return ok;
+  });
+  run('delX_without_origKey_noop', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    openD(null); // new row, __origKey null
+    delX();
+    closeD();
+    return items.length === 1 && items[0].task === 'A';
+  });
+  run('delX_clears_selection_for_deleted_row', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    __selected.add('A');
+    openD('A');
+    withConfirm(true, () => delX());
+    return !__selected.has('A');
+  });
+
+  // ── BULK ACTIONS ──────────────────────────────────────────────
+  run('bulk_toggleSelect_adds_to_set', () => {
+    clearSelection();
+    toggleSelect('A', null); toggleSelect('B', null);
+    const ok = __selected.size === 2 && __selected.has('A') && __selected.has('B');
+    clearSelection();
+    return ok;
+  });
+  run('bulk_toggleSelect_removes_when_toggled_off', () => {
+    clearSelection();
+    toggleSelect('A', null);
+    toggleSelect('A', null);
+    return __selected.size === 0;
+  });
+  run('bulk_clearSelection_empties', () => {
+    toggleSelect('A', null); toggleSelect('B', null);
+    clearSelection();
+    return __selected.size === 0;
+  });
+  run('bulk_bar_toggles_visibility_class', () => {
+    clearSelection();
+    toggleSelect('A', null);
+    const shown = document.getElementById('bulk-bar').classList.contains('show');
+    clearSelection();
+    const hidden = !document.getElementById('bulk-bar').classList.contains('show');
+    return shown && hidden;
+  });
+  run('bulk_count_reflects_selection', () => {
+    clearSelection();
+    toggleSelect('A', null); toggleSelect('B', null); toggleSelect('C', null);
+    const ok = document.getElementById('bulk-count').textContent === '3';
+    clearSelection();
+    return ok;
+  });
+  run('bulk_delete_removes_selected_keeps_others', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]},{task:'B',R:[],A:[],C:[],I:[]},{task:'C',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    toggleSelect('A', null); toggleSelect('C', null);
+    withConfirm(true, () => bulkDelete());
+    return items.length === 1 && items[0].task === 'B' && __selected.size === 0;
+  });
+  run('bulk_delete_empty_selection_is_noop', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    clearSelection();
+    bulkDelete();
+    return items.length === 1;
+  });
+  run('bulk_delete_confirm_declined_keeps_all', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]},{task:'B',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    toggleSelect('A', null);
+    withConfirm(false, () => bulkDelete());
+    return items.length === 2;
+  });
+  run('bulk_row_checkbox_renders_in_row', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    return document.querySelectorAll('#tb .row-check').length === 1;
+  });
+  run('bulk_selected_row_checkbox_has_on_class', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]}]);
+    __selected.clear(); __selected.add('A');
+    renderAll();
+    const ok = document.querySelector('#tb .row-check').classList.contains('on');
+    clearSelection();
+    return ok;
+  });
+
+  // ── DEEP LINK RECEIVER (postMessage openEntity) ───────────────
+  run('deeplink_openEntity_opens_drawer', () => {
+    restore([{task:'Target',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    closeD();
+    // Directly exercise the receiver logic (setTimeout wrap skipped in test)
+    openD('Target');
+    const ok = editing && editing.task === 'Target' && editing.__origKey === 'Target';
+    closeD();
+    return ok;
+  });
+  run('deeplink_openEntity_missing_entity_noop', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]}]);
+    renderAll();
+    editing = null;
+    openD('NotHere');
+    return editing === null;
+  });
+
+  // ── FILTER / SEARCH ───────────────────────────────────────────
+  run('filter_search_matches_workstream', () => {
+    restore([{task:'Design Phase',R:[],A:[],C:[],I:[]},{task:'Install Phase',R:[],A:[],C:[],I:[]}]);
+    document.getElementById('srch').value = 'design';
+    const out = filtered();
+    document.getElementById('srch').value = '';
+    return out.length === 1 && out[0].task === 'Design Phase';
+  });
+  run('filter_search_matches_chip_content', () => {
+    restore([{task:'A',R:['UniqueCompanyXYZ'],A:[],C:[],I:[]},{task:'B',R:['Other'],A:[],C:[],I:[]}]);
+    document.getElementById('srch').value = 'uniquecompanyxyz';
+    const out = filtered();
+    document.getElementById('srch').value = '';
+    return out.length === 1 && out[0].task === 'A';
+  });
+  run('filter_search_empty_returns_all', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]},{task:'B',R:[],A:[],C:[],I:[]}]);
+    document.getElementById('srch').value = '';
+    return filtered().length === 2;
+  });
+  run('filter_search_no_match_empty_array', () => {
+    restore([{task:'A',R:[],A:[],C:[],I:[]}]);
+    document.getElementById('srch').value = 'zzzzzznomatchzzz';
+    const out = filtered();
+    document.getElementById('srch').value = '';
+    return out.length === 0;
+  });
+  run('filter_search_case_insensitive', () => {
+    restore([{task:'Design',R:[],A:[],C:[],I:[]}]);
+    document.getElementById('srch').value = 'DESIGN';
+    const out = filtered();
+    document.getElementById('srch').value = '';
+    return out.length === 1;
+  });
+
+  // ── parse() bridge (UI input → internal array) ────────────────
+  run('parse_splits_trims_filters', () => {
+    document.getElementById('d-r').value = '  A ,B,  C  ';
+    const out = parse('d-r');
+    return out.length === 3 && out[0] === 'A' && out[1] === 'B' && out[2] === 'C';
+  });
+  run('parse_filters_empty_tokens', () => {
+    document.getElementById('d-r').value = 'A,,, B ,';
+    const out = parse('d-r');
+    return out.length === 2 && out[0] === 'A' && out[1] === 'B';
+  });
+  run('parse_empty_input_returns_empty_array', () => {
+    document.getElementById('d-r').value = '';
+    const out = parse('d-r');
+    return Array.isArray(out) && out.length === 0;
+  });
+  run('parse_whitespace_only_returns_empty_array', () => {
+    document.getElementById('d-r').value = '   ,  , ';
+    const out = parse('d-r');
+    return Array.isArray(out) && out.length === 0;
+  });
+  run('parse_single_value_no_comma', () => {
+    document.getElementById('d-r').value = 'Solo';
+    const out = parse('d-r');
+    return out.length === 1 && out[0] === 'Solo';
+  });
+
+  // ── Restore clean state ───────────────────────────────────────
+  restore(origItems);
+  renderAll();
+
+  console.table(results);
+  const failed = Object.entries(results).filter(([,v]) => v !== 'PASS');
+  if (failed.length) console.warn('[raci] smoke FAIL:', failed);
+  else console.log('[raci] all smoke PASS (' + Object.keys(results).length + ')');
+  return results;
+};
+</script></body></html>

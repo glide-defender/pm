@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"/><title>Project Workspace</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;font-size:13px;height:100vh;overflow:hidden}
+.app{display:grid;grid-template-columns:240px 1fr;height:100vh}
+aside{background:#141414;border-right:1px solid #2a2a2a;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.sbh{padding:18px;border-bottom:1px solid #2a2a2a}
+.sbn{font-size:13px;font-weight:700;color:#fff;line-height:1.3}
+.sbm{font-size:11px;color:#9CA3AF;margin-top:3px}
+.sbbl{display:flex;justify-content:space-between;font-size:10px;color:#9CA3AF;text-transform:uppercase;letter-spacing:.6px;margin:12px 0 5px;font-weight:600}
+.sbbt{height:4px;background:#2e2e2e;border-radius:2px;overflow:hidden}
+.sbbf{height:100%;width:63%;background:linear-gradient(90deg,#F59E0B,#f97316);border-radius:2px}
+nav{flex:1;overflow-y:auto;padding:12px 8px 20px}
+.gl{font-size:9.5px;color:#6a6a6a;text-transform:uppercase;letter-spacing:1px;padding:10px 12px 6px;font-weight:700}
+.nb{position:relative;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:6px;font-size:12.5px;color:#9CA3AF;cursor:pointer;width:100%;text-align:left;border:none;background:none;font-family:inherit;font-weight:500;transition:all .12s}
+.nb:hover{background:#252525;color:#E5E7EB}
+.nb.active{background:#252525;color:#fff}
+.nb.active::before{content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);width:2px;height:16px;background:#F59E0B;border-radius:0 2px 2px 0}
+.nl{flex:1}
+.nc{font-size:11px;color:#6a6a6a;font-weight:600}
+.nb.alert .nc{color:#F59E0B}
+.nb.alert .nc::before{content:'● ';font-size:8px}
+main{display:flex;flex-direction:column;overflow:hidden}
+.tb{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;border-bottom:1px solid #2a2a2a}
+.cr{font-size:13px;color:#9CA3AF}
+.cr strong{color:#E5E7EB;font-weight:600}
+.btn{padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #303030;background:#1f1f1f;color:#E5E7EB;cursor:pointer;font-family:inherit}
+.btn:hover{background:#252525}
+.bp{background:#3c4756;color:#fff;border-color:#4a5666}
+.bp:hover{background:#4a5666}
+.mc{flex:1;overflow:hidden;padding:22px;min-height:0;display:flex;flex-direction:column}
+.mc>*{width:100%}
+.mc[style*="padding: 22px"]{overflow-y:auto}
+.ph{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:60px 20px;color:#9CA3AF;text-align:center;height:100%}
+.phi{width:48px;height:48px;border-radius:12px;background:#1f1f1f;border:1px solid #303030;display:flex;align-items:center;justify-content:center;font-size:20px}
+.pht{font-size:15px;font-weight:700;color:#E5E7EB}
+.phx{font-size:12px;max-width:380px;line-height:1.6}
+.phc{background:#1f1f1f;padding:2px 6px;border-radius:4px;color:#F59E0B;font-size:11px;font-family:ui-monospace,monospace}
+.kpi{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;padding:14px 16px;position:relative;overflow:hidden}
+.kpib{position:absolute;top:0;left:0;right:0;height:2.5px}
+.kpil{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:#9CA3AF;margin-bottom:7px}
+.kpin{font-size:24px;font-weight:800;line-height:1}
+.kpic{margin-top:5px;font-size:11px;color:#9CA3AF}
+.card{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;padding:16px}
+.ai{background:linear-gradient(135deg,rgba(66,134,244,.06),rgba(139,92,246,.06));border:1px solid rgba(66,134,244,.2);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden}
+.ai::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,#4286f4,#8B5CF6)}
+.ait{font-size:12px;font-weight:700;color:#4286f4;margin-bottom:8px;letter-spacing:.3px}
+.aib{font-size:12px;color:#94A3B8;line-height:1.7}
+.aib strong{color:#E5E7EB;font-weight:700}
+.alt{background:#1f1f1f;border:1px solid #2a2a2a;border-left:2px solid #F59E0B;border-radius:10px;padding:12px 14px}
+.altt{font-size:11px;color:#F59E0B;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:8px}
+.ari{display:flex;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid #2a2a2a}
+.ari:last-child{border-bottom:none}
+.arm{color:#9CA3AF;font-size:11px}
+.mr{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #2a2a2a}
+.mr:last-child{border-bottom:none}
+.mn{flex:1;font-size:12.5px;font-weight:500}
+.mpb{width:120px;height:4px;background:#2e2e2e;border-radius:2px;overflow:hidden}
+.mpf{height:100%;border-radius:2px}
+.mpt{width:36px;text-align:right;font-size:11px;color:#9CA3AF;font-weight:600}
+/* Modal */
+.mbg{position:fixed;inset:0;background:rgba(10,10,10,.78);backdrop-filter:blur(8px);z-index:1000;display:none;align-items:center;justify-content:center;padding:24px}
+.mbg.active{display:flex}
+.mod{background:#1f1f1f;border:1px solid #303030;border-radius:14px;width:100%;max-width:720px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.6)}
+.mh{padding:20px 26px 16px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.mt{font-size:17px;font-weight:700;color:#fff}
+.ms{font-size:12px;color:#9CA3AF;margin-top:3px;line-height:1.5}
+.mx{width:30px;height:30px;border-radius:7px;border:1px solid #303030;background:#252525;color:#9CA3AF;cursor:pointer;font-size:16px}
+.stp{display:flex;gap:4px;padding:16px 26px;border-bottom:1px solid #2a2a2a;background:#191919}
+.sti{flex:1;display:flex;align-items:center;gap:8px;padding:6px 10px;font-size:12px;font-weight:600;color:#9CA3AF}
+.stn{width:22px;height:22px;border-radius:50%;background:#252525;border:1px solid #303030;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.sti.on{color:#fff}.sti.on .stn{background:#F59E0B;border-color:#F59E0B;color:#111}
+.sti.dn{color:#E5E7EB}.sti.dn .stn{background:#22C55E;border-color:#22C55E;color:#111}
+.mb{flex:1;padding:22px 26px;overflow-y:auto}
+.f{margin-bottom:14px}
+.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px}
+.fi,.fs,.ft{width:100%;background:#161616;border:1px solid #303030;border-radius:7px;padding:9px 11px;color:#E5E7EB;font-size:13px;font-family:inherit;outline:none}
+.fi:focus,.fs:focus,.ft:focus{border-color:#F59E0B}
+.ft{resize:vertical;min-height:64px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fh{font-size:11.5px;color:#9CA3AF;margin-bottom:12px;line-height:1.5}
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tp{background:#181818;border:1px solid #303030;border-radius:10px;padding:14px;cursor:pointer;position:relative;transition:all .15s}
+.tp:hover{border-color:#3a3a3a}
+.tp.sel{border-color:#F59E0B;background:rgba(245,158,11,.08)}
+.tpc{position:absolute;top:10px;right:10px;width:18px;height:18px;border-radius:50%;background:#F59E0B;color:#111;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center}
+.tpi{width:28px;height:28px;border-radius:7px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
+.tpn{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px}
+.tpd{font-size:11.5px;color:#9CA3AF;line-height:1.5}
+.tpm{font-size:10.5px;color:#6a6a6a;margin-top:8px}
+.msr{display:grid;grid-template-columns:22px 1fr 120px 120px 28px;gap:8px;align-items:center;padding:8px;background:#181818;border:1px solid #303030;border-radius:7px;margin-bottom:6px}
+.msn{width:22px;height:22px;border-radius:5px;background:#F59E0B;color:#111;font-weight:800;font-size:10px;display:flex;align-items:center;justify-content:center}
+.mii{background:transparent;border:none;color:#E5E7EB;font-size:12.5px;font-weight:500;outline:none;font-family:inherit;padding:3px 0}
+.mid{background:#121212;border:1px solid #2a2a2a;border-radius:4px;padding:4px 6px;color:#9CA3AF;font-size:11px;outline:none;font-family:inherit;width:100%}
+.mdel{width:24px;height:24px;border-radius:4px;border:1px solid #303030;background:transparent;color:#EF4444;cursor:pointer;font-size:13px}
+.madd{margin-top:4px;padding:8px;border:1px dashed #303030;border-radius:7px;color:#9CA3AF;background:transparent;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;width:100%}
+.madd:hover{border-color:#F59E0B;color:#F59E0B}
+.rv{padding:9px 12px;background:#181818;border:1px solid #303030;border-radius:7px}
+.rvl{font-size:10px;color:#9CA3AF;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:3px}
+.rvv{font-size:13px;font-weight:600;color:#fff}
+.mf{padding:14px 26px;border-top:1px solid #2a2a2a;background:#191919;display:flex;justify-content:space-between;align-items:center}
+.mfh{font-size:11.5px;color:#9CA3AF}
+/* ═══════ AGENT PANEL ═══════ */
+#agent-toggle{padding:6px 12px;display:flex;align-items:center;gap:6px}
+#agent-toggle .agi{font-size:13px;color:#F59E0B}
+#agent-toggle.open{background:#252525;border-color:#F59E0B}
+#agent-panel{position:fixed;top:0;right:0;width:400px;height:100vh;background:#1a1a1a;border-left:1px solid #2a2a2a;box-shadow:-8px 0 24px rgba(0,0,0,.4);z-index:900;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .18s ease-out}
+#agent-panel.open{transform:translateX(0)}
+.agh{height:56px;min-height:56px;padding:10px 14px;border-bottom:1px solid #2a2a2a;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.aght{display:flex;flex-direction:column;gap:2px;overflow:hidden}
+.aghn{font-size:13px;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px}
+.aghn .agi{color:#F59E0B;font-size:12px}
+.aghp{font-size:11px;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aghc{display:flex;gap:6px;flex-shrink:0}
+.agclr{background:none;border:none;color:#9CA3AF;font-size:11.5px;cursor:pointer;padding:4px 8px;border-radius:5px;font-family:inherit;font-weight:600}
+.agclr:hover{color:#E5E7EB;background:#252525}
+.agx{width:28px;height:28px;border-radius:6px;border:1px solid #303030;background:#252525;color:#9CA3AF;cursor:pointer;font-size:15px}
+.agx:hover{color:#E5E7EB}
+.agml{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.agml::-webkit-scrollbar{width:6px}
+.agml::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:3px}
+.agmu,.agma{max-width:85%;padding:8px 12px;font-size:13px;line-height:1.5;word-wrap:break-word}
+.agmu{align-self:flex-end;background:#3c4756;color:#fff;border-radius:10px 10px 2px 10px}
+.agma{align-self:flex-start;background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px 10px 10px 2px;color:#E5E7EB}
+.agsys{align-self:center;font-size:11px;color:#9CA3AF;font-style:italic;text-align:center;padding:4px 12px;max-width:90%}
+.agsys .agrt{background:none;border:1px solid #303030;color:#E5E7EB;font-size:11px;padding:3px 9px;border-radius:5px;margin-left:8px;cursor:pointer;font-family:inherit;font-weight:600;font-style:normal}
+.agsys .agrt:hover{border-color:#F59E0B;color:#F59E0B}
+.agld{align-self:flex-start;display:flex;flex-direction:column;gap:6px;padding:10px 14px;background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px 10px 10px 2px}
+.agldd{display:flex;gap:4px}
+.agldd span{width:6px;height:6px;border-radius:50%;background:#9CA3AF;opacity:.3;animation:agpulse 1.2s ease-in-out infinite}
+.agldd span:nth-child(2){animation-delay:.2s}
+.agldd span:nth-child(3){animation-delay:.4s}
+@keyframes agpulse{0%,100%{opacity:.3}50%{opacity:1}}
+.agldt{font-size:11px;color:#6a6a6a;min-height:13px}
+/* Confirm card */
+.agcc{align-self:stretch;background:#1f1f1f;border:1px solid #2a2a2a;border-left:3px solid #F59E0B;border-radius:8px;overflow:hidden}
+.agcch{padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff;border-bottom:1px solid #2a2a2a;display:flex;align-items:center;gap:6px}
+.agcch .agi{color:#F59E0B}
+.agccb{padding:10px 14px;display:grid;grid-template-columns:100px 1fr;gap:6px 12px;font-size:12px}
+.agccb .k{color:#9CA3AF;font-size:11px;text-transform:lowercase}
+.agccb .v{color:#E5E7EB;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;word-break:break-word}
+.agccf{padding:10px 14px;border-top:1px solid #2a2a2a;display:flex;justify-content:flex-end;gap:6px;background:#191919}
+.agcc.disabled{opacity:.6;pointer-events:none}
+/* Input */
+.agin{padding:12px 14px;border-top:1px solid #2a2a2a;display:flex;gap:8px;align-items:flex-end;background:#1a1a1a}
+.aginta{flex:1;background:#161616;border:1px solid #303030;border-radius:7px;padding:9px 11px;color:#E5E7EB;font-size:13px;font-family:inherit;outline:none;resize:none;min-height:36px;max-height:120px;line-height:1.4}
+.aginta:focus{border-color:#F59E0B}
+.aginta:disabled{opacity:.5}
+.agsend{width:32px;height:32px;border-radius:6px;border:1px solid #303030;background:#1f1f1f;color:#E5E7EB;cursor:pointer;font-size:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.agsend:hover:not(:disabled){border-color:#F59E0B;color:#F59E0B}
+.agsend:disabled{opacity:.4;cursor:not-allowed}
+.agcc-char{position:absolute;right:52px;bottom:16px;font-size:10px;color:#6a6a6a;pointer-events:none}
+</style><script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head><body>
+</div>
+
+<div class="app">
+<aside>
+<div class="sbh"><div class="sbn">Corporate HQ Security Upgrade</div><div class="sbm">Austin Branch · John Doe</div><div class="sbbl" id="sbbl" style="cursor:pointer"><span>Completion</span><span id="sbpct">—%</span></div><div class="sbbt"><div class="sbbf" id="sbbf" style="width:0%"></div></div></div>
+<div id="prog-pop" style="display:none;position:absolute;left:12px;top:150px;width:216px;background:#1a1a1a;border:1px solid #303030;border-radius:8px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,.6);z-index:50;font-size:11px"></div>
+<div style="padding:10px 12px;border-bottom:1px solid #2a2a2a;position:relative">
+<input id="cmd-in" placeholder="Search or jump (⌘K)…" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#E5E7EB;font-size:12px;outline:none;font-family:inherit"/>
+<div id="cmd-results" style="display:none;position:absolute;top:48px;left:12px;right:12px;background:#1a1a1a;border:1px solid #3a3a3a;border-radius:8px;box-shadow:0 12px 28px rgba(0,0,0,.6);max-height:60vh;overflow-y:auto;z-index:50;padding:4px"></div>
+</div>
+<nav id="nav"></nav>
+</aside>
+<main>
+<div class="tb"><div class="cr">Projects / <strong id="crumb">Overview</strong></div><div style="display:flex;gap:8px"><button class="btn" id="agent-toggle" onclick="window.__toggleAgent()" title="Ask Defender"><span class="agi">✦</span><span>Ask Defender</span></button><button class="btn" style="position:relative;padding:6px 10px" onclick="window.__openInbox()" title="Inbox (I)">🔔<span id="inbox-badge" style="position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:#EF4444;color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center">3</span></button><button class="btn" onclick="window.__openExport()">Export</button><button class="btn bp" onclick="openWiz()">+ New Project</button></div></div>
+<div class="mc" id="mc"></div>
+</main>
+</div>
+
+<!-- ═══════ AGENT PANEL ═══════ -->
+<div id="agent-panel" aria-hidden="true">
+  <div class="agh">
+    <div class="aght">
+      <div class="aghn"><span class="agi">✦</span>Defender Agent</div>
+      <div class="aghp" id="agent-project-name">—</div>
+    </div>
+    <div class="aghc">
+      <button class="agclr" onclick="window.__clearAgent()" title="Clear conversation">Clear</button>
+      <button class="agx" onclick="window.__toggleAgent()" title="Close">×</button>
+    </div>
+  </div>
+  <div class="agml" id="agent-messages"></div>
+  <div class="agin" style="position:relative">
+    <textarea id="agent-input" class="aginta" rows="1" placeholder="Ask or give an instruction…"></textarea>
+    <div id="agent-charcount" class="agcc-char" style="display:none"></div>
+    <button class="agsend" id="agent-send" onclick="window.__sendAgent()" title="Send (Enter)">↑</button>
+  </div>
+</div>
+
+<div class="mbg" id="wiz"><div class="mod">
+<div class="mh"><div><div class="mt">New Project</div><div class="ms" id="wsub">Pick a template.</div></div><button class="mx" onclick="closeWiz()">×</button></div>
+<div class="stp" id="stp"></div>
+<div class="mb" id="wb"></div>
+<div class="mf"><div class="mfh" id="wfh">Step 1 of 4</div><div style="display:flex;gap:8px"><button class="btn" id="wback" style="display:none" onclick="step(-1)">Back</button><button class="btn bp" id="wnext" onclick="step(1)">Continue →</button></div></div>
+</div></div>
+
+<script>
+
+// ═══════ PAYLOAD HYDRATION (reads ?p= URL param, populates window.__PAYLOAD__) ═══════
+// Must run before __SECDOCS__ injection and before any section iframe instantiation,
+// since sections read window.__PAYLOAD__ at their own ingest time.
+(function hydratePayload(){
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get('p');
+    if (!raw) {
+      console.log('[hydration] No ?p= param present, sections will use demo data');
+      return;
+    }
+    const decoded = decodeURIComponent(atob(raw));
+    const parsed = JSON.parse(decoded);
+    window.__PAYLOAD__ = parsed;
+    const keys = Object.keys(parsed || {});
+    const sizeKB = (decoded.length / 1024).toFixed(1);
+    console.log('[hydration] Payload loaded, keys: ' + keys.join(', ') + ', size: ' + sizeKB + ' KB');
+  } catch (err) {
+    console.warn('[hydration] Failed to parse payload, falling through to demo mode:', err);
+  }
+})();
+
+// Console helper: encode a JS object into a URL-ready ?p= string.
+// Usage in devtools: window.__encodePayload(myTestPayload)
+window.__encodePayload = function(obj) {
+  return btoa(encodeURIComponent(JSON.stringify(obj)));
+};
+
+// ═══════ PROGRESS ENGINE (industry-standard, duration-weighted) ═══════
+window.computeProgress = function(P) {
+  // P = { phases:[{id,name,milestones:[{id,name,durationDays,actionItems:[{id,name,percent,durationDays}], userPercent}]}], trackers:{deployment:{pct}, materials:{pct}, punch:{pct}, observations:{pct}, risks:{pct}, rfi:{pct}} }
+  const wavg = (items, valFn, wFn) => {
+    let sw = 0, swv = 0;
+    items.forEach(i => {
+      const w = Math.max(wFn(i) || 0, 0.001);
+      sw += w;
+      swv += w * (valFn(i) || 0);
+    });
+    return sw > 0 ? swv / sw : 0;
+  };
+  // Milestone % from action items (duration-weighted); fallback to userPercent if no items
+  const msPct = m => {
+    if (m.actionItems && m.actionItems.length > 0) {
+      return wavg(m.actionItems, a => a.percent || 0, a => a.durationDays || 1);
+    }
+    return m.userPercent != null ? m.userPercent : 0;
+  };
+  // Phase % from milestones (duration-weighted)
+  const phPct = p => wavg(p.milestones || [], m => msPct(m), m => m.durationDays || 1);
+  // Schedule work = phases duration-weighted
+  const scheduleWork = wavg(P.phases || [], p => phPct(p), p => (p.milestones || []).reduce((s,m)=>s+(m.durationDays||1),0));
+  // Tracker components (0-100 each, null = not applicable)
+  const T = P.trackers || {};
+  const comps = [
+    { key: 'schedule', label: 'Schedule Work', pct: scheduleWork, weight: 60 },
+    { key: 'deployment', label: 'Deployment', pct: T.deployment, weight: 12 },
+    { key: 'materials', label: 'Materials', pct: T.materials, weight: 10 },
+    { key: 'punch', label: 'Punch List', pct: T.punch, weight: 7 },
+    { key: 'observations', label: 'Observations', pct: T.observations, weight: 5 },
+    { key: 'risks', label: 'Risks', pct: T.risks, weight: 3 },
+    { key: 'rfi', label: 'RFIs', pct: T.rfi, weight: 3 }
+  ];
+  // Redistribute weights of N/A trackers proportionally
+  const active = comps.filter(c => c.pct != null);
+  const totalWeight = active.reduce((s,c) => s + c.weight, 0);
+  active.forEach(c => c.adjWeight = totalWeight > 0 ? (c.weight / totalWeight) * 100 : 0);
+  const composite = active.reduce((s,c) => s + c.pct * (c.adjWeight/100), 0);
+  return {
+    overall: Math.round(composite),
+    scheduleWork: Math.round(scheduleWork),
+    components: comps,
+    milestonePcts: (P.phases || []).flatMap(p => (p.milestones || []).map(m => ({id: m.id, pct: msPct(m), derived: (m.actionItems||[]).length > 0}))),
+    phasePcts: (P.phases || []).map(p => ({id: p.id, pct: phPct(p)}))
+  };
+};
+
+// Mock project for shell (same data echoed in section-actions for consistency)
+window.__PROJECT__ = {
+  phases: [
+    {id:'p1', name:'Phase 1', milestones:[
+      {id:1, name:'HQ Site Survey', durationDays:5, actionItems:[{id:1, name:'Speak to client about service contract', percent:82, durationDays:3}]}
+    ]},
+    {id:'p2', name:'Phase 2', milestones:[
+      {id:2, name:'Equipment Procurement', durationDays:14, actionItems:[{id:2, name:'Replace door contacts', percent:100, durationDays:4}]},
+      {id:3, name:'Installation', durationDays:30, actionItems:[{id:3, name:'Fujitec Destination Dispatch', percent:71, durationDays:10},{id:4, name:'Test Action Item', percent:100, durationDays:2}]}
+    ]},
+    {id:'p3', name:'Phase 3', milestones:[
+      {id:4, name:'Calibration & Testing', durationDays:14, actionItems:[{id:6, name:'VLAN segmentation', percent:55, durationDays:5}]},
+      {id:5, name:'Commissioning', durationDays:40, actionItems:[{id:5, name:'Commission Project', percent:37, durationDays:20},{id:8, name:'Deliver training materials', percent:15, durationDays:5},{id:10, name:'Invoice for closeout', percent:0, durationDays:2}]}
+    ]},
+    {id:'p4', name:'Phase 4', milestones:[
+      {id:6, name:'Final Inspection', durationDays:3, actionItems:[{id:7, name:'Walk Thru Findings', percent:0, durationDays:2},{id:9, name:'Final walkthrough', percent:0, durationDays:1}]}
+    ]}
+  ],
+  trackers: {
+    deployment: 66,   // 18 of 27 complete
+    materials: 68,    // delivered/ordered units
+    punch: 25,        // 1 of 4 closed
+    observations: 25, // 1 of 4 closed
+    risks: 20,        // 1 of 5 closed
+    rfi: 0            // 0 of 1 closed
+  }
+};
+
+
+
+const NAV=[{g:'Plan',i:[['mywork','My Work',''],['overview','Overview',''],['schedule','Schedule','9'],['actions','Tasks','10']]},{g:'Execute',i:[['deployment','Commissioning','27'],['assets','Deployed Assets','5',1],['materials','Materials','25',1],['punch','Punch List','4',1],['observations','Observations','4']]},{g:'Govern',i:[['risks','Risks','5',1],['rfi','RFI','1'],['raci','RACI','2'],['finance','Finance','5'],['scorecards','Scorecard','']]},{g:'Workspace',i:[['contacts','Contacts','3'],['files','Files','5'],['time','Time','5'],['meetings','Meetings','3'],['activity','Activity','9'],['audit','Audit Log','94']]}];
+const SEC={overview:'',schedule:'Hierarchical tree (Project → Phase → Milestone → Action Item) with inline Gantt column',actions:'Flat Tabulator with avatars, progress bars, status pills',deployment:'Asset checklist with per-item commissioning templates',materials:'Line items with delivered/outstanding tracking',punch:'Simple list with location and status',observations:'Field observations with root cause + convert-to-risk',risks:'Scoring matrix + heatmap',rfi:'Numbered RFIs with due dates',raci:'Task × org responsibility matrix',finance:'Line items with waterfall, funnel, invoice donut',contacts:'Roster with title and role',files:'Folder browser',time:'Time entries with milestone rollups',activity:'Unified comments + audit feed'};
+let h='';NAV.forEach(g=>{h+='<div style="margin-bottom:6px"><div class="gl">'+g.g+'</div>';g.i.forEach(it=>{const[k,l,c,a]=it;h+='<button class="nb'+(a?' alert':'')+'" data-k="'+k+'"><span class="nl">'+l+'</span>'+(c?'<span class="nc">'+c+'</span>':'')+'</button>';});h+='</div>';});document.getElementById('nav').innerHTML=h;
+
+function overview(){return`<div class="card" style="margin-bottom:14px;padding:16px"><div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none" onclick="this.parentElement.querySelector('.det-body').classList.toggle('hidden');this.querySelector('.det-chev').classList.toggle('rot')"><div><div style="font-size:13px;font-weight:700">Project Details</div><div style="font-size:11.5px;color:#9CA3AF">Corporate HQ Security Upgrade · ABC Sample Company · Austin Branch</div></div><span class="det-chev" style="color:#9CA3AF;font-size:12px;transition:transform .15s">▼</span></div><div class="det-body hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid #2a2a2a;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px"><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Owner</div><div style="font-size:12.5px">John Doe</div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Status</div><div style="font-size:12.5px"><span style="display:inline-block;padding:2px 8px;border-radius:10px;background:rgba(245,158,11,.14);color:#F59E0B;font-weight:600;font-size:11px">In Progress</span></div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Type</div><div style="font-size:12.5px">Install</div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Target Completion</div><div style="font-size:12.5px">June 10, 2026</div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Start Date</div><div style="font-size:12.5px">December 1, 2025</div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Budget</div><div style="font-size:12.5px">$183,000</div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Description</div><div style="font-size:12.5px;color:#9CA3AF">Upgrade security at corporate HQ — cameras, access control, IDS across 4 floors</div></div></div></div><style>.hidden{display:none!important}.rot{transform:rotate(-90deg)}</style><div style="margin-bottom:14px"><div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:4px">Corporate HQ Security Upgrade</div><div style="font-size:12px;color:#9CA3AF">Upgrade security at corporate headquarters · <span style="color:#F59E0B;font-weight:600">In Progress</span></div></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+${[['Completion',(window.__PROGRESS__?.overall||0)+'%','Schedule '+(window.__PROGRESS__?.scheduleWork||0)+'% · 6 trackers','#F59E0B'],['Budget','$183K','$48K invoiced','#22C55E'],['Risks','4 Open','5 total · 1 high','#EF4444'],['Materials','12 Outstanding','68% delivered','#06B6D4']].map(k=>`<div class="kpi" style="border-left:3px solid ${k[3]}"><div class="kpil">${k[0]}</div><div class="kpin" style="color:${k[3]}">${k[1]}</div><div class="kpic">${k[2]}</div></div>`).join('')}
+</div>
+<div class="ai" style="margin-bottom:14px"><div class="ait">◐ AI PROJECT ANALYSIS</div><div class="aib">Project at <strong>63% completion</strong> with strong budget control. Critical path running through <strong>Commissioning</strong> — Matt Isgur owns, 75% complete. Network delays driving 2 open risks; recommend weekly sync until resolved.</div></div>
+<div class="card" style="margin-bottom:14px;padding:16px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px"><div><div style="font-size:13px;font-weight:700;margin-bottom:4px">Project Vitals</div><div style="font-size:11.5px;color:#9CA3AF;margin-bottom:12px">Concentric rings — center score is weighted composite</div><div id="vitals-chart" style="height:260px"></div></div><div><div style="font-size:13px;font-weight:700;margin-bottom:4px">Issue Landscape</div><div style="font-size:11.5px;color:#9CA3AF;margin-bottom:12px">Open items by category — area = count</div><div id="issues-chart" style="height:260px"></div></div></div></div><div class="card" style="margin-bottom:14px;padding:16px"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px"><div><div style="font-size:13px;font-weight:700;margin-bottom:4px">Owner → Milestone → Status Flow</div><div style="font-size:11.5px;color:#9CA3AF">How work flows from assignees through milestones to current status</div></div></div><div id="sankey-chart" style="height:320px"></div></div><div class="card" style="margin-bottom:14px"><div style="font-size:13px;font-weight:700;margin-bottom:4px">Completion Breakdown</div><div style="font-size:11.5px;color:#9CA3AF;margin-bottom:14px">Weighted composite — schedule work dominates, trackers fill in the rest</div>
+${(()=>{const pr=window.__PROGRESS__;if(!pr)return'';return pr.components.filter(c=>c.pct!=null).map(c=>{const w=Math.round(c.adjWeight);const p=Math.round(c.pct);const contrib=Math.round(c.pct*c.adjWeight/100);return`<div style="display:flex;align-items:center;gap:12px;padding:6px 0"><div style="width:120px;font-size:12.5px;font-weight:500">${c.label}</div><div style="width:60px;font-size:10px;color:#6a6a6a;text-align:right">weight ${w}%</div><div style="flex:1;height:6px;background:#2e2e2e;border-radius:3px;overflow:hidden"><div style="width:${p}%;height:100%;background:#F59E0B;border-radius:3px"></div></div><div style="width:46px;text-align:right;font-size:11px;color:#9CA3AF;font-weight:600">${p}%</div><div style="width:60px;text-align:right;font-size:11px;color:#E5E7EB;font-weight:700">+${contrib}pt</div></div>`;}).join('');})()}
+</div>
+<div class="card" style="margin-bottom:14px"><div style="font-size:13px;font-weight:700;margin-bottom:12px">Milestone Progress</div>
+${[['HQ Site Survey',100,'#22C55E'],['Equipment Procurement',90,'#F59E0B'],['Installation',100,'#22C55E'],['Calibration & Testing',60,'#F59E0B'],['Commissioning',75,'#F59E0B'],['Invoice for Material',100,'#22C55E'],['Final Inspection',0,'#6a6a6a']].map(m=>`<div class="mr"><div class="mn">${m[0]}</div><div class="mpb"><div class="mpf" style="width:${m[1]}%;background:${m[2]}"></div></div><div class="mpt">${m[1]}%</div></div>`).join('')}
+</div>
+<div class="alt"><div class="altt">⚠ Needs Attention</div>${[['Network delayed going live — High risk','2d ago'],['GC delayed installing 3rd floor cameras','4d ago'],['2 materials undelivered (Genetec SVR, Conduit)','1d ago']].map(a=>`<div class="ari"><span>${a[0]}</span><span class="arm">${a[1]}</span></div>`).join('')}</div>`;}
+
+function show(k,l){document.getElementById('crumb').textContent=l;document.querySelectorAll('.nb').forEach(b=>b.classList.toggle('active',b.dataset.k===k));
+const mc=document.getElementById('mc');
+if(k==='overview'){mc.innerHTML=overview();mc.style.padding='22px';setTimeout(window.renderDashboard,80);}
+else if(window.__SECDOCS__&&window.__SECDOCS__[k]){mc.style.padding='0';mc.innerHTML='';const f=document.createElement('iframe');f.style.cssText='width:100%;height:100%;border:none;background:#171717;display:block';f.srcdoc=window.__SECDOCS__[k];mc.appendChild(f);}
+else{mc.style.padding='22px';mc.innerHTML=`<div class="ph"><div class="phi">📋</div><div class="pht">${l}</div><div class="phx">${SEC[k]}</div><div style="font-size:11px;color:#6a6a6a;margin-top:6px">Lives in <span class="phc">section-${k}.html</span></div></div>`;}}
+document.querySelectorAll('.nb').forEach(b=>b.addEventListener('click',()=>show(b.dataset.k,b.querySelector('.nl').textContent)));
+
+// Render sidebar progress
+(function(){
+  const pr = window.computeProgress(window.__PROJECT__);
+  document.getElementById('sbpct').textContent = pr.overall + '%';
+  document.getElementById('sbbf').style.width = pr.overall + '%';
+  // Update overview KPI 'Completion' if it exists
+  window.__PROGRESS__ = pr;
+  // Popover
+  const pop = document.getElementById('prog-pop');
+  const rows = pr.components.filter(c => c.pct != null).map(c => {
+    const barW = Math.round(c.pct);
+    return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0"><div style="width:78px;color:#9CA3AF">${c.label}</div><div style="flex:1;height:4px;background:#2e2e2e;border-radius:2px;overflow:hidden"><div style="width:${barW}%;height:100%;background:#F59E0B;border-radius:2px"></div></div><div style="width:28px;text-align:right;font-weight:700;color:#fff">${barW}%</div></div>`;
+  }).join('');
+  const weights = pr.components.filter(c=>c.pct!=null).map(c=>c.label+' '+Math.round(c.adjWeight)+'%').join(' · ');
+  pop.innerHTML = `<div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">Completion Breakdown</div><div style="font-size:10px;color:#9CA3AF;margin-bottom:8px">Industry-standard EVM-lite weighting</div>${rows}<div style="margin-top:8px;padding-top:8px;border-top:1px solid #303030;font-size:10px;color:#6a6a6a;line-height:1.5">Weights redistribute when trackers are empty.</div>`;
+  const lbl = document.getElementById('sbbl');
+  lbl.addEventListener('mouseenter', ()=>pop.style.display='block');
+  lbl.addEventListener('mouseleave', ()=>{setTimeout(()=>{if(!pop.matches(':hover'))pop.style.display='none';},100);});
+  pop.addEventListener('mouseleave', ()=>pop.style.display='none');
+})();
+
+
+// ═══ Render ECharts Dashboard ═══
+window.renderDashboard = function() {
+  if (typeof echarts === 'undefined') return;
+  const pr = window.__PROGRESS__;
+  if (!pr) return;
+
+  // 1. VITALS - concentric rings
+  const vEl = document.getElementById('vitals-chart');
+  if (vEl && !vEl.dataset.rendered) {
+    vEl.dataset.rendered = '1';
+    const comps = pr.components.filter(c=>c.pct!=null);
+    const v = echarts.init(vEl, 'dark');
+    v.setOption({
+      backgroundColor: 'transparent',
+      tooltip: { trigger: 'item' },
+      series: comps.slice(0,4).map((c,i)=>({
+        type: 'pie',
+        radius: [`${55 - i*11}%`, `${62 - i*11}%`],
+        center: ['50%','50%'],
+        startAngle: 90,
+        label: { show: false },
+        data: [
+          { value: c.pct, name: c.label, itemStyle: { color: ['#22C55E','#4286f4','#F59E0B','#EF4444'][i] } },
+          { value: 100-c.pct, itemStyle: { color: 'rgba(255,255,255,.05)' }, tooltip: { show: false } }
+        ]
+      })).concat([{
+        type: 'pie',
+        radius: ['0%','38%'],
+        label: {
+          show: true, position: 'center',
+          formatter: ()=>`{n|${pr.overall}}\n{l|Composite}`,
+          rich: {
+            n: { fontSize: 28, fontWeight: 800, color: '#fff' },
+            l: { fontSize: 10, fontWeight: 600, letterSpacing: 1, color: '#9CA3AF' }
+          }
+        },
+        data: [{ value: 1, itemStyle: { color: '#1a1a1a', borderColor: '#2a2a2a', borderWidth: 1 } }]
+      }])
+    });
+  }
+
+  // 2. ISSUES - polar/rose chart
+  const iEl = document.getElementById('issues-chart');
+  if (iEl && !iEl.dataset.rendered) {
+    iEl.dataset.rendered = '1';
+    const i = echarts.init(iEl, 'dark');
+    i.setOption({
+      backgroundColor: 'transparent',
+      tooltip: {},
+      series: [{
+        type: 'pie',
+        radius: [25,105],
+        roseType: 'area',
+        center: ['50%','50%'],
+        label: { color: '#9CA3AF', fontSize: 10.5 },
+        labelLine: { lineStyle: { color: '#3a3a3a' } },
+        data: [
+          { value: 10, name: 'Tasks', itemStyle:{color:'#F59E0B'} },
+          { value: 4, name: 'Punch', itemStyle:{color:'#8B5CF6'} },
+          { value: 5, name: 'Risks', itemStyle:{color:'#EF4444'} },
+          { value: 4, name: 'Observations', itemStyle:{color:'#06B6D4'} },
+          { value: 1, name: 'RFIs', itemStyle:{color:'#4286f4'} }
+        ]
+      }]
+    });
+  }
+
+  // 3. SANKEY - owner to milestone to status
+  const sEl = document.getElementById('sankey-chart');
+  if (sEl && !sEl.dataset.rendered) {
+    sEl.dataset.rendered = '1';
+    const s = echarts.init(sEl, 'dark');
+    s.setOption({
+      backgroundColor: 'transparent',
+      tooltip: { trigger: 'item', triggerOn: 'mousemove' },
+      series: {
+        type: 'sankey',
+        left: 20, right: 100, top: 10, bottom: 10,
+        nodeAlign: 'justify',
+        data: [
+          { name: 'Matt Isgur', itemStyle:{color:'#F59E0B'} },
+          { name: 'John Doe', itemStyle:{color:'#4286f4'} },
+          { name: 'Louis Feula', itemStyle:{color:'#22C55E'} },
+          { name: 'Gerritt Bakker', itemStyle:{color:'#8B5CF6'} },
+          { name: 'HQ Site Survey' },{ name: 'Equipment Procurement' },
+          { name: 'Installation' },{ name: 'Calibration & Testing' },
+          { name: 'Commissioning' },{ name: 'Final Inspection' },
+          { name: '→ In Progress', itemStyle:{color:'#F59E0B'} },
+          { name: '→ Completed', itemStyle:{color:'#22C55E'} },
+          { name: '→ Open', itemStyle:{color:'#EF4444'} }
+        ],
+        links: [
+          { source: 'John Doe', target: 'HQ Site Survey', value: 1 },
+          { source: 'Matt Isgur', target: 'Equipment Procurement', value: 1 },
+          { source: 'John Doe', target: 'Installation', value: 1 },
+          { source: 'Matt Isgur', target: 'Calibration & Testing', value: 1 },
+          { source: 'Matt Isgur', target: 'Commissioning', value: 3 },
+          { source: 'Gerritt Bakker', target: 'Final Inspection', value: 1 },
+          { source: 'HQ Site Survey', target: '→ In Progress', value: 1 },
+          { source: 'Equipment Procurement', target: '→ In Progress', value: 1 },
+          { source: 'Installation', target: '→ In Progress', value: 1 },
+          { source: 'Calibration & Testing', target: '→ In Progress', value: 1 },
+          { source: 'Commissioning', target: '→ In Progress', value: 2 },
+          { source: 'Commissioning', target: '→ Open', value: 1 },
+          { source: 'Final Inspection', target: '→ Open', value: 1 }
+        ],
+        label: { color: '#E5E7EB', fontSize: 11, fontWeight: 600 },
+        lineStyle: { color: 'gradient', curveness: 0.5, opacity: 0.55 },
+        emphasis: { focus: 'adjacency' }
+      }
+    });
+  }
+  window.addEventListener('resize', ()=>{
+    [document.getElementById('vitals-chart'), document.getElementById('issues-chart'), document.getElementById('sankey-chart')].forEach(e=>{if(e&&e.echartsInstance)e.echartsInstance.resize();});
+    echarts.getInstanceByDom(document.getElementById('vitals-chart'))?.resize();
+    echarts.getInstanceByDom(document.getElementById('issues-chart'))?.resize();
+    echarts.getInstanceByDom(document.getElementById('sankey-chart'))?.resize();
+  });
+};
+
+show('overview','Overview');
+
+// ═══ COMMAND PALETTE ═══
+// ═══ DOCKED SEARCH (null-safe) ═══
+window.__paletteIdx = 0;
+window.__paletteResults = [];
+window.__renderPaletteResults = function(q) {
+  const host = document.getElementById('cmd-results');
+  if (!host) return;
+  q = (q||'').toLowerCase();
+  const navItems = Array.from(document.querySelectorAll('.nb')).map(b=>({
+    type:'section', label: b.querySelector('.nl').textContent, key: b.dataset.k, icon: '→'
+  }));
+  const actions = [
+    { type:'action', label:'New Task', icon:'+', fn:()=>window.__gotoAndCreate('actions') },
+    { type:'action', label:'New Milestone', icon:'+', fn:()=>window.__gotoAndCreate('schedule') },
+    { type:'action', label:'New Punch Item', icon:'+', fn:()=>window.__gotoAndCreate('punch') },
+    { type:'action', label:'New Risk', icon:'+', fn:()=>window.__gotoAndCreate('risks') },
+    { type:'action', label:'New RFI', icon:'+', fn:()=>window.__gotoAndCreate('rfi') },
+    { type:'action', label:'New Meeting', icon:'+', fn:()=>window.__gotoAndCreate('meetings') },
+    { type:'action', label:'New Material', icon:'+', fn:()=>window.__gotoAndCreate('materials') },
+    { type:'action', label:'New Line Item', icon:'+', fn:()=>window.__gotoAndCreate('finance') },
+    { type:'action', label:'New Contact', icon:'+', fn:()=>window.__gotoAndCreate('contacts') }
+  ];
+  let results = q ? [...navItems, ...actions].filter(r => r.label.toLowerCase().includes(q)).slice(0, 10) : navItems.slice(0, 8);
+  window.__paletteResults = results;
+  window.__paletteIdx = 0;
+  if (!results.length) { host.innerHTML = '<div style="padding:12px;color:#9CA3AF;font-size:12px;text-align:center">No matches</div>'; host.style.display='block'; return; }
+  host.innerHTML = results.map((r,i)=>`<div data-i="${i}" style="padding:7px 10px;border-radius:5px;display:flex;align-items:center;gap:8px;cursor:pointer;${i===0?'background:#252525':''}"><span style="width:14px;color:#9CA3AF;font-size:11px;font-weight:700">${r.icon}</span><div style="flex:1"><div style="font-size:12px;color:#fff;font-weight:500">${r.label}</div><div style="font-size:9.5px;color:#6a6a6a">${r.type==='action'?'Create':'Go to'}</div></div></div>`).join('');
+  host.style.display = 'block';
+  host.querySelectorAll('[data-i]').forEach(el=>{
+    el.onmouseenter=()=>{window.__paletteIdx=+el.dataset.i;window.__paintPaletteSel();};
+    el.onmousedown=(e)=>{e.preventDefault();window.__runPaletteItem(+el.dataset.i);};
+  });
+};
+window.__paintPaletteSel = function(){const host=document.getElementById('cmd-results');if(!host)return;host.querySelectorAll('[data-i]').forEach((el,i)=>{el.style.background=i===window.__paletteIdx?'#252525':'';});};
+window.__runPaletteItem = function(i) {
+  const r = window.__paletteResults[i]; if (!r) return;
+  window.__closePalette();
+  if (r.type==='section') show(r.key, r.label);
+  else if (r.fn) r.fn();
+};
+window.__closePalette = function(){const h=document.getElementById('cmd-results');if(h)h.style.display='none';const i=document.getElementById('cmd-in');if(i){i.value='';i.blur();}};
+window.__gotoAndCreate = function(sectionKey) {
+  const btn = document.querySelector(`.nb[data-k="${sectionKey}"]`);
+  if (btn) btn.click();
+  setTimeout(()=>{try{document.querySelector('#mc iframe')?.contentDocument?.querySelector('.btn.bp')?.click();}catch(e){}}, 400);
+};
+document.addEventListener('keydown', e => {
+  if ((e.metaKey||e.ctrlKey) && e.key==='k') { e.preventDefault(); const inp=document.getElementById('cmd-in'); if(inp){inp.focus();inp.select();} return; }
+  const host = document.getElementById('cmd-results');
+  if (host && host.style.display === 'block') {
+    if (e.key === 'Escape') { e.preventDefault(); window.__closePalette(); }
+    else if (e.key === 'Enter') { e.preventDefault(); window.__runPaletteItem(window.__paletteIdx); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); window.__paletteIdx = Math.min((window.__paletteResults||[]).length-1, window.__paletteIdx+1); window.__paintPaletteSel(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); window.__paletteIdx = Math.max(0, window.__paletteIdx-1); window.__paintPaletteSel(); }
+  }
+});
+(function wireSearch(){
+  const inp = document.getElementById('cmd-in');
+  if (!inp) { setTimeout(wireSearch, 100); return; }
+  if (inp.dataset.wired) return;
+  inp.dataset.wired = '1';
+  inp.addEventListener('focus', ()=>window.__renderPaletteResults(inp.value));
+  inp.addEventListener('input', e=>window.__renderPaletteResults(e.target.value));
+  inp.addEventListener('blur', ()=>setTimeout(()=>{const h=document.getElementById('cmd-results');if(h&&!h.matches(':hover'))h.style.display='none';},200));
+})();
+
+
+// ═══ EXPORT HUB ═══
+
+// ═══ SMART INBOX ═══
+window.__NOTIFICATIONS__ = [
+  {id:1,type:'mention',actor:'Louis Feula',text:'mentioned you in Task #3',entity:'task:3',at:Date.now()-3600000*2,read:false},
+  {id:2,type:'assigned',actor:'John Doe',text:'assigned you Risk: Network delayed going live',entity:'risk:2',at:Date.now()-3600000*6,read:false},
+  {id:3,type:'due',actor:null,text:'Task "Invoice for closeout" is due in 2 days',entity:'task:10',at:Date.now()-3600000*8,read:false},
+  {id:4,type:'comment',actor:'Gerritt Bakker',text:'commented on Meeting: Commissioning Kickoff',entity:'meeting:3',at:Date.now()-3600000*22,read:true},
+  {id:5,type:'status',actor:'Louis Feula',text:'closed Punch Item: Label patch panel ports',entity:'punch:4',at:Date.now()-86400000,read:true},
+  {id:6,type:'overdue',actor:null,text:'RFI-001 is overdue — no response yet',entity:'rfi:1',at:Date.now()-86400000*2,read:true}
+];
+window.__openInbox = function() {
+  let panel = document.getElementById('inbox-panel');
+  if (panel) { panel.remove(); document.getElementById('inbox-bd')?.remove(); return; }
+  const unread = window.__NOTIFICATIONS__.filter(n=>!n.read).length;
+  panel = document.createElement('div');
+  panel.id = 'inbox-panel';
+  panel.style.cssText = 'position:fixed;top:56px;right:20px;width:380px;max-height:70vh;background:#1a1a1a;border:1px solid #3a3a3a;border-radius:10px;box-shadow:0 16px 40px rgba(0,0,0,.6);z-index:996;overflow:hidden;display:flex;flex-direction:column';
+  panel.innerHTML = `<div style="padding:12px 16px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:13.5px;font-weight:700">Inbox</div><div style="font-size:10.5px;color:#9CA3AF;margin-top:1px">${unread} unread · ${window.__NOTIFICATIONS__.length} total</div></div><button style="font-size:11px;color:#9CA3AF;background:transparent;border:none;cursor:pointer;padding:4px 8px;border-radius:4px" onclick="window.__markAllRead()">Mark all read</button></div><div style="flex:1;overflow-y:auto">${window.__NOTIFICATIONS__.map(n=>{
+    const icon = {mention:'@',assigned:'→',due:'⏰',comment:'💬',status:'✓',overdue:'⚠'}[n.type] || '•';
+    const color = {mention:'#F59E0B',assigned:'#4286f4',due:'#F59E0B',comment:'#8B5CF6',status:'#22C55E',overdue:'#EF4444'}[n.type] || '#6a6a6a';
+    const diff = (Date.now()-n.at)/3600000;
+    const timeStr = diff<1?Math.round(diff*60)+'m ago':diff<24?Math.round(diff)+'h ago':Math.round(diff/24)+'d ago';
+    return `<div data-nid="${n.id}" style="padding:11px 16px;border-bottom:1px solid #252525;display:flex;gap:10px;cursor:pointer;${n.read?'opacity:.5':''}"><div style="width:24px;height:24px;border-radius:6px;background:${color}22;color:${color};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">${icon}</div><div style="flex:1;min-width:0"><div style="font-size:12px;color:#E5E7EB">${n.actor?`<strong>${n.actor}</strong> `:''}${n.text}</div><div style="font-size:10.5px;color:#6a6a6a;margin-top:2px">${timeStr}</div></div>${!n.read?'<div style="width:6px;height:6px;border-radius:50%;background:#4286f4;margin-top:8px;flex-shrink:0"></div>':''}</div>`;
+  }).join('')}</div>`;
+  const bd = document.createElement('div');
+  bd.id = 'inbox-bd';
+  bd.style.cssText = 'position:fixed;inset:0;z-index:995';
+  bd.onclick = ()=>{panel.remove();bd.remove();};
+  document.body.appendChild(bd);
+  document.body.appendChild(panel);
+  panel.querySelectorAll('[data-nid]').forEach(el=>{
+    el.onmouseenter=()=>el.style.background='#252525';
+    el.onmouseleave=()=>el.style.background='';
+    el.onclick=()=>{
+      const n=window.__NOTIFICATIONS__.find(x=>x.id===+el.dataset.nid);
+      if(n){n.read=true;}
+      panel.remove();bd.remove();
+      window.__updateInboxBadge();
+    };
+  });
+};
+window.__markAllRead = function() {
+  window.__NOTIFICATIONS__.forEach(n=>n.read=true);
+  document.getElementById('inbox-panel')?.remove();
+  document.getElementById('inbox-bd')?.remove();
+  window.__updateInboxBadge();
+  window.toast?.('All notifications marked read','success');
+};
+window.__updateInboxBadge = function() {
+  const badge = document.getElementById('inbox-badge');
+  if (!badge) return;
+  const unread = window.__NOTIFICATIONS__.filter(n=>!n.read).length;
+  badge.textContent = unread>0 ? unread : '';
+  badge.style.display = unread>0 ? 'flex' : 'none';
+};
+setTimeout(()=>window.__updateInboxBadge(), 100);
+
+window.__openExport = function() {
+  if (document.getElementById('export-panel')) return;
+  const panel = document.createElement('div');
+  panel.id = 'export-panel';
+  panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(480px,92vw);background:#1a1a1a;border:1px solid #3a3a3a;border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,.6);z-index:995;padding:20px';
+  panel.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div><div style="font-size:15px;font-weight:700">Export Project</div><div style="font-size:11.5px;color:#9CA3AF;margin-top:2px">Generate a shareable report or data dump</div></div><button onclick="document.getElementById('export-panel').remove();document.getElementById('export-bd').remove()" style="width:26px;height:26px;border-radius:6px;border:1px solid #303030;background:#252525;color:#9CA3AF;cursor:pointer">×</button></div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="padding:12px;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:8px;cursor:pointer" onclick="window.__doExport('pdf')"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">📄</span><div style="flex:1"><div style="font-size:12.5px;font-weight:600">PDF Executive Report</div><div style="font-size:10.5px;color:#9CA3AF">Overview, KPIs, dashboards, milestone status</div></div><span style="font-size:10px;color:#6a6a6a">~2 pages</span></div></div>
+<div style="padding:12px;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:8px;cursor:pointer" onclick="window.__doExport('xlsx')"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">📊</span><div style="flex:1"><div style="font-size:12.5px;font-weight:600">Excel Workbook</div><div style="font-size:10.5px;color:#9CA3AF">One sheet per tracker · all raw data</div></div><span style="font-size:10px;color:#6a6a6a">~14 sheets</span></div></div>
+<div style="padding:12px;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:8px;cursor:pointer" onclick="window.__doExport('link')"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">🔗</span><div style="flex:1"><div style="font-size:12.5px;font-weight:600">Shareable Client Link</div><div style="font-size:10.5px;color:#9CA3AF">Read-only view · expires in 30 days</div></div><span style="font-size:10px;color:#6a6a6a">Secure</span></div></div>
+<div style="padding:12px;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:8px;cursor:pointer" onclick="window.__doExport('json')"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">{ }</span><div style="flex:1"><div style="font-size:12.5px;font-weight:600">JSON Data Dump</div><div style="font-size:10.5px;color:#9CA3AF">Machine-readable · full schema</div></div><span style="font-size:10px;color:#6a6a6a">.json</span></div></div>
+</div>`;
+  const bd = document.createElement('div');
+  bd.id = 'export-bd';
+  bd.style.cssText = 'position:fixed;inset:0;background:rgba(10,10,10,.5);backdrop-filter:blur(3px);z-index:994';
+  bd.onclick = ()=>{panel.remove();bd.remove();};
+  document.body.appendChild(bd);
+  document.body.appendChild(panel);
+};
+window.__doExport = function(kind) {
+  console.log('Export requested:', kind);
+  document.getElementById('export-panel')?.remove();
+  document.getElementById('export-bd')?.remove();
+  window.toast?.(`${kind.toUpperCase()} export queued — you'll receive it shortly`, 'info');
+};
+
+
+// ═══ Cross-section deep link handler ═══
+window.addEventListener('message', e => {
+  if (e.data?.type === 'navigate') {
+    const { section, entityId } = e.data;
+    const btn = document.querySelector(`.nb[data-k="${section}"]`);
+    if (btn) btn.click();
+    if (entityId != null) {
+      setTimeout(()=>{
+        try {
+          const iframe = document.querySelector('#mc iframe');
+          if (iframe?.contentWindow) {
+            iframe.contentWindow.postMessage({ type: 'openEntity', entityId }, '*');
+          }
+        } catch(_){}
+      }, 450);
+    }
+  }
+});
+
+window.toast = function(msg, kind) {
+  const host = document.getElementById('toast-host');
+  if (!host) return;
+  const colors = { success:'#22C55E', error:'#EF4444', info:'#4286f4', warn:'#F59E0B' };
+  const col = colors[kind||'success'];
+  const t = document.createElement('div');
+  t.style.cssText = `pointer-events:auto;background:#1a1a1a;border:1px solid #333;border-left:3px solid ${col};border-radius:8px;padding:11px 16px;color:#fff;font-size:12.5px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.5);transform:translateX(20px);opacity:0;transition:all .22s ease;max-width:360px;font-family:ui-sans-serif,system-ui,sans-serif`;
+  t.textContent = msg;
+  host.appendChild(t);
+  requestAnimationFrame(()=>{t.style.transform='none';t.style.opacity='1';});
+  setTimeout(()=>{t.style.transform='translateX(20px)';t.style.opacity='0';setTimeout(()=>t.remove(),250);}, 2800);
+};
+// Hook iframe postMessages so sections can emit toasts
+window.addEventListener('message', e => { if (e.data?.type==='toast') window.toast(e.data.msg, e.data.kind); });
+
+setTimeout(window.renderDashboard,100);
+
+
+const TPLS=[{id:'cctv',n:'CCTV Deployment',d:'Camera install with commissioning checklist',c:'#4286f4',ms:8,days:90,mil:['Site Survey','Equipment Procurement','Cable Pathways','Camera Installation','Head-End Config','Commissioning','Training','Handover']},{id:'acs',n:'Access Control Retrofit',d:'Door readers, panels, credential migration',c:'#22C55E',ms:6,days:60,mil:['Credential Audit','Hardware Procurement','Panel Install','Reader Install','Commissioning','Handover']},{id:'int',n:'Intrusion & Alarms',d:'Motion sensors, keypads, monitoring',c:'#F59E0B',ms:5,days:45,mil:['Site Walk','Device Procurement','Wiring','Install & Programming','Commissioning']},{id:'blank',n:'Blank Project',d:'Start from scratch',c:'#6a6a6a',ms:0,days:30,mil:[]}];
+const HINTS=['Pick a template.','Fill in the basics.','Edit milestones — add, remove, rename.','Review and create.'];
+let S={s:1,tpl:null,ms:[],name:'',desc:'',own:'John Doe',due:''};
+
+function openWiz(){S={s:1,tpl:null,ms:[],name:'',desc:'',own:'John Doe',due:''};render();document.getElementById('wiz').classList.add('active');}
+function closeWiz(){document.getElementById('wiz').classList.remove('active');}
+
+function stepper(){document.getElementById('stp').innerHTML=['Template','Basics','Milestones','Review'].map((l,i)=>{const n=i+1,on=n===S.s,dn=n<S.s;return`<div class="sti${on?' on':dn?' dn':''}"><div class="stn">${dn?'✓':n}</div><span>${l}</span></div>`;}).join('');}
+
+function render(){
+stepper();
+document.getElementById('wsub').textContent=HINTS[S.s-1];
+document.getElementById('wfh').textContent='Step '+S.s+' of 4';
+document.getElementById('wback').style.display=S.s>1?'inline-block':'none';
+document.getElementById('wnext').textContent=S.s===4?'Create Project ✓':'Continue →';
+const b=document.getElementById('wb');
+if(S.s===1){b.innerHTML='<div class="tg">'+TPLS.map(t=>`<div class="tp${S.tpl===t.id?' sel':''}" data-t="${t.id}">${S.tpl===t.id?'<div class="tpc">✓</div>':''}<div class="tpi" style="background:${t.c}22;color:${t.c}">${t.n[0]}</div><div class="tpn">${t.n}</div><div class="tpd">${t.d}</div><div class="tpm">${t.ms} milestones · ~${t.days} days</div></div>`).join('')+'</div>';document.querySelectorAll('.tp').forEach(c=>c.onclick=()=>{S.tpl=c.dataset.t;render();});}
+else if(S.s===2){b.innerHTML=`<div class="f"><label class="fl">Project Name</label><input class="fi" id="fn" value="${S.name}" placeholder="e.g. Austin HQ Security Upgrade"/></div><div class="f"><label class="fl">Description</label><textarea class="ft" id="fd" placeholder="Brief summary">${S.desc}</textarea></div><div class="fr"><div class="f"><label class="fl">Owner</label><select class="fs" id="fo"><option>John Doe</option><option>Matt Isgur</option><option>Louis Feula</option><option>Gerritt Bakker</option></select></div><div class="f"><label class="fl">Target Date</label><input type="date" class="fi" id="fdu" value="${S.due}"/></div></div>`;document.getElementById('fo').value=S.own;}
+else if(S.s===3){if(!S.ms.length){const t=TPLS.find(x=>x.id===S.tpl),td=new Date();S.ms=(t?t.mil:[]).map((n,i)=>{const s=new Date(td);s.setDate(s.getDate()+i*10);const e=new Date(s);e.setDate(e.getDate()+8);return{name:n,start:s.toISOString().split('T')[0],end:e.toISOString().split('T')[0]};});}
+b.innerHTML='<div class="fh">Pre-populated from template. Edit inline, or add your own.</div>'+S.ms.map((m,i)=>`<div class="msr"><div class="msn">${i+1}</div><input class="mii" value="${m.name}" data-i="${i}" data-k="name"/><input type="date" class="mid" value="${m.start}" data-i="${i}" data-k="start"/><input type="date" class="mid" value="${m.end}" data-i="${i}" data-k="end"/><button class="mdel" data-d="${i}">×</button></div>`).join('')+'<button class="madd" id="madd">+ Add Milestone</button>';
+document.querySelectorAll('.mii,.mid').forEach(i=>i.oninput=e=>S.ms[+e.target.dataset.i][e.target.dataset.k]=e.target.value);
+document.querySelectorAll('.mdel').forEach(i=>i.onclick=e=>{S.ms.splice(+e.target.dataset.d,1);render();});
+document.getElementById('madd').onclick=()=>{const t=new Date().toISOString().split('T')[0];S.ms.push({name:'New Milestone',start:t,end:t});render();};}
+else{const t=TPLS.find(x=>x.id===S.tpl);const C=(l,v)=>`<div class="rv"><div class="rvl">${l}</div><div class="rvv">${v||'—'}</div></div>`;b.innerHTML=`<div class="fh">Review and click Create. Payload will POST to your Make webhook.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">${C('Template',t?.n)}${C('Owner',S.own)}${C('Target',S.due)}${C('Milestones',S.ms.length+' items')}</div>${C('Project Name',S.name||'(untitled)')}<div style="margin-top:14px"><div style="font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid #2a2a2a">Milestone Plan</div>${S.ms.length?S.ms.map((m,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 10px;background:#181818;border:1px solid #303030;border-radius:6px;margin-bottom:4px"><div class="msn">${i+1}</div><div style="flex:1;font-size:12.5px;font-weight:600">${m.name}</div><div style="font-size:11px;color:#9CA3AF">${m.start} → ${m.end}</div></div>`).join(''):'<div style="padding:14px;text-align:center;color:#9CA3AF;font-size:11.5px;background:#181818;border:1px dashed #303030;border-radius:7px">No milestones — add after creation.</div>'}</div>`;}}
+
+function step(d){
+if(S.s===2&&d>0){S.name=document.getElementById('fn').value;S.desc=document.getElementById('fd').value;S.own=document.getElementById('fo').value;S.due=document.getElementById('fdu').value;}
+if(d>0){if(S.s===1&&!S.tpl){alert('Pick a template first');return;}if(S.s===2&&!S.name.trim()){alert('Project name is required');return;}if(S.s===4){alert('Project "'+S.name+'" would be created via Make webhook.\n\nPayload:\n'+JSON.stringify({name:S.name,template:S.tpl,milestones:S.ms.length},null,2));closeWiz();return;}}
+S.s+=d;render();}
+
+document.getElementById('wiz').addEventListener('click',e=>{if(e.target.id==='wiz')closeWiz();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeWiz();});
+
+// ═══════ AGENT PANEL ═══════
+(function(){
+  const HKEY = 'defender.agent.history.v1';
+  const PKEY = 'defender.agent.project.v1';
+  const MAX_HISTORY = 10; // 5 user + 5 assistant turns
+  const MAX_CHARS = 800;
+  const LOAD_PHASES = [
+    { at: 3000, text: 'thinking…' },
+    { at: 5000, text: 'checking project data…' },
+    { at: 8000, text: 'drafting response…' }
+  ];
+
+  // --- State ---
+  let pendingAction = null;     // { action_id, action, cardEl }
+  let isLoading = false;
+  let lastUserMessage = null;   // for retry
+
+  // --- Agent context (read from window.__AGENT_CONTEXT__ if Glide injected it, else mock) ---
+  function getCtx(){
+    return window.__AGENT_CONTEXT__ || {
+      project_id: 'PRJ-DEMO',
+      project_name: 'Corporate HQ Security Upgrade',
+      project_status: 'In Progress',
+      progress_overall: 63,
+      open_counts: { tasks:12, punch:4, rfi:1, risks:3, observations:2 },
+      milestones_summary: [],
+      team: []
+    };
+  }
+
+  // --- sessionStorage memory ---
+  function getHistory(){
+    try { return JSON.parse(sessionStorage.getItem(HKEY) || '[]'); }
+    catch(e){ return []; }
+  }
+  function setHistory(h){
+    try { sessionStorage.setItem(HKEY, JSON.stringify(h.slice(-MAX_HISTORY))); } catch(e){}
+  }
+  function pushHistory(entry){
+    const h = getHistory();
+    h.push(entry);
+    setHistory(h);
+  }
+  function clearHistory(){
+    try { sessionStorage.removeItem(HKEY); } catch(e){}
+  }
+  function checkProjectSwitch(){
+    const ctx = getCtx();
+    const stored = sessionStorage.getItem(PKEY);
+    if (stored && stored !== ctx.project_id) {
+      clearHistory();
+    }
+    sessionStorage.setItem(PKEY, ctx.project_id);
+  }
+
+  // --- DOM helpers ---
+  const ml = () => document.getElementById('agent-messages');
+  const inp = () => document.getElementById('agent-input');
+  const sendBtn = () => document.getElementById('agent-send');
+  const panel = () => document.getElementById('agent-panel');
+  const toggle = () => document.getElementById('agent-toggle');
+
+  function scrollToBottom(){
+    const m = ml();
+    requestAnimationFrame(() => { m.scrollTop = m.scrollHeight; });
+  }
+
+  // --- Rendering ---
+  function renderMessage(role, content){
+    const el = document.createElement('div');
+    el.className = role === 'user' ? 'agmu' : 'agma';
+    el.textContent = content;
+    ml().appendChild(el);
+    scrollToBottom();
+    return el;
+  }
+
+  function renderSystemNotice(text, opts){
+    opts = opts || {};
+    const el = document.createElement('div');
+    el.className = 'agsys';
+    el.textContent = text;
+    if (opts.retry) {
+      const btn = document.createElement('button');
+      btn.className = 'agrt';
+      btn.textContent = 'Retry';
+      btn.onclick = () => {
+        el.remove();
+        if (lastUserMessage) sendMessage(lastUserMessage, true);
+      };
+      el.appendChild(btn);
+    }
+    ml().appendChild(el);
+    scrollToBottom();
+    return el;
+  }
+
+  function renderLoadingDots(){
+    const el = document.createElement('div');
+    el.className = 'agld';
+    el.innerHTML = '<div class="agldd"><span></span><span></span><span></span></div><div class="agldt" id="agent-load-text"></div>';
+    ml().appendChild(el);
+    scrollToBottom();
+    // Rotating subtext
+    const txt = el.querySelector('#agent-load-text');
+    const timers = LOAD_PHASES.map(p => setTimeout(() => { if (txt) txt.textContent = p.text; }, p.at));
+    el._timers = timers;
+    return el;
+  }
+
+  function clearLoading(el){
+    if (!el) return;
+    if (el._timers) el._timers.forEach(clearTimeout);
+    el.remove();
+  }
+
+  function renderConfirmCard(action, action_id){
+    const card = document.createElement('div');
+    card.className = 'agcc';
+    const rows = Object.entries(action.input || {})
+      .map(([k,v]) => `<div class="k">${k}</div><div class="v">${escapeHtml(typeof v === 'string' ? v : JSON.stringify(v))}</div>`)
+      .join('');
+    card.innerHTML = `
+      <div class="agcch"><span class="agi">✦</span>Proposed action: ${escapeHtml(action.tool)}</div>
+      <div class="agccb">${rows}</div>
+      <div class="agccf">
+        <button class="btn" data-act="cancel">Cancel</button>
+        <button class="btn bp" data-act="confirm">Confirm</button>
+      </div>`;
+    card.querySelector('[data-act="cancel"]').onclick = () => handleCancel(card);
+    card.querySelector('[data-act="confirm"]').onclick = () => handleConfirm(card);
+    ml().appendChild(card);
+    pendingAction = { action_id, action, cardEl: card };
+    scrollToBottom();
+    return card;
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // --- Confirm / cancel handlers (Phase 1C: wired to agent.execute) ---
+  async function handleConfirm(card){
+    if (!pendingAction) return;
+    const { action_id, action } = pendingAction;
+    card.classList.add('disabled');
+    // Show loading dots inside the card footer
+    const footer = card.querySelector('.agccf');
+    if (footer) footer.innerHTML = '<div class="agldd" style="padding:4px 0"><span></span><span></span><span></span></div>';
+
+    const resp = await callAgentExecute(action_id, action);
+    card.remove();
+    pendingAction = null;
+
+    if (resp.kind === 'executed') {
+      renderSystemNotice(resp.summary);
+      pushHistory({ role:'assistant', content:resp.summary });
+      // Store entity ref for future turns (Phase 2 uses this)
+      if (resp.entity) window.__lastAgentEntity = resp.entity;
+    } else if (resp.kind === 'error') {
+      renderSystemNotice(resp.text);
+    }
+  }
+  function handleCancel(card){
+    card.remove();
+    renderSystemNotice('Action cancelled.');
+    pendingAction = null;
+  }
+
+  // --- Replay existing history into the message list ---
+  function hydrateMessages(){
+    ml().innerHTML = '';
+    const h = getHistory();
+    h.forEach(m => renderMessage(m.role, m.content));
+  }
+
+  // --- Webhook URLs (placeholder — Matt fills in real Make URLs) ---
+  const WEBHOOK_CHAT = 'https://hook.us1.make.com/AGENT_CHAT_ID';
+  const WEBHOOK_EXECUTE = 'https://hook.us1.make.com/AGENT_EXECUTE_ID';
+
+  // --- Mock mode: simulates webhook responses for UI testing without live Make ---
+  const MOCK_MODE = true; // Set to false once Make scenarios are live
+
+  function mockChatResponse(text){
+    const lower = text.toLowerCase();
+    // Detect task creation intent
+    if (lower.includes('create') && lower.includes('task') || lower.includes('add a task') || lower.includes('make a task')) {
+      const title = text.replace(/create\s+(a\s+)?task\s*(to\s+)?/i, '').replace(/add\s+(a\s+)?task\s*(to\s+)?/i, '').trim() || 'New task from agent';
+      const ctx = getCtx();
+      const assignee = ctx.team && ctx.team[0] ? ctx.team[0].email : 'unassigned@adrm-security.com';
+      return {
+        kind: 'pending_action',
+        preamble: "I'll create this task — confirm to proceed.",
+        action: {
+          tool: 'create_task',
+          input: { title: title, assignee_email: assignee, priority: 'Medium', project_id: ctx.project_id }
+        },
+        action_id: 'act_mock_' + Date.now().toString(36)
+      };
+    }
+    // Detect observation intent
+    if (lower.includes('observation') || lower.includes('observe') || lower.includes('noticed')) {
+      return {
+        kind: 'pending_action',
+        preamble: "I'll log this observation.",
+        action: { tool: 'add_observation', input: { summary: text.slice(0, 80), severity: 'Info' } },
+        action_id: 'act_mock_' + Date.now().toString(36)
+      };
+    }
+    // Detect risk intent
+    if (lower.includes('risk') || lower.includes('flag')) {
+      return {
+        kind: 'pending_action',
+        preamble: "I'll flag this risk — confirm to proceed.",
+        action: { tool: 'flag_risk', input: { title: text.slice(0, 80), likelihood: 'Medium', impact: 'Medium' } },
+        action_id: 'act_mock_' + Date.now().toString(36)
+      };
+    }
+    // Detect activity log intent
+    if (lower.includes('log') || lower.includes('update') && lower.includes('activity')) {
+      return {
+        kind: 'pending_action',
+        action: { tool: 'log_activity', input: { message: text, category: 'Update' } },
+        action_id: 'act_mock_' + Date.now().toString(36)
+      };
+    }
+    // Default: plain reply
+    const ctx = getCtx();
+    return {
+      kind: 'reply',
+      text: `You have ${ctx.open_counts.tasks} open tasks, ${ctx.open_counts.risks} open risks, ${ctx.open_counts.punch} punch items, and ${ctx.open_counts.rfi} open RFI. Project is ${ctx.progress_overall}% complete. How can I help?`
+    };
+  }
+
+  function mockExecuteResponse(action){
+    const idMap = { create_task:'T', add_observation:'OBS', flag_risk:'RSK', log_activity:'ACT' };
+    const prefix = idMap[action.tool] || 'X';
+    const id = prefix + '-' + String(Math.floor(Math.random()*9000)+1000);
+    const label = action.input.title || action.input.summary || action.input.message || 'item';
+    return {
+      kind: 'executed',
+      summary: (action.tool === 'create_task' ? 'Created task' : action.tool === 'add_observation' ? 'Added observation' : action.tool === 'flag_risk' ? 'Flagged risk' : 'Logged activity') + ' #' + id + ': ' + label,
+      entity: { type: action.tool.replace('create_','').replace('add_','').replace('flag_','').replace('log_',''), id: id }
+    };
+  }
+
+  // --- callAgentChat: POST to agent.chat webhook (or mock) ---
+  async function callAgentChat(userMessage){
+    const ctx = getCtx();
+    const history = getHistory();
+    const body = {
+      user_email: window.__USER__?.email || 'misgur@adrm-security.com',
+      user_name: window.__USER__?.name || 'Matt Isgur',
+      project_id: ctx.project_id,
+      agent_context: ctx,
+      message_history: history.slice(-MAX_HISTORY)
+    };
+
+    if (MOCK_MODE) {
+      // Simulate network delay
+      await new Promise(r => setTimeout(r, 600 + Math.random() * 800));
+      return mockChatResponse(userMessage);
+    }
+
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 30000);
+    try {
+      const res = await fetch(WEBHOOK_CHAT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: ctrl.signal
+      });
+      clearTimeout(timer);
+      if (res.status === 403) {
+        const data = await res.json().catch(() => ({}));
+        if (data.code === 'USER_UNKNOWN') return { kind:'error', text:"Your account isn't recognized.", code:'USER_UNKNOWN' };
+        if (data.code === 'PROJECT_FORBIDDEN') return { kind:'error', text:"You don't have access to this project.", code:'PROJECT_FORBIDDEN' };
+        return { kind:'error', text:'Access denied.', code:'FORBIDDEN' };
+      }
+      if (res.status >= 500) return { kind:'error', text:'Something went wrong on the server.', code:'SERVER_ERROR', _retry:true };
+      if (!res.ok) return { kind:'error', text:'Request was rejected. See console.', code:'CLIENT_ERROR' };
+      const data = await res.json();
+      if (!data.kind) return { kind:'error', text:'Got an unexpected reply from the agent.', code:'BAD_RESPONSE', _retry:true };
+      return data;
+    } catch(e) {
+      clearTimeout(timer);
+      if (e.name === 'AbortError') return { kind:'error', text:'Agent is taking too long. Try again?', code:'TIMEOUT', _retry:true };
+      return { kind:'error', text:"Couldn't reach agent. Check your connection.", code:'NETWORK', _retry:true };
+    }
+  }
+
+  // --- callAgentExecute: POST to agent.execute webhook (or mock) ---
+  async function callAgentExecute(action_id, action){
+    const ctx = getCtx();
+    const body = {
+      user_email: window.__USER__?.email || 'misgur@adrm-security.com',
+      project_id: ctx.project_id,
+      action_id: action_id,
+      action: action
+    };
+
+    if (MOCK_MODE) {
+      await new Promise(r => setTimeout(r, 400 + Math.random() * 600));
+      return mockExecuteResponse(action);
+    }
+
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 30000);
+    try {
+      const res = await fetch(WEBHOOK_EXECUTE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: ctrl.signal
+      });
+      clearTimeout(timer);
+      if (res.status === 403) {
+        const data = await res.json().catch(() => ({}));
+        if (data.code === 'USER_UNKNOWN') return { kind:'error', text:"Your account isn't recognized.", code:'USER_UNKNOWN' };
+        if (data.code === 'PROJECT_FORBIDDEN') return { kind:'error', text:"You don't have access to this project.", code:'PROJECT_FORBIDDEN' };
+        return { kind:'error', text:'Access denied.', code:'FORBIDDEN' };
+      }
+      if (res.status >= 500) return { kind:'error', text:'Something went wrong on the server.', code:'SERVER_ERROR' };
+      if (!res.ok) return { kind:'error', text:'Request was rejected. See console.', code:'CLIENT_ERROR' };
+      const data = await res.json();
+      if (!data.kind) return { kind:'error', text:'Got an unexpected reply from the agent.', code:'BAD_RESPONSE' };
+      return data;
+    } catch(e) {
+      clearTimeout(timer);
+      if (e.name === 'AbortError') return { kind:'error', text:'Agent is taking too long. Try again?', code:'TIMEOUT' };
+      return { kind:'error', text:"Couldn't reach agent. Check your connection.", code:'NETWORK' };
+    }
+  }
+
+  // --- Send message (Phase 1B: wired to callAgentChat) ---
+  async function sendMessage(text, isRetry){
+    if (!text.trim() || isLoading) return;
+    if (!isRetry) {
+      renderMessage('user', text);
+      pushHistory({ role:'user', content:text });
+      inp().value = '';
+      autoGrow();
+      updateCharCount();
+    }
+    lastUserMessage = text;
+    setLoading(true);
+    const dotsEl = renderLoadingDots();
+
+    const resp = await callAgentChat(text);
+    clearLoading(dotsEl);
+    setLoading(false);
+
+    if (resp.kind === 'reply') {
+      renderMessage('assistant', resp.text);
+      pushHistory({ role:'assistant', content:resp.text });
+    } else if (resp.kind === 'pending_action') {
+      if (resp.preamble) {
+        renderMessage('assistant', resp.preamble);
+        pushHistory({ role:'assistant', content:resp.preamble });
+      }
+      renderConfirmCard(resp.action, resp.action_id);
+    } else if (resp.kind === 'error') {
+      const canRetry = resp._retry || resp.code === 'TIMEOUT' || resp.code === 'NETWORK' || resp.code === 'SERVER_ERROR' || resp.code === 'BAD_RESPONSE';
+      renderSystemNotice(resp.text, { retry: canRetry });
+    }
+  }
+
+  function setLoading(on){
+    isLoading = on;
+    inp().disabled = on;
+    sendBtn().disabled = on;
+  }
+
+  // --- Input handlers ---
+  function autoGrow(){
+    const el = inp();
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  }
+  function updateCharCount(){
+    const el = inp();
+    const cc = document.getElementById('agent-charcount');
+    const n = el.value.length;
+    if (n > MAX_CHARS) {
+      cc.style.display = 'block';
+      cc.textContent = n + ' / ' + MAX_CHARS;
+      cc.style.color = n > MAX_CHARS ? '#EF4444' : '#6a6a6a';
+    } else {
+      cc.style.display = 'none';
+    }
+  }
+
+  // --- Public API ---
+  window.__toggleAgent = function(){
+    const p = panel(), t = toggle();
+    const open = p.classList.toggle('open');
+    t.classList.toggle('open', open);
+    p.setAttribute('aria-hidden', open ? 'false' : 'true');
+    if (open) {
+      checkProjectSwitch();
+      const ctx = getCtx();
+      document.getElementById('agent-project-name').textContent = ctx.project_name || '—';
+      hydrateMessages();
+      setTimeout(() => inp().focus(), 200);
+    }
+  };
+
+  window.__clearAgent = function(){
+    clearHistory();
+    pendingAction = null;
+    ml().innerHTML = '';
+    renderSystemNotice('Conversation cleared.');
+  };
+
+  window.__sendAgent = function(){
+    sendMessage(inp().value);
+  };
+
+  // --- Wire input events ---
+  document.addEventListener('DOMContentLoaded', function(){
+    const i = inp();
+    if (!i) return;
+    i.addEventListener('input', () => { autoGrow(); updateCharCount(); });
+    i.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage(i.value);
+      }
+    });
+  });
+  // Fallback in case DOMContentLoaded already fired
+  if (document.readyState !== 'loading') {
+    const i = inp();
+    if (i) {
+      i.addEventListener('input', () => { autoGrow(); updateCharCount(); });
+      i.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage(i.value);
+        }
+      });
+    }
+  }
+})();
+</script><div id="toast-host" style="position:fixed;bottom:20px;right:20px;z-index:998;display:flex;flex-direction:column;gap:8px;pointer-events:none"></div></body></html>

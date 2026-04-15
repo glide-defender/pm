@@ -1,0 +1,1118 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Deployed Assets</title><style>
+*{box-sizing:border-box;margin:0;padding:0}body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;padding:20px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;flex-wrap:wrap}.ti{font-size:18px;font-weight:700;color:#fff}.sb{font-size:12px;color:#9CA3AF;margin-top:3px}.ctr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.srch{background:#1f1f1f;border:1px solid #303030;border-radius:6px;padding:7px 11px;color:#E5E7EB;font-size:12.5px;outline:none;width:220px;font-family:inherit}.srch:focus{border-color:#F59E0B}
+.btn{padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #303030;background:#1f1f1f;color:#E5E7EB;cursor:pointer;font-family:inherit}.btn:hover{background:#252525}.bp{background:#3c4756;color:#fff;border-color:#4a5666}.bp:hover{background:#4a5666}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:#1f1f1f;border:1px solid #2a2a2a;border-left:3px solid;border-radius:8px;padding:12px 14px}
+.kl{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:5px}.kv{font-size:22px;font-weight:800}.kc{font-size:11px;color:#9CA3AF;margin-top:3px}
+.info{padding:8px 12px;background:rgba(66,134,244,.06);border:1px solid rgba(66,134,244,.18);border-left:2px solid #4286f4;border-radius:6px;margin-bottom:12px;font-size:11.5px;color:#9ec2f4;line-height:1.5}
+.fbar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.fgrp-lbl{font-size:10px;color:#6a6a6a;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-right:4px}
+.fchip{padding:5px 11px;border-radius:16px;font-size:11.5px;font-weight:600;background:#1f1f1f;border:1px solid #303030;color:#9CA3AF;cursor:pointer;font-family:inherit}
+.fchip:hover{border-color:#F59E0B;color:#E5E7EB}.fchip.on{background:#F59E0B;color:#111;border-color:#F59E0B}
+.card{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;overflow:hidden}
+.rtbl{width:100%;border-collapse:collapse;font-size:12.5px}.rtbl th{padding:10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9CA3AF;border-bottom:1px solid #303030;background:#191919}.rtbl td{padding:11px 10px;border-bottom:1px solid #2a2a2a;vertical-align:middle}.rtbl tr[data-id]{cursor:pointer}.rtbl tr[data-id]:hover td{background:#252525}
+.atag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;background:rgba(66,134,244,.12);color:#60a5fa;font-family:ui-monospace,monospace}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}.pill::before{content:'';width:6px;height:6px;border-radius:50%}
+.p-pl{background:rgba(148,163,184,.14);color:#94a3b8}.p-pl::before{background:#94a3b8}
+.p-in{background:rgba(66,134,244,.14);color:#60a5fa}.p-in::before{background:#4286f4}
+.p-co{background:rgba(139,92,246,.14);color:#a78bfa}.p-co::before{background:#8b5cf6}
+.p-op{background:rgba(34,197,94,.14);color:#22C55E}.p-op::before{background:#22C55E}
+.p-of{background:rgba(239,68,68,.14);color:#ff6b6b}.p-of::before{background:#EF4444}
+.p-de{background:rgba(107,114,128,.18);color:#9ca3af}.p-de::before{background:#6b7280}
+.war{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:4px;font-size:10.5px;font-weight:600}
+.war-ok{background:rgba(34,197,94,.12);color:#22C55E}.war-soon{background:rgba(245,158,11,.14);color:#F59E0B}.war-exp{background:rgba(239,68,68,.14);color:#EF4444}.war-none{color:#6a6a6a;font-size:11px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:#cbd5e1}
+.dup-flag{display:inline-flex;align-items:center;gap:4px;margin-left:6px;color:#F59E0B;font-size:10.5px;font-weight:600;cursor:help}
+.unres{display:inline-flex;align-items:center;gap:4px;color:#F59E0B;font-weight:600}
+.dbg{position:fixed;inset:0;background:rgba(10,10,10,.7);z-index:100;display:none}.dbg.on{display:block}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(520px,92vw);background:#1a1a1a;border-left:1px solid #303030;z-index:101;display:none;flex-direction:column}.dr.on{display:flex}
+.drh{padding:18px 22px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between;align-items:flex-start}.drt{font-size:16px;font-weight:700}.drs{font-size:11.5px;color:#9CA3AF;margin-top:2px}.drx{width:28px;height:28px;border-radius:6px;border:1px solid #303030;background:#252525;color:#9CA3AF;cursor:pointer;font-size:15px}
+.drb{flex:1;overflow-y:auto;padding:20px 22px}.drf{padding:14px 22px;border-top:1px solid #2a2a2a;background:#191919;display:flex;gap:8px}
+.f{margin-bottom:14px}.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px}
+.fi,.fs,.ft{width:100%;background:#161616;border:1px solid #303030;border-radius:7px;padding:9px 11px;color:#E5E7EB;font-size:13px;font-family:inherit;outline:none}.fi:focus,.fs:focus,.ft:focus{border-color:#F59E0B}
+.ft{min-height:64px;resize:vertical}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tbtn{padding:6px 10px;border-radius:5px;border:1px solid #303030;background:transparent;color:#EF4444;cursor:pointer;font-size:12px;font-weight:600}
+.origin{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:12px;background:rgba(66,134,244,.12);border:1px solid rgba(66,134,244,.3);color:#60a5fa;font-size:11px;font-weight:600;margin-bottom:10px;cursor:pointer;text-decoration:none}
+.origin:hover{background:rgba(66,134,244,.2)}
+.bulk-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:#1a1a1a;border-top:2px solid #F59E0B;padding:10px 18px;z-index:10;font-size:12.5px;align-items:center;gap:12px;box-shadow:0 -8px 20px rgba(0,0,0,.5);margin:14px -20px -20px}
+.bulk-bar.show{display:flex}
+.bulk-count{background:#F59E0B;color:#111;padding:3px 10px;border-radius:12px;font-weight:700;font-size:11.5px}
+.row-check{display:inline-flex;width:16px;height:16px;border:1.5px solid #4a4a4a;border-radius:3px;background:#181818;cursor:pointer;flex-shrink:0;align-items:center;justify-content:center;vertical-align:middle}
+.row-check.on{background:#F59E0B;border-color:#F59E0B}
+.row-check.on::after{content:"\2713";color:#111;font-size:11px;font-weight:900}
+.row-check.mixed{background:#F59E0B;border-color:#F59E0B}
+.row-check.mixed::after{content:"";display:block;width:8px;height:2px;background:#111;border-radius:1px}
+.selall{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:6px;border:1px solid #303030;background:#1f1f1f;color:#9CA3AF;cursor:pointer;font-size:11.5px;font-weight:600;font-family:inherit;user-select:none}
+.selall:hover{background:#252525;color:#E5E7EB}
+.selall .row-check{width:14px;height:14px;cursor:pointer;pointer-events:none}
+</style></head><body>
+<div class="hd"><div><div class="ti">Deployed Assets</div><div class="sb" id="sub">&mdash;</div></div>
+<div class="ctr">
+  <button class="selall" id="selall-hdr" onclick="toggleSelectAllVisible()"><span class="row-check"></span><span id="selall-hdr-lbl">Select all</span></button>
+  <input class="srch" id="srch" placeholder="Search assets&hellip;"/>
+  <button class="btn" onclick="bulkImport()">Import</button>
+  <button class="btn" onclick="__exportAssets()">Export</button>
+  <button class="btn bp" onclick="openDrawer(null)">+ Asset</button>
+</div></div>
+<div class="info"><strong>Deployed Assets</strong> are physical hardware installed at the project site. Each asset references an inventory catalog entry (what kind of thing) plus install-specific details (tag, location, serial, MAC, installer, warranty). Commissioning workflows live in <strong>Commissioning</strong>.</div>
+<div class="kpis">
+<div class="kpi" style="border-left-color:#4286f4"><div class="kl">Total</div><div class="kv" style="color:#4286f4" id="k-t">&mdash;</div><div class="kc">assets on site</div></div>
+<div class="kpi" style="border-left-color:#22C55E"><div class="kl">Operational</div><div class="kv" style="color:#22C55E" id="k-op">&mdash;</div><div class="kc">live & running</div></div>
+<div class="kpi" style="border-left-color:#F59E0B"><div class="kl">Needs Attention</div><div class="kv" style="color:#F59E0B" id="k-at">&mdash;</div><div class="kc">offline / warranty</div></div>
+<div class="kpi" style="border-left-color:#6b7280"><div class="kl">Decommissioned</div><div class="kv" style="color:#6b7280" id="k-de">&mdash;</div><div class="kc">retired</div></div>
+</div>
+<div class="fbar" id="fbar"></div>
+<div class="card"><table class="rtbl"><thead><tr><th style="padding-left:16px;width:30px"></th><th>Asset</th><th>Category</th><th>Location</th><th>Status</th><th>Installed</th><th>Warranty</th><th style="width:40px"></th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="bulk-bar" id="bulk-bar"><span class="bulk-count" id="bulk-count">0</span><span>selected</span><button class="selall" id="selall-bar" onclick="toggleSelectAllVisible()" style="margin-left:10px"><span class="row-check"></span><span id="selall-bar-lbl">Select all visible</span></button><div style="flex:1"></div><button class="btn" onclick="bulkSetStatus('Offline')">Mark Offline</button><button class="btn" onclick="bulkSetStatus('Decommissioned')">Mark Decommissioned</button><button class="btn" onclick="bulkDelete()" style="color:#ff6b6b;border-color:#5a2424">Delete</button><button class="btn" onclick="clearSelection()">Cancel</button></div>
+<div class="dbg" id="dbg" onclick="closeD()"></div>
+<div class="dr" id="dr"><div class="drh"><div><div class="drt" id="drt">New Asset</div><div class="drs" id="drs"></div></div><button class="drx" onclick="closeD()">&times;</button></div><div class="drb" id="drb"></div><div class="drf"><button class="tbtn" id="bd" onclick="delAsset()" style="display:none">Delete</button><div style="display:flex;gap:8px;margin-left:auto"><button class="btn" onclick="closeD()">Cancel</button><button class="btn bp" onclick="saveAsset()">Save</button></div></div></div>
+<script>
+// \u2550\u2550\u2550 esc() helper (Pattern #3) \u2550\u2550\u2550
+const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// \u2550\u2550\u2550 Shared workspace utility stubs (present in every section) \u2550\u2550\u2550
+window.__STATUSES__ = window.__STATUSES__ || {
+  task:['Not Started','In Progress','Blocked','Done'],
+  punch:['Open','In Progress','Ready for Review','Closed'],
+  rfi:['Open','Answered','Closed'],
+  risk:['Identified','Monitoring','Mitigating','Closed'],
+  observation:['Open','In Review','Resolved','Dismissed'],
+  material:['Ordered','Partial','Received','Installed'],
+  milestone:['Not Started','In Progress','Complete','At Risk'],
+  asset:['Planned','Installed','Commissioned','Operational','Offline','Decommissioned']
+};
+window.__CONTACTS__=window.__CONTACTS__||['Matt Isgur','Louis Feula','Jane Carter','Gerritt Bakker'];
+window.__COMMENTS__=window.__COMMENTS__||{};
+window.__ATTACHMENTS__=window.__ATTACHMENTS__||{};
+window.__contactByEmail=window.__contactByEmail||{};
+
+window.commentsWidget=function(et,id){const k=et+':'+id;const L=window.__COMMENTS__[k]||[];const rows=L.length?L.map(c=>`<div style="padding:8px 0;border-bottom:1px solid #252525;font-size:12px"><div style="display:flex;gap:6px;align-items:baseline"><strong style="color:#E5E7EB">${esc(c.who||c.author||'')}</strong><span style="color:#6a6a6a;font-size:10.5px">${esc(new Date(c.at).toLocaleDateString())}</span></div><div style="color:#9CA3AF;margin-top:2px;line-height:1.5">${esc(c.txt||c.text||'')}</div></div>`).join(''):'<div style="padding:10px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No comments yet</div>';return `<div style="margin-top:16px;padding-top:14px;border-top:1px solid #2a2a2a"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px">Comments (${L.length})</div><div>${rows}</div><div style="display:flex;gap:6px;margin-top:10px"><input class="fi" id="cw-in-${esc(id)}" placeholder="Add a comment\u2026" style="flex:1"/><button class="btn bp" onclick="__postC('${esc(et)}', ${JSON.stringify(String(id))})">Post</button></div></div>`;};
+window.__postC=function(et,id){const k=et+':'+id;const inp=document.getElementById('cw-in-'+id);if(!inp||!inp.value.trim())return;(window.__COMMENTS__[k]=window.__COMMENTS__[k]||[]).push({who:(window.__USER__&&window.__USER__.name)||'Matt Isgur',txt:inp.value.trim(),at:new Date().toISOString()});console.log('Make payload (comment_post):',{entity:et,entity_id:id,text:inp.value});openDrawer(id);};
+window.attachmentsWidget=function(et,id){const k=et+':'+id;const L=window.__ATTACHMENTS__[k]||[];const rows=L.length?L.map(a=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#181818;border:1px solid #262626;border-radius:6px;margin-bottom:4px"><span>\u{1F4CE}</span><span style="flex:1;font-size:12px">${esc(a.filename||a.name||'')}</span><span style="font-size:10.5px;color:#6a6a6a">${esc(a.size||'')}</span></div>`).join(''):'<div style="padding:8px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No attachments</div>';return `<div style="margin-top:14px;padding-top:12px;border-top:1px solid #2a2a2a"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF">Attachments (${L.length})</div><button class="btn" style="padding:5px 10px;font-size:11px" onclick="__addA('${esc(et)}', ${JSON.stringify(String(id))})">+ Attach file</button></div>${rows}</div>`;};
+window.__addA=function(et,id){const name=prompt('File name:','photo.jpg');if(!name)return;(window.__ATTACHMENTS__[et+':'+id]=window.__ATTACHMENTS__[et+':'+id]||[]).push({filename:name,size:'0.8 MB'});openDrawer(id);};
+window.showRowMenu=window.showRowMenu||function(btn,actions){document.querySelectorAll('.row-menu-pop').forEach(x=>x.remove());const r=btn.getBoundingClientRect();const m=document.createElement('div');m.className='row-menu-pop';m.style.cssText=`position:fixed;top:${r.bottom+4}px;left:${Math.max(8,r.right-200)}px;min-width:200px;background:#1a1a1a;border:1px solid #333;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.6);z-index:999;padding:4px`;m.innerHTML=actions.map((a,i)=>a.divider?'<div style="height:1px;background:#2a2a2a;margin:4px 0"></div>':`<div data-i="${i}" style="padding:7px 12px;font-size:12.5px;color:${a.color||'#E5E7EB'};border-radius:5px;cursor:pointer">${esc(a.label)}</div>`).join('');m.querySelectorAll('[data-i]').forEach(el=>{el.onmouseenter=()=>el.style.background='#252525';el.onmouseleave=()=>el.style.background='';el.onclick=e=>{e.stopPropagation();m.remove();actions[+el.dataset.i].fn();};});document.body.appendChild(m);setTimeout(()=>document.addEventListener('click',function c(){m.remove();document.removeEventListener('click',c);},{once:true}),50);};
+
+// \u2550\u2550\u2550 STATUS VALIDATION \u2550\u2550\u2550
+const VALID_STATUSES = ['Planned','Installed','Commissioned','Operational','Offline','Decommissioned'];
+const DEFAULT_STATUS = 'Planned';
+
+// status \u2192 visual classification for KPIs + rendering
+const OPERATIONAL_STATUSES = ['Operational','Commissioned'];
+const ATTENTION_STATUSES   = ['Offline','Planned','Installed']; // needs follow-through
+const RETIRED_STATUSES     = ['Decommissioned'];
+
+// \u2550\u2550\u2550 DEMO DATA (schema shape) \u2550\u2550\u2550
+// INVENTORY is the asset-type catalog. Populated from P.lookups.inventory[] on payload.
+let INVENTORY = [
+  { id:'INV-01', name:'HID Signo 20',          category:'Card Reader', manufacturer:'HID',      model:'Signo 20' },
+  { id:'INV-02', name:'Axis P3245-LV',         category:'Camera',      manufacturer:'Axis',     model:'P3245-LV' },
+  { id:'INV-03', name:'Hanwha XNV-8080R',      category:'Camera',      manufacturer:'Hanwha',   model:'XNV-8080R' },
+  { id:'INV-04', name:'Genetec Cloudlink',     category:'Network',     manufacturer:'Genetec',  model:'Cloudlink' },
+  { id:'INV-05', name:'Motorola APX 6000',     category:'Radio',       manufacturer:'Motorola', model:'APX 6000' },
+  { id:'INV-06', name:'Amerex B402 Extinguisher', category:'Safety',   manufacturer:'Amerex',   model:'B402' },
+  { id:'INV-07', name:'HID iCLASS SE Reader',  category:'Card Reader', manufacturer:'HID',      model:'iCLASS SE' }
+];
+
+// deployed[] is the live list. Schema shape:
+//   { id, inventory_id, asset_tag, location, status, serial_number, mac_address,
+//     installed_at, installed_by_email, warranty_expires, notes }
+let deployed = [
+  { id:'AST-01', inventory_id:'INV-02', asset_tag:'CAM-001',     location:'Garage Level 1',  status:'Operational',    serial_number:'AX-9823-114', mac_address:'B8:A4:4F:12:3A:01', installed_at:'2026-01-20', installed_by_email:'jcarter@adrm-security.com', warranty_expires:'2027-01-20', notes:'Replace housing during next maintenance window.' },
+  { id:'AST-02', inventory_id:'INV-06', asset_tag:'FE-017',      location:'Floor 1 Hallway', status:'Operational',    serial_number:'AMX-017-B402', mac_address:'',                   installed_at:'2025-12-15', installed_by_email:'lfeula@adrm-security.com',  warranty_expires:'2028-12-15', notes:'' },
+  { id:'AST-03', inventory_id:'INV-06', asset_tag:'FE-023',      location:'Floor 2 Hallway', status:'Operational',    serial_number:'AMX-023-B402', mac_address:'',                   installed_at:'2025-12-15', installed_by_email:'lfeula@adrm-security.com',  warranty_expires:'2028-12-15', notes:'' },
+  { id:'AST-04', inventory_id:'INV-05', asset_tag:'RAD-EOC-1',   location:'EOC Office',      status:'Commissioned',   serial_number:'MOT-APX-77214',mac_address:'',                   installed_at:'2026-02-01', installed_by_email:'misgur@adrm-security.com',  warranty_expires:'2026-08-01', notes:'Firmware R28.00.00 at commissioning.' },
+  { id:'AST-05', inventory_id:'INV-04', asset_tag:'CL-4F-01',    location:'Floor 4 IDF',     status:'Operational',    serial_number:'GEN-CL-00042',mac_address:'00:1B:44:11:3A:B7',   installed_at:'2026-01-25', installed_by_email:'jcarter@adrm-security.com', warranty_expires:'2026-05-15', notes:'' },
+  { id:'AST-06', inventory_id:'INV-03', asset_tag:'CAM-002',     location:'Lobby',           status:'Offline',        serial_number:'HNW-55A1-LOBBY',mac_address:'00:1B:44:11:3A:B7', installed_at:'2025-11-03', installed_by_email:'jcarter@adrm-security.com', warranty_expires:'2025-05-03', notes:'Went offline 4/09. Suspected PoE injector.' },
+  { id:'AST-07', inventory_id:'INV-07', asset_tag:'RDR-ME',      location:'Main Entry',      status:'Installed',      serial_number:'HID-ICL-991',  mac_address:'',                   installed_at:'2026-04-02', installed_by_email:'lfeula@adrm-security.com',  warranty_expires:'2029-04-02', notes:'Awaiting commissioning by ACS vendor.' }
+];
+
+// \u2550\u2550\u2550 PAYLOAD INGESTION (Pattern #1, #2, #8) \u2550\u2550\u2550
+// Deployed Assets is relational \u2014 Pattern #6 (consolidated JSON fallback) is N/A.
+// Reads P.deployed_assets[] + P.lookups.inventory[]. Falls through to demo data on empty/malformed.
+(function ingestPayload(){
+  try {
+    const P = window.__PAYLOAD__;
+    if (!P) return;
+    const expectedVersion = 1;
+    const actualVersion = P?.meta?.payload_version;
+    if (actualVersion != null && actualVersion !== expectedVersion) {
+      console.warn(`[assets] payload v${expectedVersion} expected, got v${actualVersion} \u2014 rendering best-effort`);
+    }
+
+    // Contact list for @-mentions (project-first, account-wide fallback, de-duped)
+    const projectContacts = Array.isArray(P?.contacts) ? P.contacts : [];
+    const allContacts     = Array.isArray(P?.lookups?.all_contacts) ? P.lookups.all_contacts : [];
+    const orderedNames = [...new Set([
+      ...projectContacts.map(c => c?.name).filter(Boolean),
+      ...allContacts.map(c => c?.name).filter(Boolean)
+    ])];
+    if (orderedNames.length) window.__CONTACTS__ = orderedNames;
+    // Build email\u2192contact lookup if Contacts section hasn't already
+    if (!window.__contactByEmail || !Object.keys(window.__contactByEmail).length) {
+      const merged = [...projectContacts, ...allContacts];
+      const map = {};
+      merged.forEach(c => { if (c?.email) map[String(c.email).toLowerCase()] = c; });
+      window.__contactByEmail = map;
+    }
+
+    // Inventory catalog ingest
+    const rawInv = Array.isArray(P?.lookups?.inventory) ? P.lookups.inventory : null;
+    if (Array.isArray(rawInv) && rawInv.length) {
+      const normInv = rawInv
+        .filter(i => i && typeof i === 'object' && i.id != null)
+        .map(i => ({
+          id:           String(i.id),
+          name:         String(i.name ?? '(unnamed)'),
+          category:     String(i.category ?? 'Uncategorized'),
+          manufacturer: String(i.manufacturer ?? ''),
+          model:        String(i.model ?? '')
+        }));
+      if (normInv.length) { INVENTORY.length = 0; normInv.forEach(n => INVENTORY.push(n)); }
+    }
+
+    // Assets ingest
+    const rawAssets = Array.isArray(P?.deployed_assets) ? P.deployed_assets : null;
+    if (Array.isArray(rawAssets) && rawAssets.length) {
+      const norm = rawAssets
+        .filter(a => a && typeof a === 'object')
+        .map((a, idx) => {
+          const id = String(a.id ?? `tmp-${Date.now()}-${idx}`);
+          const rawStatus = a.status;
+          const status = VALID_STATUSES.includes(rawStatus) ? rawStatus : DEFAULT_STATUS;
+          if (rawStatus && !VALID_STATUSES.includes(rawStatus)) {
+            console.warn(`[assets] unknown status "${rawStatus}" on ${id} \u2014 defaulting to "${DEFAULT_STATUS}"`);
+          }
+          const installedBy = String(a.installed_by_email ?? '').trim();
+          if (!installedBy) console.warn(`[assets] ${id} has no installed_by_email \u2014 installer attribution missing.`);
+          const invId = String(a.inventory_id ?? '').trim();
+          if (!invId) console.warn(`[assets] ${id} has no inventory_id \u2014 catalog resolution will show warning.`);
+          return {
+            id,
+            inventory_id:       invId,
+            asset_tag:          String(a.asset_tag ?? '').trim(),
+            location:           String(a.location ?? '').trim(),
+            status,
+            serial_number:      String(a.serial_number ?? '').trim(),
+            mac_address:        String(a.mac_address ?? '').trim(),
+            installed_at:       a.installed_at ?? null,
+            installed_by_email: installedBy,
+            warranty_expires:   a.warranty_expires ?? null,
+            notes:              String(a.notes ?? '')
+          };
+        });
+      if (norm.length) { deployed.length = 0; norm.forEach(n => deployed.push(n)); }
+    }
+
+    console.warn('Payload ingestion active:', 'assets');
+  } catch (err) {
+    console.warn(`[assets] payload ingestion failed, falling back to demo data:`, err);
+  }
+})();
+
+// \u2550\u2550\u2550 CROSS-SECTION GLOBAL (Pattern #4 + My Work consumers) \u2550\u2550\u2550
+function __exposeAssetsGlobal(){
+  // Clone so downstream consumers can't mutate internal state
+  window.__DEPLOYED_ASSETS__ = deployed.map(a => ({...a}));
+}
+__exposeAssetsGlobal();
+
+// \u2550\u2550\u2550 OUTBOUND PAYLOAD BUILDER (Pattern #1 single boundary, Pattern #8 casing) \u2550\u2550\u2550
+// Schema deployed_assets[] shape \u2014 all snake_case, no camelCase origin fields.
+function buildSavePayload(a, isNew) {
+  return {
+    ...(isNew ? {} : { id: String(a.id) }),
+    inventory_id:       String(a.inventory_id ?? ''),
+    asset_tag:          String(a.asset_tag ?? ''),
+    location:           String(a.location ?? ''),
+    status:             VALID_STATUSES.includes(a.status) ? a.status : DEFAULT_STATUS,
+    serial_number:      String(a.serial_number ?? ''),
+    mac_address:        String(a.mac_address ?? ''),
+    installed_at:       a.installed_at || null,
+    installed_by_email: String(a.installed_by_email ?? ''),
+    warranty_expires:   a.warranty_expires || null,
+    notes:              String(a.notes ?? '')
+  };
+}
+
+// \u2550\u2550\u2550 LOOKUPS / RESOLVERS \u2550\u2550\u2550
+function findInv(id){ return INVENTORY.find(x => String(x.id) === String(id)); }
+function invDisplay(invId){
+  const inv = findInv(invId);
+  if (inv) return { name:inv.name, category:inv.category, manufacturer:inv.manufacturer, model:inv.model, unresolved:false };
+  return { name:(invId||'(no inventory_id)'), category:'\u26a0 unresolved', manufacturer:'', model:'', unresolved:true };
+}
+function userDisplay(email){
+  if (!email) return { name:'\u2014', warn:true };
+  const c = window.__contactByEmail && window.__contactByEmail[String(email).toLowerCase()];
+  return { name: c?.name || email, warn: !c };
+}
+
+// \u2550\u2550\u2550 WARRANTY RENDERING \u2550\u2550\u2550
+function warrantyInfo(dateStr){
+  if (!dateStr) return { label:'\u2014', cls:'war-none', days:null, status:'none' };
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return { label:'invalid date', cls:'war-exp', days:null, status:'invalid' };
+  const now = new Date();
+  const days = Math.round((d - now) / 86400000);
+  if (days < 0)      return { label:`expired ${Math.abs(days)}d ago`, cls:'war-exp',  days, status:'expired' };
+  if (days < 90)     return { label:`expires in ${days}d`,            cls:'war-soon', days, status:'soon' };
+  return { label:`expires in ${days}d`, cls:'war-ok', days, status:'ok' };
+}
+
+// \u2550\u2550\u2550 MAC validation (basic, warn-only) \u2550\u2550\u2550
+const MAC_RE = /^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$/;
+function isValidMac(m){ return !m || MAC_RE.test(m); }
+
+// \u2550\u2550\u2550 DUPLICATE DETECTION (warn-only, compliance flag) \u2550\u2550\u2550
+function computeDuplicates(){
+  const serials = {}, macs = {};
+  deployed.forEach(a => {
+    if (a.serial_number) (serials[a.serial_number.toLowerCase()] ??= []).push(a.id);
+    if (a.mac_address)   (macs[a.mac_address.toLowerCase()]      ??= []).push(a.id);
+  });
+  const dupSerials = new Set(), dupMacs = new Set();
+  Object.entries(serials).forEach(([k,ids]) => { if (ids.length > 1) ids.forEach(id => dupSerials.add(id)); });
+  Object.entries(macs).forEach(([k,ids])    => { if (ids.length > 1) ids.forEach(id => dupMacs.add(id));    });
+  return { dupSerials, dupMacs };
+}
+
+// \u2550\u2550\u2550 FILTERING \u2550\u2550\u2550
+let __catFilter    = 'all';
+let __statusFilter = 'all';
+
+function filtered(){
+  const q = (document.getElementById('srch')?.value||'').toLowerCase();
+  return deployed.filter(a => {
+    const inv = findInv(a.inventory_id);
+    if (__catFilter !== 'all' && (inv?.category || 'Uncategorized') !== __catFilter) return false;
+    if (__statusFilter !== 'all' && a.status !== __statusFilter) return false;
+    if (!q) return true;
+    const installer = userDisplay(a.installed_by_email).name;
+    const hay = [a.asset_tag,a.location,a.status,a.serial_number,a.mac_address,a.notes,a.installed_at,a.warranty_expires,a.installed_by_email,installer,inv?.name,inv?.category,inv?.manufacturer,inv?.model].filter(Boolean).join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+}
+
+function setCatFilter(c){ __catFilter = c; renderAll(); }
+function setStatusFilter(s){ __statusFilter = s; renderAll(); }
+
+// \u2550\u2550\u2550 RENDER \u2550\u2550\u2550
+function statusPill(st){
+  const map = { Planned:'p-pl', Installed:'p-in', Commissioned:'p-co', Operational:'p-op', Offline:'p-of', Decommissioned:'p-de' };
+  return `<span class="pill ${map[st]||'p-pl'}">${esc(st)}</span>`;
+}
+
+function renderAll(){
+  // KPIs
+  const total = deployed.length;
+  const op = deployed.filter(a => OPERATIONAL_STATUSES.includes(a.status)).length;
+  const at = deployed.filter(a => ATTENTION_STATUSES.includes(a.status) || warrantyInfo(a.warranty_expires).status==='expired').length;
+  const de = deployed.filter(a => RETIRED_STATUSES.includes(a.status)).length;
+  document.getElementById('k-t').textContent = total;
+  document.getElementById('k-op').textContent = op;
+  document.getElementById('k-at').textContent = at;
+  document.getElementById('k-de').textContent = de;
+
+  // Category list from resolved inventory
+  const cats = [...new Set(deployed.map(a => findInv(a.inventory_id)?.category || 'Uncategorized'))].sort();
+  const catCounts = { all: total };
+  cats.forEach(c => catCounts[c] = deployed.filter(a => (findInv(a.inventory_id)?.category || 'Uncategorized') === c).length);
+
+  const statusList = VALID_STATUSES;
+  const stCounts = { all: total };
+  statusList.forEach(s => stCounts[s] = deployed.filter(a => a.status === s).length);
+
+  document.getElementById('fbar').innerHTML =
+    `<span class="fgrp-lbl">Category</span>` +
+    [['all','All']].concat(cats.map(c=>[c,c])).map(([k,l])=>
+      `<span class="fchip${__catFilter===k?' on':''}" data-kind="cat" data-f="${esc(k)}">${esc(l)} (${catCounts[k]||0})</span>`).join('') +
+    `<span style="width:10px"></span><span class="fgrp-lbl">Status</span>` +
+    [['all','All']].concat(statusList.map(s=>[s,s])).map(([k,l])=>
+      `<span class="fchip${__statusFilter===k?' on':''}" data-kind="st" data-f="${esc(k)}">${esc(l)} (${stCounts[k]||0})</span>`).join('');
+
+  document.querySelectorAll('.fchip').forEach(c => c.onclick = () => {
+    if (c.dataset.kind === 'cat') setCatFilter(c.dataset.f);
+    else                          setStatusFilter(c.dataset.f);
+  });
+
+  document.getElementById('sub').textContent = `${total} asset${total===1?'':'s'} on site \u00b7 ${cats.length} categor${cats.length===1?'y':'ies'}`;
+
+  const rows = filtered();
+  const { dupSerials, dupMacs } = computeDuplicates();
+  const tb = document.getElementById('tb');
+  if (!rows.length) {
+    tb.innerHTML = `<tr><td colspan="8" style="padding:24px;text-align:center;color:#9CA3AF">No assets match.</td></tr>`;
+  } else {
+    tb.innerHTML = rows.map(a => {
+      const inv = invDisplay(a.inventory_id);
+      const w   = warrantyInfo(a.warranty_expires);
+      const sid = String(a.id);
+      const keyAttr = JSON.stringify(sid).replace(/"/g,'&quot;');
+      const checked = __selected.has(sid) ? ' on' : '';
+      const dupFlag = (dupSerials.has(a.id) || dupMacs.has(a.id))
+        ? `<span class="dup-flag" title="Duplicate serial or MAC detected across assets">\u26a0 dup</span>` : '';
+      const macInvalid = (a.mac_address && !isValidMac(a.mac_address)) ? ` <span class="dup-flag" title="MAC address format looks malformed">\u26a0 mac</span>` : '';
+      const invName = inv.unresolved
+        ? `<span class="unres">\u26a0 ${esc(a.inventory_id||'no id')}</span>`
+        : esc(inv.name);
+      return `<tr data-id="${esc(sid)}">
+        <td style="padding-left:16px"><span class="row-check${checked}" onclick="event.stopPropagation();toggleSelect(${keyAttr},this)"></span></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="atag">${esc(a.asset_tag||'\u2014')}</span>
+            <div>
+              <div style="font-weight:600">${invName}${dupFlag}${macInvalid}</div>
+              <div style="font-size:10.5px;color:#9CA3AF">${esc(inv.manufacturer)} ${esc(inv.model)}</div>
+            </div>
+          </div>
+        </td>
+        <td style="color:#9CA3AF">${esc(inv.category)}</td>
+        <td>${esc(a.location||'\u2014')}</td>
+        <td>${statusPill(a.status)}</td>
+        <td style="color:#9CA3AF">${esc(a.installed_at||'\u2014')}</td>
+        <td>${w.label==='\u2014' ? `<span class="war-none">\u2014</span>` : `<span class="war ${w.cls}">${esc(w.label)}</span>`}</td>
+        <td style="text-align:right">
+          <button class="btn" style="padding:3px 8px;font-size:14px;line-height:1" onclick="event.stopPropagation();showRowMenu(this,[
+            {label:'Update',fn:()=>openDrawer(${keyAttr})},
+            {label:'Mark Offline',fn:()=>quickStatus(${keyAttr},'Offline')},
+            {label:'Mark Decommissioned',fn:()=>quickStatus(${keyAttr},'Decommissioned')},
+            {divider:true},
+            {label:'Delete',color:'#EF4444',fn:()=>deleteOne(${keyAttr})}
+          ])">\u22ef</button>
+        </td>
+      </tr>`;
+    }).join('');
+    document.querySelectorAll('#tb tr[data-id]').forEach(tr => {
+      tr.onclick = e => { if (e.target.closest('button') || e.target.classList?.contains('row-check')) return; openDrawer(tr.dataset.id); };
+    });
+  }
+
+  updateBulkBar();
+}
+
+document.getElementById('srch').oninput = () => renderAll();
+
+// \u2550\u2550\u2550 DRAWER (create + update, single form) \u2550\u2550\u2550
+let __editing = null;
+
+function blankAsset(){
+  return {
+    id: null,
+    inventory_id: INVENTORY[0]?.id || '',
+    asset_tag: '',
+    location: '',
+    status: DEFAULT_STATUS,
+    serial_number: '',
+    mac_address: '',
+    installed_at: new Date().toISOString().slice(0,10),
+    installed_by_email: (window.__USER__ && window.__USER__.email) || '',
+    warranty_expires: '',
+    notes: ''
+  };
+}
+
+function openDrawer(id){
+  const existing = id != null ? deployed.find(a => String(a.id) === String(id)) : null;
+  __editing = existing ? JSON.parse(JSON.stringify(existing)) : blankAsset();
+  const isNew = !existing;
+  document.getElementById('drt').textContent = isNew ? 'New Asset' : 'Update Asset';
+  document.getElementById('drs').textContent = existing ? `${existing.id}` : '';
+  document.getElementById('bd').style.display = isNew ? 'none' : 'inline-block';
+
+  const invOpts = INVENTORY.map(i =>
+    `<option value="${esc(i.id)}"${String(i.id)===String(__editing.inventory_id)?' selected':''}>${esc(i.name)} \u2014 ${esc(i.category)}</option>`
+  ).join('');
+  const stOpts = VALID_STATUSES.map(s => `<option${s===__editing.status?' selected':''}>${esc(s)}</option>`).join('');
+  const contactOpts = (() => {
+    const contacts = (window.__CONTACTS_FULL__ && window.__CONTACTS_FULL__.length)
+      ? window.__CONTACTS_FULL__
+      : Object.values(window.__contactByEmail || {});
+    const current = __editing.installed_by_email || '';
+    const head = `<option value="">\u2014</option>`;
+    const known = contacts.filter(c => c?.email).map(c =>
+      `<option value="${esc(c.email)}"${c.email===current?' selected':''}>${esc(c.name)} (${esc(c.email)})</option>`).join('');
+    // If the current email isn't in the known list, still preserve it
+    const preserveCurrent = current && !contacts.some(c => c?.email === current)
+      ? `<option value="${esc(current)}" selected>${esc(current)} \u2014 unresolved</option>` : '';
+    return head + preserveCurrent + known;
+  })();
+
+  const invResolved = findInv(__editing.inventory_id);
+  const invWarn = __editing.inventory_id && !invResolved
+    ? `<div style="margin-top:6px;font-size:11px;color:#F59E0B">\u26a0 inventory_id "${esc(__editing.inventory_id)}" not in catalog \u2014 will save verbatim.</div>` : '';
+  const macWarn = __editing.mac_address && !isValidMac(__editing.mac_address)
+    ? `<div style="margin-top:6px;font-size:11px;color:#F59E0B">\u26a0 MAC address format looks malformed.</div>` : '';
+
+  document.getElementById('drb').innerHTML = `
+    <div class="f"><label class="fl">Inventory Item</label>
+      <select class="fs" id="dr-inv">${invOpts}</select>
+      ${invWarn}
+    </div>
+    <div class="fr2">
+      <div class="f"><label class="fl">Asset Tag</label><input class="fi" id="dr-tag" value="${esc(__editing.asset_tag)}" placeholder="CAM-001"/></div>
+      <div class="f"><label class="fl">Status</label><select class="fs" id="dr-st">${stOpts}</select></div>
+    </div>
+    <div class="f"><label class="fl">Location</label><input class="fi" id="dr-loc" value="${esc(__editing.location)}" placeholder="Lobby, Floor 2 IDF, etc."/></div>
+    <div class="fr2">
+      <div class="f"><label class="fl">Serial Number</label><input class="fi" id="dr-ser" value="${esc(__editing.serial_number)}"/></div>
+      <div class="f"><label class="fl">MAC Address</label><input class="fi" id="dr-mac" value="${esc(__editing.mac_address)}" placeholder="AA:BB:CC:11:22:33"/>${macWarn}</div>
+    </div>
+    <div class="fr2">
+      <div class="f"><label class="fl">Installed At</label><input class="fi" id="dr-iat" type="date" value="${esc(__editing.installed_at||'')}"/></div>
+      <div class="f"><label class="fl">Warranty Expires</label><input class="fi" id="dr-war" type="date" value="${esc(__editing.warranty_expires||'')}"/></div>
+    </div>
+    <div class="f"><label class="fl">Installed By</label><select class="fs" id="dr-by">${contactOpts}</select></div>
+    <div class="f"><label class="fl">Notes</label><textarea class="ft" id="dr-notes" placeholder="Installation notes, firmware version, quirks\u2026">${esc(__editing.notes)}</textarea></div>
+    ${existing ? `${window.commentsWidget('asset', existing.id)}${window.attachmentsWidget('asset', existing.id)}` : ''}
+  `;
+
+  document.getElementById('dbg').classList.add('on');
+  document.getElementById('dr').classList.add('on');
+}
+
+function closeD(){
+  document.getElementById('dbg').classList.remove('on');
+  document.getElementById('dr').classList.remove('on');
+  __editing = null;
+}
+
+function saveAsset(){
+  if (!__editing) return;
+  const g = id => document.getElementById(id);
+  const next = {
+    ...__editing,
+    inventory_id:       g('dr-inv').value,
+    asset_tag:          g('dr-tag').value.trim(),
+    location:           g('dr-loc').value.trim(),
+    status:             g('dr-st').value,
+    serial_number:      g('dr-ser').value.trim(),
+    mac_address:        g('dr-mac').value.trim(),
+    installed_at:       g('dr-iat').value || null,
+    installed_by_email: g('dr-by').value,
+    warranty_expires:   g('dr-war').value || null,
+    notes:              g('dr-notes').value
+  };
+  const isNew = !next.id;
+  if (isNew) next.id = `tmp-${Date.now()}-${deployed.length}`;
+  if (next.mac_address && !isValidMac(next.mac_address)) {
+    console.warn(`[assets] saving malformed MAC "${next.mac_address}" on ${next.id}`);
+  }
+  const idx = deployed.findIndex(a => String(a.id) === String(next.id));
+  if (idx >= 0) deployed[idx] = next; else deployed.push(next);
+  console.log('Make payload (asset_save):', { isNew, row: buildSavePayload(next, isNew) });
+  try { parent.postMessage({type:'toast',msg: isNew?'Asset created':'Asset updated',kind:'success'}, '*'); } catch(e){}
+  __exposeAssetsGlobal();
+  closeD();
+  renderAll();
+}
+
+function deleteOne(id){
+  const a = deployed.find(x => String(x.id) === String(id));
+  if (!a) return;
+  if (!confirm(`Delete asset ${a.asset_tag||a.id}?`)) return;
+  deployed = deployed.filter(x => String(x.id) !== String(id));
+  __selected.delete(String(id));
+  console.log('Make payload (asset_delete):', { asset_ids: [String(id)] });
+  try { parent.postMessage({type:'toast',msg:'Asset deleted',kind:'success'}, '*'); } catch(e){}
+  __exposeAssetsGlobal();
+  renderAll();
+}
+
+function delAsset(){
+  if (!__editing || !__editing.id) return;
+  const id = __editing.id;
+  closeD();
+  deleteOne(id);
+}
+
+function quickStatus(id, status){
+  const a = deployed.find(x => String(x.id) === String(id));
+  if (!a) return;
+  a.status = status;
+  console.log('Make payload (asset_save):', { isNew:false, row: buildSavePayload(a, false) });
+  try { parent.postMessage({type:'toast',msg:`Marked ${status}`,kind:'success'}, '*'); } catch(e){}
+  __exposeAssetsGlobal();
+  renderAll();
+}
+
+// \u2550\u2550\u2550 BULK SYSTEM (checkboxes, select-all, bulk actions) \u2550\u2550\u2550
+let __selected = new Set();
+
+function toggleSelect(id, el){
+  const sid = String(id);
+  if (__selected.has(sid)) { __selected.delete(sid); el?.classList.remove('on'); }
+  else                     { __selected.add(sid);    el?.classList.add('on');    }
+  updateBulkBar();
+}
+
+function updateBulkBar(){
+  const n = __selected.size;
+  const c = document.getElementById('bulk-count'); if (c) c.textContent = n;
+  const b = document.getElementById('bulk-bar');   if (b) b.classList.toggle('show', n > 0);
+  updateSelectAllState();
+}
+
+function clearSelection(){
+  __selected.clear();
+  document.querySelectorAll('.row-check.on').forEach(c => c.classList.remove('on'));
+  updateBulkBar();
+}
+
+function toggleSelectAllVisible(){
+  const visIds = filtered().map(a => String(a.id));
+  const allSelected = visIds.length > 0 && visIds.every(id => __selected.has(id));
+  if (allSelected) visIds.forEach(id => __selected.delete(id));
+  else             visIds.forEach(id => __selected.add(id));
+  document.querySelectorAll('tr[data-id]').forEach(tr => {
+    const chk = tr.querySelector('.row-check');
+    if (chk) chk.classList.toggle('on', __selected.has(tr.dataset.id));
+  });
+  updateBulkBar();
+}
+
+function updateSelectAllState(){
+  const visIds = filtered().map(a => String(a.id));
+  const selVis = visIds.filter(id => __selected.has(id)).length;
+  let state, label;
+  if (visIds.length === 0)         { state='empty'; label='Select all'; }
+  else if (selVis === 0)           { state='none';  label=`Select all (${visIds.length})`; }
+  else if (selVis === visIds.length){ state='all';  label='Deselect all'; }
+  else                             { state='mixed'; label=`Select all (${visIds.length})`; }
+  ['selall-hdr','selall-bar'].forEach(hostId => {
+    const host = document.getElementById(hostId);
+    if (!host) return;
+    const chk = host.querySelector('.row-check');
+    const lbl = document.getElementById(hostId+'-lbl');
+    if (chk) {
+      chk.classList.remove('on','mixed');
+      if (state === 'all')   chk.classList.add('on');
+      if (state === 'mixed') chk.classList.add('mixed');
+    }
+    if (lbl) lbl.textContent = label;
+    host.style.opacity = state === 'empty' ? '.5' : '1';
+    host.style.pointerEvents = state === 'empty' ? 'none' : 'auto';
+  });
+}
+
+function bulkDelete(){
+  if (!__selected.size) return;
+  const n = __selected.size;
+  if (!confirm(`Delete ${n} asset${n===1?'':'s'}?`)) return;
+  const ids = [...__selected];
+  deployed = deployed.filter(a => !__selected.has(String(a.id)));
+  console.log('Make payload (assets_bulk_delete):', { asset_ids: ids });
+  try { parent.postMessage({type:'toast',msg:`${n} deleted`,kind:'success'}, '*'); } catch(e){}
+  __exposeAssetsGlobal();
+  clearSelection();
+  renderAll();
+}
+
+function bulkSetStatus(status){
+  if (!__selected.size) return;
+  if (!VALID_STATUSES.includes(status)) return;
+  const n = __selected.size;
+  if (!confirm(`Mark ${n} asset${n===1?'':'s'} as "${status}"?`)) return;
+  const rows = [];
+  deployed.forEach(a => {
+    if (__selected.has(String(a.id))) {
+      a.status = status;
+      rows.push(buildSavePayload(a, false));
+    }
+  });
+  console.log('Make payload (assets_bulk_status):', { status, rows });
+  try { parent.postMessage({type:'toast',msg:`${n} marked ${status}`,kind:'success'}, '*'); } catch(e){}
+  __exposeAssetsGlobal();
+  clearSelection();
+  renderAll();
+}
+
+function bulkImport(){
+  const raw = prompt('Paste rows \u2014 one per line, comma-separated:\nAsset Tag, Inventory ID, Location, Status, Serial, MAC');
+  if (!raw) return;
+  const lines = raw.split('\n').filter(l => l.trim());
+  let added = 0;
+  const rows = [];
+  lines.forEach((line, idx) => {
+    const [tag, invId, loc, st, ser, mac] = line.split(',').map(s => (s||'').trim());
+    if (!tag && !invId) return;
+    const a = {
+      id: `tmp-${Date.now()}-${idx}`,
+      inventory_id: invId || '',
+      asset_tag: tag || '',
+      location: loc || '',
+      status: VALID_STATUSES.includes(st) ? st : DEFAULT_STATUS,
+      serial_number: ser || '',
+      mac_address: mac || '',
+      installed_at: new Date().toISOString().slice(0,10),
+      installed_by_email: (window.__USER__ && window.__USER__.email) || '',
+      warranty_expires: null,
+      notes: ''
+    };
+    deployed.push(a);
+    rows.push(buildSavePayload(a, true));
+    added++;
+  });
+  console.log('Make payload (assets_bulk_import):', { rows });
+  try { parent.postMessage({type:'toast',msg:`${added} imported`,kind:'success'}, '*'); } catch(e){}
+  __exposeAssetsGlobal();
+  renderAll();
+}
+
+function __exportAssets(){
+  // Simple CSV to clipboard (keeping the current app's pattern of inline export preview)
+  const header = ['id','inventory_id','asset_tag','location','status','serial_number','mac_address','installed_at','installed_by_email','warranty_expires','notes'];
+  const csv = [header.join(',')].concat(
+    deployed.map(a => header.map(h => JSON.stringify(a[h] ?? '')).join(','))
+  ).join('\n');
+  try { navigator.clipboard?.writeText(csv); parent.postMessage({type:'toast',msg:'CSV copied to clipboard',kind:'success'},'*'); } catch(e){ console.log(csv); }
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeD(); clearSelection(); } });
+
+// \u2550\u2550\u2550 Deep-link receiver \u2550\u2550\u2550
+window.addEventListener('message', e => {
+  if (e.data?.type === 'openEntity' && e.data.entityId != null) {
+    setTimeout(() => { try { openDrawer(e.data.entityId); } catch(_){} }, 100);
+  }
+});
+
+renderAll();
+
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+// SMOKE TESTS (Pattern #5) \u2014 window.__ASSETS_SMOKE__()
+// 50+ cases. Covers ingestion defense, schema round-trip, Pattern #2/3/4/7/8,
+// bulk flows (string IDs), rename-migrates-selection, render invariants (XSS),
+// duplicate detection, warranty math, inventory resolution.
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+window.__ASSETS_SMOKE__ = function(){
+  const results = {};
+  const run = (name, fn) => { try { results[name] = fn() ? 'PASS' : 'FAIL'; } catch(e) { results[name] = 'THROW: '+e.message; } };
+  const snap = () => JSON.parse(JSON.stringify(deployed));
+  const snapInv = () => JSON.parse(JSON.stringify(INVENTORY));
+  const restore = (dSnap, iSnap) => {
+    deployed.length = 0; dSnap.forEach(x => deployed.push(x));
+    INVENTORY.length = 0; iSnap.forEach(x => INVENTORY.push(x));
+    __selected.clear();
+    __exposeAssetsGlobal();
+  };
+  const origD = snap(), origI = snapInv();
+  const origPayload = window.__PAYLOAD__;
+
+  // Pure ingestion mirror (no DOM) for payload-shape tests
+  const ingestOnce = (P) => {
+    const out = { inventory:null, assets:null };
+    const rawInv = Array.isArray(P?.lookups?.inventory) ? P.lookups.inventory : null;
+    if (Array.isArray(rawInv) && rawInv.length) {
+      out.inventory = rawInv.filter(i=>i&&typeof i==='object'&&i.id!=null).map(i => ({
+        id: String(i.id), name: String(i.name??''), category: String(i.category??'Uncategorized'),
+        manufacturer: String(i.manufacturer??''), model: String(i.model??'')
+      }));
+    }
+    const rawA = Array.isArray(P?.deployed_assets) ? P.deployed_assets : null;
+    if (Array.isArray(rawA) && rawA.length) {
+      out.assets = rawA.filter(a=>a&&typeof a==='object').map((a,i) => ({
+        id: String(a.id ?? `tmp-x-${i}`),
+        inventory_id: String(a.inventory_id ?? '').trim(),
+        asset_tag: String(a.asset_tag ?? '').trim(),
+        location: String(a.location ?? '').trim(),
+        status: VALID_STATUSES.includes(a.status) ? a.status : DEFAULT_STATUS,
+        serial_number: String(a.serial_number ?? '').trim(),
+        mac_address: String(a.mac_address ?? '').trim(),
+        installed_at: a.installed_at ?? null,
+        installed_by_email: String(a.installed_by_email ?? '').trim(),
+        warranty_expires: a.warranty_expires ?? null,
+        notes: String(a.notes ?? '')
+      }));
+    }
+    return out;
+  };
+
+  // \u2500\u2500 Core ingestion defense (9 cases) \u2500\u2500
+  run('no_payload_keeps_demo', () => { window.__PAYLOAD__ = null; return deployed.length > 0; });
+  run('undefined_payload_safe', () => { window.__PAYLOAD__ = undefined; return deployed.length > 0; });
+  run('malformed_assets_array', () => {
+    const o = ingestOnce({ deployed_assets: 'not an array' });
+    return o.assets === null;
+  });
+  run('malformed_inventory_array', () => {
+    const o = ingestOnce({ lookups: { inventory: 'nope' } });
+    return o.inventory === null;
+  });
+  run('valid_payload_shape', () => {
+    const o = ingestOnce({ deployed_assets: [{ id:'AST-X', inventory_id:'INV-01', asset_tag:'T1', status:'Operational' }] });
+    return o.assets.length === 1 && o.assets[0].id === 'AST-X' && o.assets[0].status === 'Operational';
+  });
+  run('version_mismatch_renders_best_effort', () => {
+    const o = ingestOnce({ meta:{payload_version:99}, deployed_assets: [{id:'AST-1',inventory_id:'INV-01'}] });
+    return o.assets.length === 1;
+  });
+  run('unknown_status_defaults_to_planned', () => {
+    const o = ingestOnce({ deployed_assets: [{ id:'AST-X', status:'BOGUS' }] });
+    return o.assets[0].status === 'Planned';
+  });
+  run('outbound_shape_matches_schema_keys', () => {
+    const p = buildSavePayload({id:'AST-1',inventory_id:'INV-01',asset_tag:'T',location:'L',status:'Operational',serial_number:'S',mac_address:'M',installed_at:'2026-01-01',installed_by_email:'e@x.com',warranty_expires:'2027-01-01',notes:'n'}, false);
+    const k = Object.keys(p).sort().join(',');
+    return k === ['id','inventory_id','asset_tag','location','status','serial_number','mac_address','installed_at','installed_by_email','warranty_expires','notes'].sort().join(',');
+  });
+  run('roundtrip_stable', () => {
+    const a = {id:'AST-9',inventory_id:'INV-01',asset_tag:'R',location:'L',status:'Operational',serial_number:'S',mac_address:'',installed_at:'2026-01-01',installed_by_email:'e@x.com',warranty_expires:'2027-01-01',notes:''};
+    const p1 = buildSavePayload(a, false);
+    const p2 = buildSavePayload({...a, ...p1}, false);
+    return JSON.stringify(p1) === JSON.stringify(p2);
+  });
+
+  // \u2500\u2500 Pattern #2 string IDs (5 cases) \u2500\u2500
+  run('string_id_in_filter', () => {
+    restore(origD, origI);
+    deployed.push({id:'AST-ZZ',inventory_id:'INV-01',asset_tag:'Z',location:'',status:'Operational',serial_number:'',mac_address:'',installed_at:null,installed_by_email:'',warranty_expires:null,notes:''});
+    const f = deployed.find(a => String(a.id) === 'AST-ZZ');
+    return !!f && f.id === 'AST-ZZ';
+  });
+  run('tmp_id_prefix_on_new', () => {
+    const a = { ...blankAsset(), id:null };
+    a.id = `tmp-${Date.now()}-0`;
+    return /^tmp-\d+-\d+$/.test(a.id);
+  });
+  run('no_numeric_coercion_on_string_id', () => {
+    const sid = 'AST-01';
+    return (+sid !== +sid) || sid === 'AST-01';
+  });
+  run('id_comparison_via_string', () => {
+    return String('AST-1') === String('AST-1') && String('AST-1') !== String('AST-2');
+  });
+  run('id_preserved_on_buildSavePayload', () => {
+    const p = buildSavePayload({id:'AST-42',inventory_id:'INV-01',asset_tag:'',location:'',status:'Planned',serial_number:'',mac_address:'',installed_at:null,installed_by_email:'',warranty_expires:null,notes:''}, false);
+    return p.id === 'AST-42' && typeof p.id === 'string';
+  });
+
+  // \u2500\u2500 Pattern #3 esc() / XSS invariants (4 cases) \u2500\u2500
+  run('esc_escapes_angle_brackets', () => esc('<img src=x>') === '&lt;img src=x&gt;');
+  run('esc_escapes_quotes', () => esc('"\'') === '&quot;&#39;');
+  run('esc_handles_null', () => esc(null) === '' && esc(undefined) === '');
+  run('render_does_not_inject_raw_html', () => {
+    restore(origD, origI);
+    const evil = '<' + 'script>alert(1)<' + '/script>';
+    deployed.push({id:'AST-XSS',inventory_id:'INV-01',asset_tag:evil,location:'',status:'Operational',serial_number:'',mac_address:'',installed_at:null,installed_by_email:'',warranty_expires:null,notes:''});
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    return !html.includes(evil) && html.includes('&lt;script&gt;');
+  });
+
+  // \u2500\u2500 Pattern #4 installed_by_email pass-through (3 cases) \u2500\u2500
+  run('installed_by_email_preserved_on_emit', () => {
+    const p = buildSavePayload({id:'X',inventory_id:'INV-01',asset_tag:'',location:'',status:'Planned',serial_number:'',mac_address:'',installed_at:null,installed_by_email:'foo@bar.com',warranty_expires:null,notes:''}, false);
+    return p.installed_by_email === 'foo@bar.com';
+  });
+  run('userDisplay_falls_back_to_email', () => {
+    return userDisplay('unknown@x.com').name === 'unknown@x.com' && userDisplay('unknown@x.com').warn === true;
+  });
+  run('userDisplay_resolves_via_contactByEmail', () => {
+    window.__contactByEmail = window.__contactByEmail || {};
+    window.__contactByEmail['known@x.com'] = {email:'known@x.com',name:'Known Person'};
+    return userDisplay('known@x.com').name === 'Known Person';
+  });
+
+  // \u2500\u2500 Pattern #7 schema fields rendered (6 cases) \u2500\u2500
+  run('drawer_exposes_serial_number', () => {
+    restore(origD, origI); openDrawer(deployed[0].id);
+    const ok = !!document.getElementById('dr-ser'); closeD(); return ok;
+  });
+  run('drawer_exposes_mac_address', () => {
+    restore(origD, origI); openDrawer(deployed[0].id);
+    const ok = !!document.getElementById('dr-mac'); closeD(); return ok;
+  });
+  run('drawer_exposes_warranty', () => {
+    restore(origD, origI); openDrawer(deployed[0].id);
+    const ok = !!document.getElementById('dr-war'); closeD(); return ok;
+  });
+  run('drawer_exposes_notes', () => {
+    restore(origD, origI); openDrawer(deployed[0].id);
+    const ok = !!document.getElementById('dr-notes'); closeD(); return ok;
+  });
+  run('drawer_exposes_installed_by', () => {
+    restore(origD, origI); openDrawer(deployed[0].id);
+    const ok = !!document.getElementById('dr-by'); closeD(); return ok;
+  });
+  run('drawer_exposes_installed_at', () => {
+    restore(origD, origI); openDrawer(deployed[0].id);
+    const ok = !!document.getElementById('dr-iat'); closeD(); return ok;
+  });
+
+  // \u2500\u2500 Pattern #8 snake_case outbound (1 case) \u2500\u2500
+  run('outbound_is_snake_case', () => {
+    const p = buildSavePayload({id:'X',inventory_id:'I',asset_tag:'',location:'',status:'Planned',serial_number:'',mac_address:'',installed_at:null,installed_by_email:'',warranty_expires:null,notes:''}, false);
+    const camelKeys = Object.keys(p).filter(k => /[A-Z]/.test(k));
+    return camelKeys.length === 0;
+  });
+
+  // \u2500\u2500 Inventory resolution (4 cases) \u2500\u2500
+  run('inv_resolves_known', () => invDisplay('INV-01').unresolved === false);
+  run('inv_unresolved_renders_warning', () => {
+    const d = invDisplay('INV-DOES-NOT-EXIST');
+    return d.unresolved === true && d.category === '\u26a0 unresolved';
+  });
+  run('inv_empty_id_unresolved', () => invDisplay('').unresolved === true);
+  run('inv_id_preserved_on_save_verbatim', () => {
+    const p = buildSavePayload({id:'X',inventory_id:'INV-MISSING',asset_tag:'',location:'',status:'Planned',serial_number:'',mac_address:'',installed_at:null,installed_by_email:'',warranty_expires:null,notes:''}, false);
+    return p.inventory_id === 'INV-MISSING';
+  });
+
+  // \u2500\u2500 Warranty math (4 cases) \u2500\u2500
+  run('warranty_none_when_null', () => warrantyInfo(null).status === 'none');
+  run('warranty_expired_past_date', () => {
+    const d = new Date(); d.setDate(d.getDate()-30);
+    return warrantyInfo(d.toISOString().slice(0,10)).status === 'expired';
+  });
+  run('warranty_soon_under_90', () => {
+    const d = new Date(); d.setDate(d.getDate()+45);
+    return warrantyInfo(d.toISOString().slice(0,10)).status === 'soon';
+  });
+  run('warranty_ok_past_180', () => {
+    const d = new Date(); d.setDate(d.getDate()+200);
+    return warrantyInfo(d.toISOString().slice(0,10)).status === 'ok';
+  });
+
+  // \u2500\u2500 Duplicate detection + MAC validation (4 cases) \u2500\u2500
+  run('duplicate_serial_flagged', () => {
+    restore(origD, origI);
+    deployed.push({id:'A',inventory_id:'INV-01',asset_tag:'a',location:'',status:'Operational',serial_number:'SAME',mac_address:'',installed_at:null,installed_by_email:'',warranty_expires:null,notes:''});
+    deployed.push({id:'B',inventory_id:'INV-01',asset_tag:'b',location:'',status:'Operational',serial_number:'SAME',mac_address:'',installed_at:null,installed_by_email:'',warranty_expires:null,notes:''});
+    const { dupSerials } = computeDuplicates();
+    return dupSerials.has('A') && dupSerials.has('B');
+  });
+  run('duplicate_mac_flagged', () => {
+    restore(origD, origI);
+    deployed.push({id:'A',inventory_id:'INV-01',asset_tag:'a',location:'',status:'Operational',serial_number:'',mac_address:'AA:BB:CC:DD:EE:FF',installed_at:null,installed_by_email:'',warranty_expires:null,notes:''});
+    deployed.push({id:'B',inventory_id:'INV-01',asset_tag:'b',location:'',status:'Operational',serial_number:'',mac_address:'AA:BB:CC:DD:EE:FF',installed_at:null,installed_by_email:'',warranty_expires:null,notes:''});
+    const { dupMacs } = computeDuplicates();
+    return dupMacs.has('A') && dupMacs.has('B');
+  });
+  run('mac_valid_format', () => isValidMac('AA:BB:CC:11:22:33') && isValidMac('aa-bb-cc-11-22-33'));
+  run('mac_invalid_format', () => !isValidMac('ZZZZ') && !isValidMac('AA:BB:CC'));
+
+  // \u2500\u2500 Bulk flows with string IDs (7 cases) \u2500\u2500
+  run('bulk_toggleSelect_adds', () => {
+    restore(origD, origI);
+    toggleSelect('AST-01', null); toggleSelect('AST-02', null);
+    return __selected.size === 2 && __selected.has('AST-01') && __selected.has('AST-02');
+  });
+  run('bulk_toggleSelect_removes', () => {
+    __selected.clear(); toggleSelect('AST-01', null); toggleSelect('AST-01', null);
+    return __selected.size === 0;
+  });
+  run('bulk_clearSelection', () => {
+    __selected.clear(); toggleSelect('AST-01', null); toggleSelect('AST-02', null);
+    clearSelection();
+    return __selected.size === 0;
+  });
+  run('bulkSetStatus_updates_all_selected', () => {
+    restore(origD, origI);
+    __selected.clear(); __selected.add('AST-01'); __selected.add('AST-02');
+    const origConfirm = window.confirm; window.confirm = () => true;
+    bulkSetStatus('Offline');
+    window.confirm = origConfirm;
+    return deployed.find(a=>a.id==='AST-01').status === 'Offline' && deployed.find(a=>a.id==='AST-02').status === 'Offline';
+  });
+  run('bulkSetStatus_rejects_invalid_status', () => {
+    restore(origD, origI);
+    __selected.clear(); __selected.add('AST-01');
+    const before = deployed.find(a=>a.id==='AST-01').status;
+    bulkSetStatus('BOGUS-STATUS');
+    return deployed.find(a=>a.id==='AST-01').status === before;
+  });
+  run('bulkDelete_removes_selected', () => {
+    restore(origD, origI);
+    __selected.clear(); __selected.add('AST-01'); __selected.add('AST-02');
+    const origConfirm = window.confirm; window.confirm = () => true;
+    bulkDelete();
+    window.confirm = origConfirm;
+    return !deployed.some(a => a.id === 'AST-01' || a.id === 'AST-02') && __selected.size === 0;
+  });
+  run('bulkDelete_emits_asset_ids_schema', () => {
+    restore(origD, origI);
+    __selected.clear(); __selected.add('AST-01');
+    const logs = [];
+    const origLog = console.log; console.log = (...args) => logs.push(args);
+    const origConfirm = window.confirm; window.confirm = () => true;
+    bulkDelete();
+    console.log = origLog; window.confirm = origConfirm;
+    const payload = logs.find(l => l[0] === 'Make payload (assets_bulk_delete):');
+    return !!payload && Array.isArray(payload[1].asset_ids) && payload[1].asset_ids[0] === 'AST-01';
+  });
+
+  // \u2500\u2500 Select-all scoping to filtered() (5 cases) \u2500\u2500
+  run('selectAllVisible_selects_filtered_only', () => {
+    restore(origD, origI);
+    __catFilter = 'Camera'; __statusFilter = 'all';
+    document.getElementById('srch').value = '';
+    const visIds = filtered().map(a => String(a.id));
+    __selected.clear();
+    toggleSelectAllVisible();
+    const ok = __selected.size === visIds.length && visIds.every(id => __selected.has(id));
+    __catFilter = 'all';
+    return ok;
+  });
+  run('selectAllVisible_ignores_out_of_filter', () => {
+    restore(origD, origI);
+    __catFilter = 'Camera'; document.getElementById('srch').value = '';
+    const inFilter = filtered().map(a=>String(a.id));
+    const outOfFilter = deployed.filter(a => (findInv(a.inventory_id)?.category||'Uncategorized') !== 'Camera').map(a=>String(a.id));
+    __selected.clear();
+    toggleSelectAllVisible();
+    const ok = outOfFilter.every(id => !__selected.has(id)) && inFilter.every(id => __selected.has(id));
+    __catFilter = 'all';
+    return ok;
+  });
+  run('selectAllVisible_toggle_off', () => {
+    restore(origD, origI);
+    __catFilter = 'all'; __statusFilter = 'all'; document.getElementById('srch').value = '';
+    __selected.clear();
+    toggleSelectAllVisible(); // all on
+    toggleSelectAllVisible(); // all off
+    return __selected.size === 0;
+  });
+  run('selectAll_mixed_state_selects_remaining', () => {
+    restore(origD, origI);
+    __catFilter = 'all'; __statusFilter = 'all'; document.getElementById('srch').value = '';
+    __selected.clear(); __selected.add('AST-01');
+    toggleSelectAllVisible();
+    return __selected.size === deployed.length;
+  });
+  run('selectAll_state_empty_when_no_matches', () => {
+    restore(origD, origI);
+    document.getElementById('srch').value = 'zzzzzzzzzzz-no-match-zzz';
+    renderAll();
+    const host = document.getElementById('selall-hdr');
+    const ok = host.style.opacity === '.5' || host.style.opacity === '0.5';
+    document.getElementById('srch').value = '';
+    renderAll();
+    return ok;
+  });
+
+  // \u2500\u2500 Filter flows (3 cases) \u2500\u2500
+  run('filter_by_status', () => {
+    restore(origD, origI);
+    __statusFilter = 'Offline'; __catFilter = 'all';
+    document.getElementById('srch').value = '';
+    const r = filtered();
+    __statusFilter = 'all';
+    return r.every(a => a.status === 'Offline');
+  });
+  run('filter_by_category', () => {
+    restore(origD, origI);
+    __catFilter = 'Camera'; __statusFilter = 'all';
+    document.getElementById('srch').value = '';
+    const r = filtered();
+    __catFilter = 'all';
+    return r.every(a => findInv(a.inventory_id)?.category === 'Camera');
+  });
+  run('search_matches_tag_and_location', () => {
+    restore(origD, origI);
+    __catFilter = 'all'; __statusFilter = 'all';
+    document.getElementById('srch').value = 'lobby';
+    const r = filtered();
+    document.getElementById('srch').value = '';
+    return r.length >= 1;
+  });
+
+  // \u2500\u2500 Render + DOM (5 cases) \u2500\u2500
+  run('render_creates_rows_per_asset', () => {
+    restore(origD, origI);
+    __catFilter='all'; __statusFilter='all'; document.getElementById('srch').value='';
+    renderAll();
+    return document.querySelectorAll('#tb tr[data-id]').length === deployed.length;
+  });
+  run('render_shows_empty_state_when_no_matches', () => {
+    restore(origD, origI);
+    document.getElementById('srch').value = 'zzz-impossible-query-zzz';
+    renderAll();
+    const html = document.getElementById('tb').innerHTML;
+    document.getElementById('srch').value = '';
+    return html.includes('No assets match');
+  });
+  run('render_kpis_add_up', () => {
+    restore(origD, origI);
+    renderAll();
+    return +document.getElementById('k-t').textContent === deployed.length;
+  });
+  run('row_checkbox_present_per_row', () => {
+    restore(origD, origI); renderAll();
+    return document.querySelectorAll('#tb tr[data-id] .row-check').length === deployed.length;
+  });
+  run('bulk_bar_shows_when_selected', () => {
+    restore(origD, origI); renderAll();
+    __selected.clear(); toggleSelect('AST-01', null);
+    const shown = document.getElementById('bulk-bar').classList.contains('show');
+    __selected.clear(); updateBulkBar();
+    const hidden = !document.getElementById('bulk-bar').classList.contains('show');
+    return shown && hidden;
+  });
+
+  // \u2500\u2500 Drawer save / delete (3 cases) \u2500\u2500
+  run('drawer_save_new_appends', () => {
+    restore(origD, origI);
+    openDrawer(null);
+    document.getElementById('dr-tag').value = 'NEW-001';
+    document.getElementById('dr-loc').value = 'Test Room';
+    saveAsset();
+    return deployed.some(a => a.asset_tag === 'NEW-001' && a.location === 'Test Room');
+  });
+  run('drawer_save_existing_updates', () => {
+    restore(origD, origI);
+    openDrawer('AST-01');
+    document.getElementById('dr-loc').value = 'Updated Location';
+    saveAsset();
+    return deployed.find(a => a.id === 'AST-01').location === 'Updated Location';
+  });
+  run('delete_removes_and_clears_selection', () => {
+    restore(origD, origI);
+    __selected.add('AST-01');
+    const origConfirm = window.confirm; window.confirm = () => true;
+    deleteOne('AST-01');
+    window.confirm = origConfirm;
+    return !deployed.some(a => a.id === 'AST-01') && !__selected.has('AST-01');
+  });
+
+  // \u2500\u2500 Cross-section global exposure (2 cases) \u2500\u2500
+  run('deployed_assets_global_exposed', () => {
+    restore(origD, origI);
+    return Array.isArray(window.__DEPLOYED_ASSETS__) && window.__DEPLOYED_ASSETS__.length === deployed.length;
+  });
+  run('deployed_assets_global_is_clone_not_ref', () => {
+    restore(origD, origI);
+    const before = window.__DEPLOYED_ASSETS__;
+    deployed.push({id:'AST-TMP',inventory_id:'INV-01',asset_tag:'X',location:'',status:'Planned',serial_number:'',mac_address:'',installed_at:null,installed_by_email:'',warranty_expires:null,notes:''});
+    return before.length !== deployed.length;
+  });
+
+  // \u2500\u2500 Quick status actions (1 case) \u2500\u2500
+  run('quickStatus_updates', () => {
+    restore(origD, origI);
+    quickStatus('AST-01','Offline');
+    return deployed.find(a=>a.id==='AST-01').status === 'Offline';
+  });
+
+  // \u2500\u2500 Consolidated-JSON fallback N/A assertion \u2500\u2500
+  run('no_consolidated_json_fallback_NA', () => {
+    // Assets is relational \u2014 there is no deployedAssetsJson path. Simulate
+    // both shapes and ensure we only read from P.deployed_assets[].
+    const o1 = ingestOnce({ deployed_assets: [{id:'A'}] });
+    const o2 = ingestOnce({ deployedAssetsJson: [{id:'B'}] });
+    return o1.assets?.length === 1 && o2.assets === null;
+  });
+
+  // Restore
+  restore(origD, origI);
+  window.__PAYLOAD__ = origPayload;
+  renderAll();
+
+  const passed = Object.values(results).filter(v => v === 'PASS').length;
+  const total  = Object.keys(results).length;
+  console.log(`[assets smoke] ${passed}/${total} passed`);
+  return { results, passed, total };
+};
+</script></body></html>

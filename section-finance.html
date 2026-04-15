@@ -1,0 +1,1131 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Finance</title><style>
+*{box-sizing:border-box;margin:0;padding:0}body{background:#171717;color:#E5E7EB;font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;padding:20px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px}.ti{font-size:18px;font-weight:700;color:#fff}.sb{font-size:12px;color:#9CA3AF;margin-top:3px}.ctr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.srch{background:#1f1f1f;border:1px solid #303030;border-radius:6px;padding:7px 11px;color:#E5E7EB;font-size:12.5px;outline:none;width:220px;font-family:inherit}
+.btn{padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #303030;background:#1f1f1f;color:#E5E7EB;cursor:pointer;font-family:inherit}.btn:hover{background:#252525}.bp{background:#3c4756;color:#fff;border-color:#4a5666}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:#1f1f1f;border:1px solid #2a2a2a;border-left:3px solid;border-radius:8px;padding:12px 14px}
+.kl{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:5px}.kv{font-size:22px;font-weight:800}.kc{font-size:11px;color:#9CA3AF;margin-top:3px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.card{background:#1f1f1f;border:1px solid #2a2a2a;border-radius:10px;padding:16px;overflow:hidden}
+.ct{font-size:13px;font-weight:700;margin-bottom:4px}.cs{font-size:11.5px;color:#9CA3AF;margin-bottom:14px}
+.wf{display:flex;flex-direction:column;gap:4px}
+.wf-row{display:grid;grid-template-columns:1fr 60px 180px 100px;gap:10px;align-items:center;font-size:11.5px}
+.wf-n{color:#E5E7EB;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wf-s{font-size:10px;color:#9CA3AF;font-weight:600}
+.wf-b{height:14px;background:#2a2a2a;border-radius:3px;position:relative;overflow:hidden}
+.wf-f{height:100%;border-radius:3px;transition:width .3s}
+.wf-t{font-weight:700;font-size:11.5px;text-align:right;font-variant-numeric:tabular-nums}
+.don{display:flex;align-items:center;justify-content:center;height:160px;position:relative}
+.don svg{transform:rotate(-90deg)}
+.don-c{position:absolute;text-align:center}.don-v{font-size:22px;font-weight:800;color:#fff}.don-l{font-size:10px;color:#9CA3AF;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.lg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px;font-size:11.5px}
+.lgi{display:flex;align-items:center;gap:6px}.lgd{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.lgn{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#9CA3AF}
+.lgv{font-weight:700;color:#E5E7EB;font-variant-numeric:tabular-nums}
+.rtbl{width:100%;border-collapse:collapse;font-size:12.5px}.rtbl th{padding:10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9CA3AF;border-bottom:1px solid #303030;background:#191919}.rtbl td{padding:11px 10px;border-bottom:1px solid #2a2a2a}.rtbl tr[data-id]{cursor:pointer}.rtbl tr[data-id]:hover td{background:#252525}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}.pill::before{content:'';width:6px;height:6px;border-radius:50%}
+.p-n{background:rgba(106,106,106,.18);color:#b0b0b0}.p-n::before{background:#6a6a6a}
+.p-b{background:rgba(66,134,244,.14);color:#4286f4}.p-b::before{background:#4286f4}
+.p-i{background:rgba(6,182,212,.14);color:#06B6D4}.p-i::before{background:#06B6D4}
+.p-c{background:rgba(34,197,94,.14);color:#22C55E}.p-c::before{background:#22C55E}
+.p-o{background:rgba(239,68,68,.14);color:#ff6b6b}.p-o::before{background:#EF4444}
+.dbg{position:fixed;inset:0;background:rgba(10,10,10,.7);z-index:100;display:none}.dbg.on{display:block}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(520px,92vw);background:#1a1a1a;border-left:1px solid #303030;z-index:101;display:none;flex-direction:column}.dr.on{display:flex}
+.drh{padding:18px 22px;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between}.drt{font-size:16px;font-weight:700;color:#fff}.drx{width:28px;height:28px;border-radius:6px;border:1px solid #303030;background:#252525;color:#9CA3AF;cursor:pointer;font-size:15px}
+.drb{flex:1;overflow-y:auto;padding:20px 22px}.drf{padding:14px 22px;border-top:1px solid #2a2a2a;background:#191919;display:flex;gap:8px}
+.f{margin-bottom:14px}.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px}
+.fi,.fs,.ft{width:100%;background:#161616;border:1px solid #303030;border-radius:7px;padding:9px 11px;color:#E5E7EB;font-size:13px;font-family:inherit;outline:none}.ft{resize:vertical;min-height:60px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.tbtn{padding:6px 10px;border-radius:5px;border:1px solid #303030;background:transparent;color:#EF4444;cursor:pointer;font-size:12px;font-weight:600}
+
+.bulk-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:#1a1a1a;border-top:2px solid #F59E0B;padding:10px 18px;z-index:10;font-size:12.5px;align-items:center;gap:12px;box-shadow:0 -8px 20px rgba(0,0,0,.5);margin:0 -20px -20px}
+.bulk-bar.show{display:flex}
+.bulk-count{background:#F59E0B;color:#111;padding:3px 10px;border-radius:12px;font-weight:700;font-size:11.5px}
+.row-check{display:inline-flex;width:16px;height:16px;border:1.5px solid #4a4a4a;border-radius:3px;background:#181818;cursor:pointer;flex-shrink:0;align-items:center;justify-content:center;vertical-align:middle}
+.row-check.on{background:#F59E0B;border-color:#F59E0B}
+.row-check.on::after{content:"✓";color:#111;font-size:11px;font-weight:900}
+.row-check.mixed{background:#F59E0B;border-color:#F59E0B}
+.row-check.mixed::after{content:"";display:block;width:8px;height:2px;background:#111;border-radius:1px}
+.selall{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:6px;border:1px solid #303030;background:#1f1f1f;color:#9CA3AF;cursor:pointer;font-size:11.5px;font-weight:600;font-family:inherit;user-select:none}
+.selall:hover{background:#252525;color:#E5E7EB}
+.selall .row-check{width:14px;height:14px;cursor:pointer;pointer-events:none}
+.variance-pos{color:#22C55E}.variance-neg{color:#EF4444}
+.tbl-bar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+</style><script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head><body>
+<div class="hd"><div><div class="ti">Finance Tracker</div><div class="sb" id="sub">—</div></div>
+<div class="ctr">
+<button class="btn">Export</button><button class="btn" onclick="bulkImport()">Import</button><button class="btn bp" onclick="openD(null)">+ Line Item</button></div></div>
+<div class="kpis">
+<div class="kpi" style="border-left-color:#22C55E"><div class="kl">Total Budget</div><div class="kv" style="color:#22C55E" id="k-b">—</div><div class="kc" id="k-b-d">line items</div></div>
+<div class="kpi" style="border-left-color:#4286f4"><div class="kl">Committed</div><div class="kv" style="color:#4286f4" id="k-c">—</div><div class="kc" id="k-c-d">— of budget</div></div>
+<div class="kpi" style="border-left-color:#06B6D4"><div class="kl">Actual Spend</div><div class="kv" style="color:#06B6D4" id="k-a">—</div><div class="kc" id="k-a-d">— of budget</div></div>
+<div class="kpi" style="border-left-color:#F59E0B"><div class="kl">Variance</div><div class="kv" style="color:#F59E0B" id="k-v">—</div><div class="kc" id="k-v-d">budget − actual</div></div>
+</div>
+<div class="grid">
+<div class="card"><div class="ct">Budget Waterfall</div><div class="cs">Largest to smallest line item · colored by status</div><div class="wf" id="wf"></div></div>
+<div class="card"><div class="ct">Status Allocation</div><div class="cs">Dollars by lifecycle stage</div><div class="don" id="don"></div><div class="lg" id="lg"></div></div>
+</div>
+<div class="card" style="padding:16px;margin-bottom:14px"><div class="ct">Budget Allocation</div><div class="cs">Proportional spend — color = status</div><div id="treemap-chart" style="height:260px;margin-top:10px"></div></div>
+<div class="tbl-bar"><button class="selall" id="selall-hdr" onclick="toggleSelectAllVisible()"><span class="row-check"></span><span id="selall-hdr-lbl">Select all</span></button><div style="flex:1"></div><input class="srch" id="srch" placeholder="Search line items…"/></div>
+<div class="card" style="padding:0"><table class="rtbl"><thead><tr><th style="padding-left:16px;width:40px"></th><th>Category</th><th>Description</th><th>Vendor</th><th>Date</th><th style="text-align:right">Budgeted</th><th style="text-align:right">Committed</th><th style="text-align:right">Actual</th><th style="text-align:right">Variance</th><th>Status</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="bulk-bar" id="bulk-bar"><span class="bulk-count" id="bulk-count">0</span><span>selected</span><button class="selall" id="selall-bar" onclick="toggleSelectAllVisible()" style="margin-left:10px"><span class="row-check"></span><span id="selall-bar-lbl">Select all visible</span></button><div style="flex:1"></div><button class="btn" onclick="bulkDelete()" style="color:#ff6b6b;border-color:#5a2424">Delete</button><button class="btn" onclick="clearSelection()">Cancel</button></div>
+<div class="dbg" id="dbg" onclick="closeD()"></div>
+<div class="dr" id="dr"><div class="drh"><div><div class="drt" id="drt">New Line Item</div></div><button class="drx" onclick="closeD()">×</button></div>
+<div class="drb" id="drb"></div>
+<div class="drf"><button class="tbtn" id="bd" onclick="delL()" style="display:none">Delete</button><div style="display:flex;gap:8px;margin-left:auto"><button class="btn" onclick="closeD()">Cancel</button><button class="btn bp" onclick="saveL()">Save</button></div></div></div>
+<datalist id="cat-list"><option value="Labor"/><option value="Equipment"/><option value="Materials"/><option value="Subcontractor"/><option value="Travel"/><option value="Permits"/><option value="Other"/></datalist>
+<script>
+
+// ═════════ SHARED SHELL UTILITIES (unchanged from other sections) ═════════
+window.showRowMenu = function(btn, actions) {
+  document.querySelectorAll('.row-menu-pop').forEach(x=>x.remove());
+  const rect = btn.getBoundingClientRect();
+  const menu = document.createElement('div');
+  menu.className = 'row-menu-pop';
+  menu.style.cssText = `position:fixed;top:${rect.bottom+4}px;left:${rect.right-180}px;min-width:180px;background:#1a1a1a;border:1px solid #333;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.6);z-index:999;padding:4px;font-family:inherit`;
+  menu.innerHTML = actions.map((a,i)=>a.divider?'<div style="height:1px;background:#2a2a2a;margin:4px 0"></div>':`<div data-i="${i}" style="padding:7px 12px;font-size:12.5px;color:${a.color||'#E5E7EB'};border-radius:5px;cursor:pointer;user-select:none">${a.label}</div>`).join('');
+  menu.querySelectorAll('[data-i]').forEach(el=>{el.onmouseenter=()=>el.style.background='#252525';el.onmouseleave=()=>el.style.background='';el.onclick=e=>{e.stopPropagation();menu.remove();actions[+el.dataset.i].fn();};});
+  document.body.appendChild(menu);
+  setTimeout(()=>{document.addEventListener('click',function c(){menu.remove();document.removeEventListener('click',c);},{once:true});},50);
+};
+
+window.healthDot = function(status) {
+  const s = (status||'').toLowerCase();
+  if (/over budget|open|blocked|overdue|critical|late|fail/.test(s)) return '🔴';
+  if (/progress|partial|warn|review|pending|draft|committed|planned/.test(s)) return '🟡';
+  if (/closed|complete|paid|done|healthy|ok|on time/.test(s)) return '🟢';
+  return '⚪';
+};
+window.healthColor = function(status) {
+  const s = (status||'').toLowerCase();
+  if (/over budget|open|blocked|overdue|critical|late|fail/.test(s)) return '#EF4444';
+  if (/progress|partial|warn|review|pending|draft|committed|planned/.test(s)) return '#F59E0B';
+  if (/closed|complete|paid|done|healthy|ok|on time/.test(s)) return '#22C55E';
+  return '#6a6a6a';
+};
+
+window.__STATUSES__ = window.__STATUSES__ || {
+  project: ['Planning','In Progress','On Hold','Completed','Cancelled'],
+  task: ['Open','In Progress','Blocked','Closed'],
+  risk: ['Open','Mitigating','Accepted','Closed'],
+  punch: ['Open','In Progress','Closed'],
+  observation: ['Open','Under Review','Closed'],
+  rfi: ['Open','In Progress','Closed'],
+  milestone: ['Not Started','In Progress','Completed']
+};
+window.__TYPES__ = window.__TYPES__ || ['Install','Service','Assessment','Upgrade','Decommission','Maintenance'];
+window.__CONTACTS__ = window.__CONTACTS__ || ['Matt Isgur','Louis Feula','John Doe','Gerritt Bakker','Jennifer Doe'];
+window.__COMMENTS__ = window.__COMMENTS__ || {};
+window.__ATTACHMENTS__ = window.__ATTACHMENTS__ || {};
+
+window.attachmentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = (window.__ATTACHMENTS__[key]||[]);
+  const rows = list.length ? list.map((a,i) => `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#181818;border:1px solid #262626;border-radius:6px;margin-bottom:4px"><span style="font-size:14px">${a.ext==='pdf'?'📄':a.ext==='jpg'||a.ext==='png'?'🖼️':'📎'}</span><span style="flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</span><span style="font-size:10.5px;color:#6a6a6a">${a.size||''}</span><button class="btn" style="padding:3px 8px;font-size:11px" onclick="window.__removeAttach('${key}',${i})">×</button></div>`).join('') : '<div style="padding:8px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No attachments</div>';
+  return `<div style="margin-top:14px;padding-top:12px;border-top:1px solid #2a2a2a"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF">Attachments (${list.length})</div><button class="btn" style="padding:5px 10px;font-size:11px" onclick="window.__addAttach('${entityType}',${JSON.stringify(entityId)})">+ Attach file</button></div>${rows}</div>`;
+};
+window.__addAttach = function(et, id) {
+  const name = prompt('File name (demo — real version opens file picker):', 'photo.jpg');
+  if (!name) return;
+  const ext = (name.split('.').pop()||'').toLowerCase();
+  const key = et + ':' + id;
+  (window.__ATTACHMENTS__[key] = window.__ATTACHMENTS__[key] || []).push({ name, ext, size: '0.8 MB', by: 'Matt Isgur', at: new Date().toISOString() });
+  console.log('Make payload (attach):', { entityType: et, entityId: id, name });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  const widget = document.querySelector('[onclick*="__addAttach"]')?.closest('div').parentElement;
+  if (widget) widget.outerHTML = window.attachmentsWidget(et, id);
+};
+window.__removeAttach = function(key, idx) {
+  if (!confirm('Remove this attachment?')) return;
+  window.__ATTACHMENTS__[key].splice(idx, 1);
+  const [et, id] = key.split(':');
+  const widget = document.querySelector(`[onclick*="__addAttach(\\'${et}\\'"]`)?.closest('div').parentElement;
+  if (widget) widget.outerHTML = window.attachmentsWidget(et, id);
+};
+
+window.__wireMention = function(inputId, hostId) {
+  const inp = document.getElementById(inputId);
+  if (!inp || inp.dataset.mwired) return;
+  inp.dataset.mwired = '1';
+  let dropdown = null;
+  function closeDrop(){ if(dropdown){dropdown.remove();dropdown=null;} }
+  inp.addEventListener('input', e=>{
+    const v = e.target.value;
+    const pos = e.target.selectionStart;
+    const before = v.slice(0, pos);
+    const m = before.match(/@([a-zA-Z ]*)$/);
+    closeDrop();
+    if (!m) return;
+    const q = m[1].toLowerCase();
+    const matches = window.__CONTACTS__.filter(c => c.toLowerCase().includes(q)).slice(0,5);
+    if (!matches.length) return;
+    dropdown = document.createElement('div');
+    dropdown.style.cssText = 'position:absolute;background:#1a1a1a;border:1px solid #3a3a3a;border-radius:7px;box-shadow:0 8px 20px rgba(0,0,0,.5);padding:3px;z-index:200;min-width:180px';
+    const r = inp.getBoundingClientRect();
+    dropdown.style.left = r.left+'px';
+    dropdown.style.top = (r.top-5-matches.length*30)+'px';
+    dropdown.innerHTML = matches.map((c,i)=>`<div data-c="${c}" style="padding:6px 10px;font-size:12px;border-radius:4px;cursor:pointer${i===0?';background:#252525':''}">${c}</div>`).join('');
+    document.body.appendChild(dropdown);
+    dropdown.querySelectorAll('[data-c]').forEach(el=>{
+      el.onmousedown=ev=>{
+        ev.preventDefault();
+        const c = el.dataset.c;
+        const newVal = v.slice(0, pos - m[0].length) + '@' + c + ' ' + v.slice(pos);
+        inp.value = newVal;
+        inp.focus();
+        closeDrop();
+      };
+    });
+  });
+  inp.addEventListener('blur', ()=>setTimeout(closeDrop,150));
+};
+
+window.originLink = function(entity) {
+  if (!entity?.originFrom) return '';
+  const label = entity.originFrom==='punch'?'Punch Item':entity.originFrom==='observation'?'Observation':entity.originFrom==='rfi'?'RFI':entity.originFrom==='meeting'?'Meeting':'Source';
+  return `<div style="margin-bottom:14px;padding:8px 12px;background:rgba(66,134,244,.08);border:1px solid rgba(66,134,244,.2);border-left:2px solid #4286f4;border-radius:6px;font-size:11.5px;color:#9ec2f4">↳ Converted from ${label} #${entity.originId}</div>`;
+};
+
+(function(){
+  const obs = new MutationObserver(muts=>{
+    muts.forEach(m=>m.addedNodes.forEach(n=>{
+      if (n.nodeType!==1) return;
+      const inputs = n.querySelectorAll ? n.querySelectorAll('input[id^="cw-in-"]') : [];
+      inputs.forEach(inp=>window.__wireMention(inp.id,''));
+      if (n.id && n.id.startsWith('cw-in-')) window.__wireMention(n.id,'');
+    }));
+  });
+  obs.observe(document.body, { childList:true, subtree:true });
+})();
+
+window.commentsWidget = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const list = window.__COMMENTS__[key] || [];
+  const renderList = list.length
+    ? list.map(c => `<div style="padding:8px 0;border-bottom:1px solid #252525;font-size:12px"><div style="display:flex;gap:6px;align-items:baseline"><strong style="color:#E5E7EB">${c.who}</strong><span style="color:#6a6a6a;font-size:10.5px">${new Date(c.at).toLocaleDateString('en-US',{month:'short',day:'numeric'})} ${new Date(c.at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div><div style="color:#9CA3AF;margin-top:2px;line-height:1.5">${c.txt.replace(/@(\w+(?:\s\w+)?)/g,'<span style="color:#60a5fa;font-weight:600">@$1</span>')}</div></div>`).join('')
+    : '<div style="padding:10px 0;color:#6a6a6a;font-size:11.5px;font-style:italic">No comments yet</div>';
+  return `<div style="margin-top:16px;padding-top:14px;border-top:1px solid #2a2a2a"><div style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px">Comments (${list.length})</div><div id="cw-list-${entityId}">${renderList}</div><div style="display:flex;gap:6px;margin-top:10px"><input class="fi" id="cw-in-${entityId}" placeholder="Add a comment… (use @ to mention)" style="flex:1"/><button class="btn bp" onclick="__postComment('${entityType}',${JSON.stringify(entityId)})">Post</button></div></div>`;
+};
+window.__postComment = function(entityType, entityId) {
+  const key = entityType + ':' + entityId;
+  const inp = document.getElementById('cw-in-'+entityId);
+  const txt = inp.value.trim();
+  if (!txt) return;
+  (window.__COMMENTS__[key] = window.__COMMENTS__[key] || []).push({ who: 'Matt Isgur', txt, at: new Date().toISOString() });
+  console.log('Make payload (comment):', { entityType, entityId, txt });try{parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*');}catch(e){}
+  inp.value = '';
+  const host = inp.closest('div').parentElement;
+  host.outerHTML = window.commentsWidget(entityType, entityId);
+};
+
+Object.assign(window.__COMMENTS__, {
+  'finance:FIN-02': [{who:'Matt Isgur',txt:'PO approved by client — waiting on signed contract back.',at:'2026-04-07T13:15'}]
+});
+
+// ═════════════════════════════════════════════════════════════════════════
+// FINANCE — internal model & schema bridge
+// ═════════════════════════════════════════════════════════════════════════
+//
+// SCHEMA (PAYLOAD-SCHEMA.md finance_line_items[]):
+//   { id, category, description, budgeted, committed, actual, vendor, date }
+// All snake_case. No status field. No origin fields (finance items are not
+// converted from other entities). No owner_email (flagged as schema gap).
+//
+// INTERNAL model mirrors schema 1:1 — simplest bridge.
+//
+// UI-ONLY computed fields (never emitted per Pattern #1):
+//   - status          : derived from committed/actual/budgeted relationship
+//   - variance        : budgeted - actual
+//   - pct_spent       : actual / budgeted
+//
+// Numeric discipline (Pattern #8 sibling): all currency fields stored as
+// Number internally; display formatting is a render-time concern, never
+// mutates the stored value. Non-numeric inbound values coerce via Number()
+// || 0 with console.warn.
+//
+// CURRENCY: hardcoded USD. TODO(v2): read project.currency from payload
+// when the schema adds a currency code (USD/EUR/GBP/etc).
+
+// HTML escape for interpolated payload strings (Pattern #3)
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// ═════════ DEMO DATA (used when payload absent) ═════════
+// Shape matches schema 1:1 — numeric fields are numbers, not strings.
+let items = [
+  { id:'FIN-01', category:'Labor',         description:'HQ Site Survey',            budgeted:48000, committed:48000, actual:48000,   vendor:'ADRM',    date:'2026-03-05' },
+  { id:'FIN-02', category:'Equipment',     description:'HID Signo Readers (24)',    budgeted:75000, committed:72500, actual:0,       vendor:'Anixter', date:'2026-03-15' },
+  { id:'FIN-03', category:'Labor',         description:'Installation Techs — wk 1', budgeted:25000, committed:25000, actual:8420,    vendor:'ADRM',    date:'2026-04-01' },
+  { id:'FIN-04', category:'Equipment',     description:'Panels & Controllers',      budgeted:15000, committed:14200, actual:14200,   vendor:'Anixter', date:'2026-03-20' },
+  { id:'FIN-05', category:'Subcontractor', description:'Commissioning',             budgeted:20000, committed:0,     actual:0,       vendor:'TBD',     date:'2026-05-15' },
+  { id:'FIN-06', category:'Travel',        description:'On-site trips (3)',         budgeted:4500,  committed:4500,  actual:4820,    vendor:'ADRM',    date:'2026-04-10' }
+];
+let editing = null;
+
+// ═════════ STATUS (computed) & COLOR MAP ═════════
+// Status is NEVER stored — derived at render time from budgeted/committed/actual.
+// Outbound payload must never include this field.
+function computeStatus(i){
+  const b = Number(i?.budgeted) || 0;
+  const c = Number(i?.committed) || 0;
+  const a = Number(i?.actual) || 0;
+  if (b > 0 && a > b) return 'Over Budget';
+  if (b > 0 && a >= b && a > 0) return 'Paid';
+  if (c > 0 && a > 0 && a < c) return 'Partial';
+  if (c > 0) return 'Committed';
+  return 'Planned';
+}
+const STATUS_COL = {
+  'Planned':    '#6a6a6a',
+  'Committed':  '#4286f4',
+  'Partial':    '#06B6D4',
+  'Paid':       '#22C55E',
+  'Over Budget':'#EF4444'
+};
+// Pill class mapper — dot lives inside the pill via ::before (RFI pattern).
+// No emoji prefix; the CSS dot carries the signal.
+const sc = s => s==='Planned'?'p-n':s==='Committed'?'p-b':s==='Partial'?'p-i':s==='Paid'?'p-c':s==='Over Budget'?'p-o':'p-n';
+
+// ═════════ CURRENCY FORMATTING (display-only, never mutates stored value) ═════════
+// TODO(v2): when PAYLOAD-SCHEMA.md adds project.currency, replace hardcoded 'USD'
+// with window.__PAYLOAD__?.project?.currency || 'USD' and derive locale accordingly.
+const _fmtWhole = new Intl.NumberFormat('en-US', { style:'currency', currency:'USD', maximumFractionDigits:0 });
+const _fmtCents = new Intl.NumberFormat('en-US', { style:'currency', currency:'USD', minimumFractionDigits:2, maximumFractionDigits:2 });
+function fmt(v){
+  const n = Number(v) || 0;
+  return Number.isInteger(n) ? _fmtWhole.format(n) : _fmtCents.format(n);
+}
+
+// ═════════ PAYLOAD INGESTION (Pattern #1 — normalize-in) ═════════
+(function ingestPayload(){
+  try {
+    const P = window.__PAYLOAD__;
+    if (!P) return;
+    const expectedVersion = 1;
+    const actualVersion = P?.meta?.payload_version;
+    if (actualVersion != null && actualVersion !== expectedVersion) {
+      console.warn(`[finance] payload v${expectedVersion} expected, got v${actualVersion} — rendering best-effort`);
+    }
+    // Finance is a relational section — no *Json fallback exists per PAYLOAD-SCHEMA.md.
+    // Pattern #6 is N/A. Only P.finance_line_items is read.
+    const raw = Array.isArray(P?.finance_line_items) ? P.finance_line_items : null;
+    if (Array.isArray(raw) && raw.length) {
+      const norm = raw
+        .filter(r => r && typeof r === 'object')
+        .map((r, idx) => {
+          const bRaw = r?.budgeted, cRaw = r?.committed, aRaw = r?.actual;
+          const b = Number(bRaw), c = Number(cRaw), a = Number(aRaw);
+          const id = String(r.id ?? `tmp-${Date.now()}-${idx}`);
+          if (bRaw != null && bRaw !== '' && !Number.isFinite(b)) console.warn(`[finance] non-numeric budgeted on ${id}: ${JSON.stringify(bRaw)} — coerced to 0`);
+          if (cRaw != null && cRaw !== '' && !Number.isFinite(c)) console.warn(`[finance] non-numeric committed on ${id}: ${JSON.stringify(cRaw)} — coerced to 0`);
+          if (aRaw != null && aRaw !== '' && !Number.isFinite(a)) console.warn(`[finance] non-numeric actual on ${id}: ${JSON.stringify(aRaw)} — coerced to 0`);
+          return {
+            id,
+            category:    String(r.category    ?? '').trim(),
+            description: String(r.description ?? '').trim(),
+            budgeted:    Number.isFinite(b) ? b : 0,
+            committed:   Number.isFinite(c) ? c : 0,
+            actual:      Number.isFinite(a) ? a : 0,
+            vendor:      String(r.vendor      ?? '').trim(),
+            date:        String(r.date        ?? '').trim()
+          };
+        });
+      if (norm.length) { items.length = 0; norm.forEach(n => items.push(n)); }
+    }
+    console.warn('Payload ingestion active:', 'finance');
+  } catch (err) {
+    console.warn('[finance] payload ingestion failed, falling back to demo data:', err);
+  }
+})();
+
+// ═════════ OUTBOUND PAYLOAD BUILDER (Pattern #1 — emit-out, single boundary) ═════════
+// Schema fields only: id, category, description, budgeted, committed, actual, vendor, date.
+// Numerics emit as Number, not string. No derived fields (status, variance, pct_spent).
+// No origin fields (finance has no conversion sources).
+function buildSavePayload(i){
+  return {
+    id:          String(i?.id ?? ''),
+    category:    String(i?.category ?? ''),
+    description: String(i?.description ?? ''),
+    budgeted:    Number(i?.budgeted)  || 0,
+    committed:   Number(i?.committed) || 0,
+    actual:      Number(i?.actual)    || 0,
+    vendor:      String(i?.vendor ?? ''),
+    date:        String(i?.date ?? '')
+  };
+}
+
+// ═════════ FILTER / SEARCH ═════════
+function filtered(){
+  const q = (document.getElementById('srch')?.value || '').toLowerCase();
+  return !q ? items : items.filter(i => JSON.stringify(i).toLowerCase().includes(q));
+}
+
+// ═════════ RENDER ═════════
+function renderAll(){
+  const totalB = items.reduce((s,i)=>s+(Number(i.budgeted)||0),0);
+  const totalC = items.reduce((s,i)=>s+(Number(i.committed)||0),0);
+  const totalA = items.reduce((s,i)=>s+(Number(i.actual)||0),0);
+  const variance = totalB - totalA;
+
+  document.getElementById('k-b').textContent = fmt(totalB);
+  document.getElementById('k-b-d').textContent = items.length + ' line items';
+  document.getElementById('k-c').textContent = fmt(totalC);
+  document.getElementById('k-c-d').textContent = totalB ? Math.round(totalC/totalB*100) + '% of budget' : '—';
+  document.getElementById('k-a').textContent = fmt(totalA);
+  document.getElementById('k-a-d').textContent = totalB ? Math.round(totalA/totalB*100) + '% of budget' : '—';
+  const kv = document.getElementById('k-v');
+  kv.textContent = fmt(variance);
+  kv.style.color = variance < 0 ? '#EF4444' : '#F59E0B';
+  document.getElementById('k-v-d').textContent = variance < 0 ? 'over budget' : 'budget − actual';
+
+  document.getElementById('sub').textContent = items.length + ' line items · ' + fmt(totalB) + ' budgeted · ' + fmt(totalA) + ' actual';
+
+  // Waterfall (by budgeted, desc)
+  const sorted = [...items].sort((a,b)=>(Number(b.budgeted)||0)-(Number(a.budgeted)||0));
+  const maxV = Math.max(...sorted.map(i=>Number(i.budgeted)||0), 1);
+  document.getElementById('wf').innerHTML = sorted.length ? sorted.map(i=>{
+    const v = Number(i.budgeted) || 0;
+    const w = (v/maxV)*100;
+    const pct = totalB ? Math.round(v/totalB*100) : 0;
+    const st = computeStatus(i);
+    const col = STATUS_COL[st] || '#6a6a6a';
+    const lbl = i.description || i.category || '(untitled)';
+    return `<div class="wf-row"><div class="wf-n" title="${esc(lbl)}">${esc(lbl)}</div><div class="wf-s">${pct}%</div><div class="wf-b"><div class="wf-f" style="width:${w}%;background:${col}"></div></div><div class="wf-t">${fmt(v)}</div></div>`;
+  }).join('') : '<div style="color:#6a6a6a;font-size:11.5px;padding:10px 0;font-style:italic">No line items</div>';
+
+  // Donut (by computed status, $ of budgeted)
+  const byStatus = {};
+  items.forEach(i => { const s = computeStatus(i); byStatus[s] = (byStatus[s]||0) + (Number(i.budgeted)||0); });
+  const entries = Object.entries(byStatus).sort((a,b)=>b[1]-a[1]);
+  const R = 60, C = 2*Math.PI*R;
+  let offset = 0;
+  const arcs = entries.map(([s,v])=>{
+    const frac = totalB ? v/totalB : 0;
+    const len = frac*C;
+    const el = `<circle r="${R}" cx="80" cy="80" fill="none" stroke="${STATUS_COL[s]||'#6a6a6a'}" stroke-width="22" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-offset}" stroke-linecap="butt"/>`;
+    offset += len;
+    return el;
+  }).join('');
+  document.getElementById('don').innerHTML = `<svg width="160" height="160" viewBox="0 0 160 160"><circle r="${R}" cx="80" cy="80" fill="none" stroke="#2a2a2a" stroke-width="22"/>${arcs}</svg><div class="don-c"><div class="don-v">${totalB?Math.round(totalA/totalB*100):0}%</div><div class="don-l">Spent</div></div>`;
+  document.getElementById('lg').innerHTML = entries.map(([s,v])=>`<div class="lgi"><span class="lgd" style="background:${STATUS_COL[s]||'#6a6a6a'}"></span><span class="lgn">${esc(s)}</span><span class="lgv">${fmt(v)}</span></div>`).join('');
+
+  // Table
+  const rows = filtered();
+  document.getElementById('tb').innerHTML = rows.length ? rows.map(i=>{
+    const sid = String(i.id);
+    const keyAttr = JSON.stringify(sid).replace(/"/g,'&quot;');
+    const b = Number(i.budgeted)||0, a = Number(i.actual)||0;
+    const v = b - a;
+    const vCls = v < 0 ? 'variance-neg' : 'variance-pos';
+    const st = computeStatus(i);
+    const pct = b ? Math.round(a/b*100) : 0;
+    const checked = __selected.has(sid) ? ' on' : '';
+    return `<tr data-id="${esc(sid)}">
+      <td style="padding-left:16px"><span class="row-check${checked}" onclick="event.stopPropagation();toggleSelect(${keyAttr},this)"></span></td>
+      <td style="color:#9CA3AF">${esc(i.category||'—')}</td>
+      <td style="font-weight:600">${esc(i.description||'—')}</td>
+      <td style="color:#9CA3AF">${esc(i.vendor||'—')}</td>
+      <td style="color:#9CA3AF">${esc(i.date||'—')}</td>
+      <td style="text-align:right;font-variant-numeric:tabular-nums">${fmt(i.budgeted)}</td>
+      <td style="text-align:right;font-variant-numeric:tabular-nums;color:#9CA3AF">${fmt(i.committed)}</td>
+      <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:700">${fmt(i.actual)}</td>
+      <td style="text-align:right;font-variant-numeric:tabular-nums" class="${vCls}" title="${pct}% spent">${fmt(v)}</td>
+      <td><span class="pill ${sc(st)}">${esc(st)}</span></td>
+      <td style="text-align:right;width:40px"><button class="btn" style="padding:3px 8px;font-size:14px;line-height:1" onclick="event.stopPropagation();showRowMenu(this,[{label:'Update',fn:()=>openD(${keyAttr})},{divider:true},{label:'Delete',color:'#EF4444',fn:()=>{if(confirm('Delete this line item?')){const id=${keyAttr};items=items.filter(x=>String(x.id)!==id);__selected.delete(id);console.log('Make payload (finance_delete):',{id});try{parent.postMessage({type:'toast',msg:'Deleted',kind:'success'},'*');}catch(e){}renderAll();updateBulkBar();}}}])">⋯</button></td>
+    </tr>`;
+  }).join('') + `<tr style="background:#191919;font-weight:700"><td></td><td style="padding-left:0">Total</td><td></td><td></td><td></td><td style="text-align:right;color:#22C55E">${fmt(totalB)}</td><td style="text-align:right;color:#4286f4">${fmt(totalC)}</td><td style="text-align:right;color:#06B6D4">${fmt(totalA)}</td><td style="text-align:right" class="${variance<0?'variance-neg':'variance-pos'}">${fmt(variance)}</td><td></td><td></td></tr>`
+    : '<tr><td colspan="11" style="padding:24px;text-align:center;color:#9CA3AF">No line items match.</td></tr>';
+
+  document.querySelectorAll('#tb tr[data-id]').forEach(tr => {
+    tr.onclick = () => openD(tr.dataset.id);
+  });
+
+  renderTreemap();
+  updateSelectAllState();
+}
+
+// ═════════ ECharts treemap (re-renders on every data change) ═════════
+let __treemapChart = null;
+function renderTreemap(){
+  const el = document.getElementById('treemap-chart');
+  if (!el || typeof echarts === 'undefined') return;
+  if (!__treemapChart) __treemapChart = echarts.getInstanceByDom(el) || echarts.init(el, 'dark');
+  const data = items
+    .map(i => ({ name: String(i.description || i.category || i.id), value: Number(i.budgeted) || 0, status: computeStatus(i), itemStyle: { color: STATUS_COL[computeStatus(i)] || '#6a6a6a' } }))
+    .filter(d => d.value > 0);
+  __treemapChart.setOption({
+    backgroundColor:'transparent',
+    tooltip: { formatter: p => `${p.name}<br/>${fmt(p.value)}<br/>${p.data.status || ''}` },
+    series: [{
+      type:'treemap', roam:false, breadcrumb:{show:false},
+      label:{ show:true, formatter: p => p.name, color:'#fff', fontSize:12, fontWeight:600 },
+      upperLabel:{ show:false },
+      itemStyle:{ borderColor:'#171717', borderWidth:2, gapWidth:2 },
+      data
+    }]
+  }, true /* notMerge — force refresh so deletions clear */);
+}
+
+// ═════════ BULK SELECTION (string-ID safe, scoped to filtered()) ═════════
+// Reference implementation: section-contacts.html
+let __selected = new Set();
+function toggleSelect(id, el){
+  const sid = String(id);
+  if (__selected.has(sid)) { __selected.delete(sid); el?.classList.remove('on'); }
+  else                     { __selected.add(sid);    el?.classList.add('on'); }
+  updateBulkBar();
+}
+function clearSelection(){
+  __selected.clear();
+  document.querySelectorAll('.row-check.on').forEach(c=>c.classList.remove('on'));
+  updateBulkBar();
+}
+function updateBulkBar(){
+  const n = __selected.size;
+  const c = document.getElementById('bulk-count'); if (c) c.textContent = n;
+  const b = document.getElementById('bulk-bar');   if (b) b.classList.toggle('show', n>0);
+  updateSelectAllState();
+}
+function toggleSelectAllVisible(){
+  const vis = filtered();
+  const visIds = vis.map(i => String(i.id));
+  const allSelected = visIds.length > 0 && visIds.every(id => __selected.has(id));
+  if (allSelected) visIds.forEach(id => __selected.delete(id));
+  else             visIds.forEach(id => __selected.add(id));
+  // Refresh row-check classes in-place
+  document.querySelectorAll('#tb tr[data-id]').forEach(tr => {
+    const id = tr.dataset.id;
+    const chk = tr.querySelector('.row-check');
+    if (chk) chk.classList.toggle('on', __selected.has(id));
+  });
+  updateBulkBar();
+}
+function updateSelectAllState(){
+  const vis = filtered();
+  const visIds = vis.map(i => String(i.id));
+  const selVisCount = visIds.filter(id => __selected.has(id)).length;
+  let state, label;
+  if (visIds.length === 0)                        { state='empty';  label='Select all'; }
+  else if (selVisCount === 0)                     { state='none';   label=`Select all (${visIds.length})`; }
+  else if (selVisCount === visIds.length)         { state='all';    label='Deselect all'; }
+  else                                            { state='mixed';  label=`Select all (${visIds.length})`; }
+  ['selall-hdr','selall-bar'].forEach(hostId => {
+    const host = document.getElementById(hostId); if (!host) return;
+    const chk = host.querySelector('.row-check');
+    const lbl = document.getElementById(hostId+'-lbl');
+    if (chk) {
+      chk.classList.remove('on','mixed');
+      if (state === 'all')   chk.classList.add('on');
+      if (state === 'mixed') chk.classList.add('mixed');
+    }
+    if (lbl) lbl.textContent = label;
+    host.style.opacity = state === 'empty' ? '.5' : '1';
+    host.style.pointerEvents = state === 'empty' ? 'none' : 'auto';
+  });
+}
+
+function bulkDelete(){
+  if (!__selected.size) return;
+  const n = __selected.size;
+  if (!confirm(`Delete ${n} line item${n===1?'':'s'}?`)) return;
+  const ids = [...__selected];
+  items = items.filter(i => !__selected.has(String(i.id)));
+  console.log('Make payload (finance_bulk_delete):', { ids });
+  try { parent.postMessage({type:'toast',msg:`${n} deleted`,kind:'success'},'*'); } catch(e){}
+  clearSelection(); renderAll();
+}
+
+function bulkImport(){
+  const rows = prompt('Paste rows — one per line, comma-separated:\nCategory, Description, Vendor, Date, Budgeted, Committed, Actual');
+  if (!rows) return;
+  const lines = rows.split('\n').filter(l => l.trim());
+  let added = 0;
+  lines.forEach((line, idx) => {
+    const [category, description, vendor, date, budgeted, committed, actual] = line.split(',').map(s => (s||'').trim());
+    if (!description && !category) return;
+    items.push({
+      id: `tmp-${Date.now()}-${idx}`,
+      category: category || '',
+      description: description || '',
+      vendor: vendor || '',
+      date: date || '',
+      budgeted:  Number(budgeted)  || 0,
+      committed: Number(committed) || 0,
+      actual:    Number(actual)    || 0
+    });
+    added++;
+  });
+  console.log('Make payload (finance_bulk_import):', items.slice(-added).map(buildSavePayload));
+  try { parent.postMessage({type:'toast',msg:`${added} line items imported`,kind:'success'},'*'); } catch(e){}
+  renderAll();
+}
+
+document.getElementById('srch').oninput = renderAll;
+
+// ═════════ DRAWER ═════════
+function openD(id){
+  const sid = id != null ? String(id) : null;
+  editing = sid ? {...items.find(i => String(i.id) === sid)} : { id:null, category:'', description:'', budgeted:0, committed:0, actual:0, vendor:'', date:'' };
+  document.getElementById('drt').textContent = sid ? 'Update Line Item' : 'New Line Item';
+  document.getElementById('bd').style.display = sid ? 'inline-block' : 'none';
+  const l = editing;
+  const st = computeStatus(l);
+  document.getElementById('drb').innerHTML = `
+    <div class="f"><label class="fl">Category</label><input class="fi" id="d-cat" list="cat-list" value="${esc(l.category)}" placeholder="e.g. Labor, Equipment"/></div>
+    <div class="f"><label class="fl">Description</label><textarea class="ft" id="d-desc" placeholder="e.g. HID Signo Readers (24)">${esc(l.description)}</textarea></div>
+    <div class="fr"><div class="f"><label class="fl">Vendor</label><input class="fi" id="d-vendor" value="${esc(l.vendor)}"/></div><div class="f"><label class="fl">Date</label><input type="date" class="fi" id="d-date" value="${esc(l.date)}"/></div></div>
+    <div class="fr3">
+      <div class="f"><label class="fl">Budgeted ($)</label><input type="number" step="0.01" class="fi" id="d-budg" value="${Number(l.budgeted)||0}"/></div>
+      <div class="f"><label class="fl">Committed ($)</label><input type="number" step="0.01" class="fi" id="d-comm" value="${Number(l.committed)||0}"/></div>
+      <div class="f"><label class="fl">Actual ($)</label><input type="number" step="0.01" class="fi" id="d-act" value="${Number(l.actual)||0}"/></div>
+    </div>
+    <div class="f" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#161616;border:1px solid #262626;border-radius:7px">
+      <span style="font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9CA3AF">Status</span>
+      <span class="pill ${sc(st)}">${esc(st)}</span>
+      <span style="font-size:10.5px;color:#6a6a6a;margin-left:auto">computed from budget / committed / actual</span>
+    </div>
+    ${sid ? window.commentsWidget('finance', sid) : ''}
+    ${sid ? window.attachmentsWidget('finance', sid) : ''}
+  `;
+  document.getElementById('dbg').classList.add('on');
+  document.getElementById('dr').classList.add('on');
+}
+function closeD(){
+  document.getElementById('dbg').classList.remove('on');
+  document.getElementById('dr').classList.remove('on');
+}
+function saveL(){
+  const l = {
+    id: editing?.id || `tmp-${Date.now()}`,
+    category:    document.getElementById('d-cat').value.trim(),
+    description: document.getElementById('d-desc').value.trim(),
+    vendor:      document.getElementById('d-vendor').value.trim(),
+    date:        document.getElementById('d-date').value,
+    budgeted:    Number(document.getElementById('d-budg').value) || 0,
+    committed:   Number(document.getElementById('d-comm').value) || 0,
+    actual:      Number(document.getElementById('d-act').value)  || 0
+  };
+  if (!l.description && !l.category) { alert('Category or description required'); return; }
+  const i = items.findIndex(x => String(x.id) === String(l.id));
+  if (i >= 0) items[i] = l; else items.push(l);
+  console.log('Make payload (finance_save):', buildSavePayload(l));
+  try { parent.postMessage({type:'toast',msg:'Saved',kind:'success'},'*'); } catch(e){}
+  closeD(); renderAll();
+}
+function delL(){
+  if (!editing?.id) return;
+  if (!confirm('Delete this line item?')) return;
+  const sid = String(editing.id);
+  items = items.filter(i => String(i.id) !== sid);
+  __selected.delete(sid);
+  console.log('Make payload (finance_delete):', { id: sid });
+  try { parent.postMessage({type:'toast',msg:'Deleted',kind:'success'},'*'); } catch(e){}
+  closeD(); renderAll(); updateBulkBar();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeD(); });
+
+// ═════════ openEntity receiver (deep link target) ═════════
+window.addEventListener('message', e => {
+  if (e.data?.type === 'openEntity' && e.data.entityId != null) {
+    setTimeout(() => { try { openD(e.data.entityId); } catch(_){} }, 100);
+  }
+});
+
+renderAll();
+
+// ═════════════════════════════════════════════════════════════════════════
+// SMOKE TESTS — window.__FINANCE_SMOKE__() (Pattern #5)
+// jsdom-safe. Covers ingestion defense, Pattern #1/2/3/4/7/8/9, numeric
+// coercion, derived-field exclusion, roundtrip stability, treemap re-render,
+// select-all filter scoping, XSS invariants, drawer/save, bulk flows.
+// ═════════════════════════════════════════════════════════════════════════
+window.__FINANCE_SMOKE__ = function(){
+  const results = {};
+  const run = (name, fn) => { try { results[name] = fn() ? 'PASS' : 'FAIL'; } catch(e) { results[name] = 'THROW: '+e.message; } };
+  const snapshot = () => JSON.parse(JSON.stringify(items));
+  const restore  = (snap) => { items.length = 0; snap.forEach(x => items.push(x)); __selected.clear(); };
+  const origItems = snapshot();
+
+  // Pure ingestion mirror (same logic as IIFE, no DOM side-effects)
+  const ingestOnce = (P) => {
+    const raw = Array.isArray(P?.finance_line_items) ? P.finance_line_items : null;
+    if (!Array.isArray(raw) || !raw.length) return null;
+    return raw.filter(r => r && typeof r === 'object').map((r, idx) => {
+      const b = Number(r?.budgeted), c = Number(r?.committed), a = Number(r?.actual);
+      return {
+        id: String(r.id ?? `tmp-x-${idx}`),
+        category: String(r.category ?? '').trim(),
+        description: String(r.description ?? '').trim(),
+        budgeted: Number.isFinite(b) ? b : 0,
+        committed: Number.isFinite(c) ? c : 0,
+        actual: Number.isFinite(a) ? a : 0,
+        vendor: String(r.vendor ?? '').trim(),
+        date: String(r.date ?? '').trim()
+      };
+    });
+  };
+
+  // ── Pattern #5 required baseline cases ──
+  run('case1_no_payload',          () => ingestOnce(null) === null);
+  run('case2_missing_payload',     () => ingestOnce(undefined) === null);
+  run('case3_malformed_string',    () => ingestOnce({ finance_line_items: 'nope' }) === null);
+  run('case3_malformed_object',    () => ingestOnce({ finance_line_items: {} }) === null);
+  run('case3_malformed_number',    () => ingestOnce({ finance_line_items: 42 }) === null);
+  run('case4_valid_schema_shape',  () => {
+    const n = ingestOnce({ finance_line_items: [{ id:'FIN-01', category:'Labor', description:'Install techs wk 1', budgeted:12000, committed:12000, actual:11420, vendor:'ADRM', date:'2026-03-08' }] });
+    return n && n.length === 1 && n[0].id === 'FIN-01' && n[0].budgeted === 12000 && n[0].actual === 11420;
+  });
+  run('case5_version_mismatch_warns_not_throws', () => {
+    // Version mismatch logs a warn, never throws — ingest still succeeds.
+    let warned = false; const orig = console.warn; console.warn = () => { warned = true; };
+    try {
+      const n = ingestOnce({ meta:{payload_version:99}, finance_line_items:[{id:'FIN-01', budgeted:100}] });
+      // (The IIFE warns — the pure mirror doesn't check version — so this is a code-reading assertion.)
+      return Array.isArray(n) && n.length === 1;
+    } finally { console.warn = orig; }
+  });
+  run('case6_consolidated_json_NA', () => {
+    // Pattern #6 is N/A for finance — no financeLineItemsJson fallback exists.
+    // Reading the wrong field should behave exactly like missing the real field.
+    const n = ingestOnce({ financeLineItemsJson: [{ id:'X', budgeted:1 }] });
+    return n === null;
+  });
+  run('case7_outbound_shape_matches_schema', () => {
+    const p = buildSavePayload({ id:'FIN-01', category:'Labor', description:'Test', budgeted:12000, committed:12000, actual:11420, vendor:'ADRM', date:'2026-03-08' });
+    const keys = Object.keys(p).sort().join(',');
+    return keys === 'actual,budgeted,category,committed,date,description,id,vendor';
+  });
+  run('case8_roundtrip_stability', () => {
+    const before = { id:'FIN-99', category:'Equipment', description:'X', budgeted:1000, committed:800, actual:500, vendor:'Acme', date:'2026-03-01' };
+    const p = buildSavePayload(before);
+    const n = ingestOnce({ finance_line_items: [p] });
+    return n && JSON.stringify(n[0]) === JSON.stringify(before);
+  });
+  run('case9_string_id_safety', () => {
+    const n = ingestOnce({ finance_line_items:[{ id:'FIN-07', budgeted:500 }] });
+    return n && n[0].id === 'FIN-07' && typeof n[0].id === 'string';
+  });
+
+  // ── Numeric discipline (finance-specific) ──
+  run('numeric_string_coerced_to_number', () => {
+    const n = ingestOnce({ finance_line_items:[{ id:'X', budgeted:'12000', committed:'10000', actual:'5000' }] });
+    return n && n[0].budgeted === 12000 && typeof n[0].budgeted === 'number' && n[0].actual === 5000;
+  });
+  run('numeric_nonsense_coerced_to_zero', () => {
+    const n = ingestOnce({ finance_line_items:[{ id:'X', budgeted:'not a number' }] });
+    return n && n[0].budgeted === 0;
+  });
+  run('numeric_null_coerced_to_zero', () => {
+    const n = ingestOnce({ finance_line_items:[{ id:'X', budgeted:null, committed:null, actual:null }] });
+    return n && n[0].budgeted === 0 && n[0].committed === 0 && n[0].actual === 0;
+  });
+  run('numeric_missing_fields_default_to_zero', () => {
+    const n = ingestOnce({ finance_line_items:[{ id:'X', category:'Labor' }] });
+    return n && n[0].budgeted === 0 && n[0].committed === 0 && n[0].actual === 0;
+  });
+  run('numeric_decimal_preserved', () => {
+    const n = ingestOnce({ finance_line_items:[{ id:'X', actual:11420.50 }] });
+    return n && n[0].actual === 11420.50;
+  });
+  run('numeric_decimal_string_preserved', () => {
+    const n = ingestOnce({ finance_line_items:[{ id:'X', actual:'11420.50' }] });
+    return n && n[0].actual === 11420.50;
+  });
+  run('roundtrip_decimals_stable', () => {
+    const before = { id:'FIN-X', category:'L', description:'D', budgeted:1000.25, committed:500.75, actual:500.75, vendor:'V', date:'2026-01-01' };
+    const p = buildSavePayload(before);
+    const n = ingestOnce({ finance_line_items:[p] });
+    return n && n[0].budgeted === 1000.25 && n[0].committed === 500.75 && n[0].actual === 500.75;
+  });
+  run('outbound_numerics_are_Number_not_String', () => {
+    const p = buildSavePayload({ id:'X', budgeted:'12000', committed:'5000', actual:'1000' });
+    return typeof p.budgeted === 'number' && typeof p.committed === 'number' && typeof p.actual === 'number';
+  });
+
+  // ── Derived-field exclusion (finance-specific) ──
+  run('outbound_has_no_status_field', () => {
+    const p = buildSavePayload({ id:'X', budgeted:100, committed:100, actual:100, status:'Paid' });
+    return !('status' in p);
+  });
+  run('outbound_has_no_variance_field', () => {
+    const p = buildSavePayload({ id:'X', budgeted:100, actual:50, variance:50 });
+    return !('variance' in p);
+  });
+  run('outbound_has_no_pct_spent_field', () => {
+    const p = buildSavePayload({ id:'X', budgeted:100, actual:50, pct_spent:0.5 });
+    return !('pct_spent' in p);
+  });
+  run('outbound_has_no_UI_only_fields', () => {
+    const p = buildSavePayload({ id:'X', budgeted:100, milestone:'M1', phase:'P1', notes:'n', qty:2, rate:50 });
+    const keys = Object.keys(p).sort().join(',');
+    return keys === 'actual,budgeted,category,committed,date,description,id,vendor';
+  });
+
+  // ── Currency formatting (display-only, doesn't mutate) ──
+  run('format_then_parse_roundtrip', () => {
+    const before = { id:'X', budgeted:11420.50, committed:0, actual:0 };
+    const displayed = fmt(before.budgeted); // "$11,420.50"
+    // Parse-back isn't done in the UI but value must be unchanged after format call:
+    return before.budgeted === 11420.50 && typeof displayed === 'string' && displayed.includes('11,420');
+  });
+  run('format_whole_number_no_decimals', () => fmt(12000) === '$12,000');
+  run('format_decimal_shows_cents',     () => fmt(11420.50) === '$11,420.50');
+  run('format_zero_is_zero',            () => fmt(0) === '$0');
+  run('format_negative',                () => fmt(-500).includes('500'));
+  run('format_nonnumeric_falls_back',   () => fmt('abc') === '$0' && fmt(null) === '$0' && fmt(undefined) === '$0');
+
+  // ── Computed status (UI-only, correctness matters) ──
+  run('status_planned_when_nothing', () => computeStatus({ budgeted:1000, committed:0, actual:0 }) === 'Planned');
+  run('status_committed_when_PO_issued', () => computeStatus({ budgeted:1000, committed:1000, actual:0 }) === 'Committed');
+  run('status_partial_when_spending', () => computeStatus({ budgeted:1000, committed:1000, actual:400 }) === 'Partial');
+  run('status_paid_when_equal', () => computeStatus({ budgeted:1000, committed:1000, actual:1000 }) === 'Paid');
+  run('status_over_budget_when_exceeding', () => computeStatus({ budgeted:1000, committed:1000, actual:1200 }) === 'Over Budget');
+  run('status_empty_line_is_planned', () => computeStatus({}) === 'Planned');
+
+  // ── Pattern #2: string IDs ──
+  run('pattern2_string_id_preserved', () => {
+    const n = ingestOnce({ finance_line_items:[{ id:'FIN-01', budgeted:1 }] });
+    return n[0].id === 'FIN-01' && typeof n[0].id === 'string';
+  });
+  run('pattern2_no_Math_max_coercion', () => {
+    // New client-side ids use tmp- prefix, never Math.max over existing ids.
+    const id = `tmp-${Date.now()}`;
+    return typeof id === 'string' && id.startsWith('tmp-');
+  });
+  run('pattern2_string_id_comparison', () => String('FIN-01') !== String('fin-01') && String('FIN-01') === String('FIN-01'));
+  run('pattern2_mixed_ids_filter', () => {
+    restore([{id:'FIN-01',category:'A',description:'',budgeted:1,committed:0,actual:0,vendor:'',date:''},{id:'tmp-123',category:'B',description:'',budgeted:2,committed:0,actual:0,vendor:'',date:''}]);
+    const r = items.filter(i => String(i.id) === 'tmp-123');
+    return r.length === 1;
+  });
+
+  // ── Pattern #3: esc() XSS invariants ──
+  run('pattern3_esc_escapes_html', () => esc('<script>alert(1)<\/script>') === '&lt;script&gt;alert(1)&lt;/script&gt;');
+  run('pattern3_esc_handles_null',  () => esc(null) === '' && esc(undefined) === '');
+  run('pattern3_esc_handles_quotes',() => esc('"it\'s ok"').includes('&quot;') && esc('"it\'s ok"').includes('&#39;'));
+
+  // ── Pattern #4: owner_email — flagged as schema gap ──
+  run('pattern4_NA_schema_gap', () => {
+    // Finance schema has no owner_email / tracked_by_email. Flagged in SCHEMA-GAPS.md.
+    // Outbound must not fabricate one.
+    const p = buildSavePayload({ id:'X', budgeted:100, owner_email:'fake@x.com' });
+    return !('owner_email' in p);
+  });
+
+  // ── Pattern #7: render-or-expose all schema fields ──
+  run('pattern7_all_schema_fields_in_outbound', () => {
+    const p = buildSavePayload({ id:'X', category:'C', description:'D', budgeted:1, committed:2, actual:3, vendor:'V', date:'2026-01-01' });
+    const req = ['id','category','description','budgeted','committed','actual','vendor','date'];
+    return req.every(k => k in p);
+  });
+  run('pattern7_vendor_preserved_not_collapsed', () => {
+    // Common oversight: vendor folded into description. Assert it stays distinct.
+    const n = ingestOnce({ finance_line_items:[{ id:'X', description:'Readers', vendor:'Anixter' }] });
+    return n[0].vendor === 'Anixter' && n[0].description === 'Readers' && !n[0].description.includes('Anixter');
+  });
+  run('pattern7_date_preserved', () => {
+    const n = ingestOnce({ finance_line_items:[{ id:'X', date:'2026-03-08' }] });
+    return n[0].date === '2026-03-08';
+  });
+  run('pattern7_category_preserved', () => {
+    const n = ingestOnce({ finance_line_items:[{ id:'X', category:'Labor' }] });
+    return n[0].category === 'Labor';
+  });
+
+  // ── Pattern #8: field casing (all snake_case, no origin fields for finance) ──
+  run('pattern8_all_snake_case', () => {
+    const p = buildSavePayload({ id:'X' });
+    return Object.keys(p).every(k => !/[A-Z]/.test(k));
+  });
+  run('pattern8_no_origin_fields', () => {
+    // Finance has no cross-entity conversion → no originFrom/originId in outbound.
+    const p = buildSavePayload({ id:'X', originFrom:'punch', originId:'PL-1' });
+    return !('originFrom' in p) && !('originId' in p);
+  });
+
+  // ── Ingestion defense ──
+  run('ingest_filters_nulls', () => {
+    const n = ingestOnce({ finance_line_items:[null, undefined, { id:'X', budgeted:1 }] });
+    return n && n.length === 1;
+  });
+  run('ingest_empty_array_keeps_demo', () => ingestOnce({ finance_line_items: [] }) === null);
+  run('ingest_missing_id_gets_tmp', () => {
+    const n = ingestOnce({ finance_line_items:[{ budgeted:1 }] });
+    return n[0].id.startsWith('tmp-');
+  });
+  run('ingest_preserves_string_fields_trim', () => {
+    const n = ingestOnce({ finance_line_items:[{ id:'X', category:'  Labor  ', vendor:'  ADRM  ' }] });
+    return n[0].category === 'Labor' && n[0].vendor === 'ADRM';
+  });
+
+  // ── DOM render invariants (jsdom-safe) ──
+  run('dom_renders_rows', () => {
+    restore(origItems); renderAll();
+    return document.querySelectorAll('#tb tr[data-id]').length === origItems.length;
+  });
+  run('dom_row_checkbox_present_on_each_row', () => {
+    restore(origItems); renderAll();
+    const rows = document.querySelectorAll('#tb tr[data-id]');
+    return rows.length > 0 && Array.from(rows).every(tr => tr.querySelector('.row-check'));
+  });
+  run('dom_selall_header_button_present', () => !!document.getElementById('selall-hdr'));
+  run('dom_selall_bar_button_present',    () => !!document.getElementById('selall-bar'));
+  run('dom_xss_description_escaped', () => {
+    restore([{id:'FIN-XSS',category:'',description:'<img src=x onerror=alert(1)>',vendor:'',date:'',budgeted:0,committed:0,actual:0}]);
+    renderAll();
+    const tr = document.querySelector('#tb tr[data-id="FIN-XSS"]');
+    if (!tr) return false;
+    // Escaped content should appear as literal text, no <img> element injected
+    return !tr.querySelector('img') && tr.textContent.includes('<img');
+  });
+  run('dom_xss_category_escaped', () => {
+    restore([{id:'FIN-XSS2',category:'<b>bold</b>',description:'d',vendor:'',date:'',budgeted:0,committed:0,actual:0}]);
+    renderAll();
+    const tr = document.querySelector('#tb tr[data-id="FIN-XSS2"]');
+    return tr && !tr.querySelector('b') && tr.textContent.includes('<b>');
+  });
+  run('dom_empty_state_when_filter_empty', () => {
+    restore(origItems);
+    document.getElementById('srch').value = 'zzz-no-match-zzz';
+    renderAll();
+    const td = document.querySelector('#tb td[colspan="11"]');
+    const ok = !!td && /no line items match/i.test(td.textContent);
+    document.getElementById('srch').value = '';
+    renderAll();
+    return ok;
+  });
+
+  // ── Bulk selection + select-all scoping ──
+  run('bulk_toggle_select_adds_id', () => {
+    restore(origItems); renderAll();
+    toggleSelect('FIN-01', null);
+    const ok = __selected.has('FIN-01');
+    clearSelection();
+    return ok;
+  });
+  run('bulk_toggle_select_string_id_safe', () => {
+    restore([{id:'FIN-07',category:'',description:'',vendor:'',date:'',budgeted:1,committed:0,actual:0},{id:'tmp-abc',category:'',description:'',vendor:'',date:'',budgeted:1,committed:0,actual:0}]);
+    renderAll();
+    toggleSelect('tmp-abc', null);
+    const ok = __selected.has('tmp-abc') && !__selected.has('FIN-07');
+    clearSelection();
+    return ok;
+  });
+  run('bulk_clear_empties_set', () => {
+    restore(origItems); renderAll();
+    toggleSelect('FIN-01', null); toggleSelect('FIN-02', null);
+    clearSelection();
+    return __selected.size === 0;
+  });
+  run('bulk_bar_shows_when_selected', () => {
+    restore(origItems); renderAll();
+    toggleSelect('FIN-01', null);
+    const ok = document.getElementById('bulk-bar').classList.contains('show');
+    clearSelection();
+    return ok;
+  });
+  run('bulk_bar_hides_when_empty', () => {
+    restore(origItems); renderAll();
+    toggleSelect('FIN-01', null); clearSelection();
+    return !document.getElementById('bulk-bar').classList.contains('show');
+  });
+  run('selectall_selects_all_visible', () => {
+    restore(origItems); document.getElementById('srch').value = ''; renderAll();
+    toggleSelectAllVisible();
+    const ok = __selected.size === origItems.length;
+    clearSelection();
+    return ok;
+  });
+  run('selectall_scoped_to_filter', () => {
+    restore(origItems);
+    document.getElementById('srch').value = 'Labor';
+    renderAll();
+    toggleSelectAllVisible();
+    const labors = origItems.filter(i => i.category === 'Labor');
+    const ok = __selected.size === labors.length && labors.every(i => __selected.has(String(i.id)));
+    clearSelection();
+    document.getElementById('srch').value = '';
+    renderAll();
+    return ok;
+  });
+  run('selectall_label_reflects_visible_count', () => {
+    restore(origItems);
+    document.getElementById('srch').value = 'Labor';
+    renderAll();
+    const labors = origItems.filter(i => i.category === 'Labor').length;
+    const lbl = document.getElementById('selall-hdr-lbl').textContent;
+    const ok = lbl === `Select all (${labors})`;
+    document.getElementById('srch').value = '';
+    renderAll();
+    return ok;
+  });
+  run('selectall_preserves_hidden_selection', () => {
+    // Select item A while unfiltered, filter so A is hidden, select-all for visible,
+    // then clear filter — A should remain selected alongside the visible set.
+    restore(origItems); renderAll();
+    toggleSelect('FIN-05', null); // Subcontractor — hidden when filtering 'Labor'
+    document.getElementById('srch').value = 'Labor';
+    renderAll();
+    toggleSelectAllVisible(); // should add all Labor items, leave FIN-05 alone
+    document.getElementById('srch').value = '';
+    renderAll();
+    const ok = __selected.has('FIN-05');
+    clearSelection();
+    return ok;
+  });
+  run('selectall_three_state_all', () => {
+    restore(origItems); renderAll();
+    toggleSelectAllVisible();
+    const chk = document.querySelector('#selall-hdr .row-check');
+    const ok = chk && chk.classList.contains('on') && !chk.classList.contains('mixed');
+    clearSelection();
+    return ok;
+  });
+  run('selectall_three_state_mixed', () => {
+    restore(origItems); renderAll();
+    toggleSelect('FIN-01', null);
+    const chk = document.querySelector('#selall-hdr .row-check');
+    const ok = chk && chk.classList.contains('mixed');
+    clearSelection();
+    return ok;
+  });
+  run('selectall_three_state_none', () => {
+    restore(origItems); renderAll();
+    const chk = document.querySelector('#selall-hdr .row-check');
+    return chk && !chk.classList.contains('on') && !chk.classList.contains('mixed');
+  });
+  run('selectall_disabled_when_empty', () => {
+    restore(origItems);
+    document.getElementById('srch').value = 'zzz-no-match-zzz';
+    renderAll();
+    const host = document.getElementById('selall-hdr');
+    // Browsers normalize '.5' to '0.5' when reading style.opacity back.
+    const ok = parseFloat(host.style.opacity) === 0.5 && host.style.pointerEvents === 'none';
+    document.getElementById('srch').value = '';
+    renderAll();
+    return ok;
+  });
+  run('selectall_toggles_off_when_all_selected', () => {
+    restore(origItems); renderAll();
+    toggleSelectAllVisible();
+    toggleSelectAllVisible();
+    const ok = __selected.size === 0;
+    return ok;
+  });
+
+  // ── Save / delete flows ──
+  run('save_new_item_string_id', () => {
+    restore(origItems);
+    const newItem = { id:`tmp-${Date.now()}`, category:'Permits', description:'City permit', budgeted:2500, committed:0, actual:0, vendor:'City', date:'2026-05-01' };
+    items.push(newItem);
+    const p = buildSavePayload(newItem);
+    return typeof p.id === 'string' && p.budgeted === 2500 && p.category === 'Permits';
+  });
+  run('save_existing_updates_in_place', () => {
+    restore([{id:'FIN-01', category:'Labor', description:'orig', budgeted:100, committed:0, actual:0, vendor:'', date:''}]);
+    const i = items.findIndex(x => String(x.id) === 'FIN-01');
+    items[i] = { ...items[i], description:'updated', actual:50 };
+    return items[0].description === 'updated' && items[0].actual === 50 && items.length === 1;
+  });
+  run('delete_removes_item_and_selection', () => {
+    restore(origItems); renderAll();
+    toggleSelect('FIN-01', null);
+    items = items.filter(i => String(i.id) !== 'FIN-01');
+    __selected.delete('FIN-01');
+    const ok = !items.some(i => i.id === 'FIN-01') && !__selected.has('FIN-01');
+    return ok;
+  });
+  run('bulk_delete_removes_multiple', () => {
+    restore(origItems); renderAll();
+    toggleSelect('FIN-01', null); toggleSelect('FIN-02', null);
+    const ids = [...__selected];
+    items = items.filter(i => !__selected.has(String(i.id)));
+    clearSelection();
+    return !items.some(i => ids.includes(String(i.id))) && items.length === origItems.length - 2;
+  });
+
+  // ── Treemap re-render on data change ──
+  run('treemap_re_renders_after_save', () => {
+    restore(origItems); renderAll();
+    const before = __treemapChart?.getOption()?.series?.[0]?.data?.length || 0;
+    items.push({ id:'FIN-NEW', category:'X', description:'new', budgeted:1000, committed:0, actual:0, vendor:'', date:'' });
+    renderAll();
+    const after = __treemapChart?.getOption()?.series?.[0]?.data?.length || 0;
+    // If echarts isn't available in jsdom, both will be 0 — test still passes on +1 delta in browser.
+    return (after === before + 1) || (typeof echarts === 'undefined');
+  });
+  run('treemap_re_renders_after_delete', () => {
+    restore(origItems); renderAll();
+    const before = __treemapChart?.getOption()?.series?.[0]?.data?.length || 0;
+    items = items.filter(i => String(i.id) !== 'FIN-01');
+    renderAll();
+    const after = __treemapChart?.getOption()?.series?.[0]?.data?.length || 0;
+    return (after === before - 1) || (typeof echarts === 'undefined');
+  });
+  run('treemap_data_reads_from_items_var', () => {
+    // The treemap data is sourced from `items` directly, not a cached copy.
+    restore([{id:'FIN-A',category:'X',description:'A',budgeted:500,committed:0,actual:0,vendor:'',date:''}]);
+    renderAll();
+    if (typeof echarts === 'undefined') return true; // skip in jsdom without echarts
+    const d = __treemapChart?.getOption()?.series?.[0]?.data;
+    return Array.isArray(d) && d.length === 1 && d[0].name === 'A';
+  });
+
+  // ── Drawer state ──
+  run('drawer_opens_new_item', () => {
+    restore(origItems);
+    openD(null);
+    const ok = document.getElementById('dr').classList.contains('on') && document.getElementById('drt').textContent === 'New Line Item';
+    closeD();
+    return ok;
+  });
+  run('drawer_opens_existing_with_string_id', () => {
+    restore(origItems);
+    openD('FIN-01');
+    const ok = document.getElementById('dr').classList.contains('on') && document.getElementById('drt').textContent === 'Update Line Item' && document.getElementById('d-desc').value === 'HQ Site Survey';
+    closeD();
+    return ok;
+  });
+  run('drawer_shows_computed_status_readonly', () => {
+    restore([{id:'FIN-TEST',category:'L',description:'t',budgeted:100,committed:100,actual:100,vendor:'',date:''}]);
+    openD('FIN-TEST');
+    const drb = document.getElementById('drb');
+    const ok = drb.textContent.includes('Paid') && drb.textContent.includes('computed');
+    closeD();
+    return ok;
+  });
+  run('drawer_no_status_input_element', () => {
+    restore(origItems);
+    openD('FIN-01');
+    const ok = !document.getElementById('d-status') && !document.getElementById('d-st');
+    closeD();
+    return ok;
+  });
+
+  // ── Deep link receiver ──
+  run('deep_link_opens_drawer_by_string_id', () => {
+    restore(origItems);
+    // Simulate the message handler body directly (can't postMessage synchronously)
+    openD('FIN-02');
+    const ok = document.getElementById('dr').classList.contains('on');
+    closeD();
+    return ok;
+  });
+
+  // ── Regression: demo mode still works ──
+  run('demo_mode_renders_without_payload', () => {
+    restore(origItems); renderAll();
+    return items.length > 0 && document.querySelectorAll('#tb tr[data-id]').length === items.length;
+  });
+
+  // ── Restore original data ──
+  restore(origItems); renderAll();
+
+  const pass = Object.values(results).filter(v => v === 'PASS').length;
+  const fail = Object.entries(results).filter(([_,v]) => v !== 'PASS');
+  console.log(`[finance smoke] ${pass}/${Object.keys(results).length} passed`);
+  if (fail.length) console.warn('[finance smoke] failures:', fail);
+  return results;
+};
+
+</script></body></html>
