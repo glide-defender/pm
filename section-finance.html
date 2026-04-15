@@ -252,8 +252,8 @@ function esc(s){ return String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':
 // ═════════ DEMO DATA (used when payload absent) ═════════
 // Shape matches schema 1:1 — numeric fields are numbers, not strings.
 let items = [
-  { id:'FIN-01', category:'Labor',         description:'HQ Site Survey',            budgeted:48000, committed:48000, actual:48000,   vendor:'Northwind',    date:'2026-03-05' },
-  { id:'FIN-02', category:'Equipment',     description:'KeySys Signo Readers (24)',    budgeted:75000, committed:72500, actual:0,       vendor:'Cablecorp', date:'2026-03-15' },
+  { id:'FIN-01', category:'Labor',         description:'Initial Site Survey',            budgeted:48000, committed:48000, actual:48000,   vendor:'Northwind',    date:'2026-03-05' },
+  { id:'FIN-02', category:'Equipment',     description:'KeySys S-Series Readers (24)',    budgeted:75000, committed:72500, actual:0,       vendor:'Cablecorp', date:'2026-03-15' },
   { id:'FIN-03', category:'Labor',         description:'Installation Techs — wk 1', budgeted:25000, committed:25000, actual:8420,    vendor:'Northwind',    date:'2026-04-01' },
   { id:'FIN-04', category:'Equipment',     description:'Panels & Controllers',      budgeted:15000, committed:14200, actual:14200,   vendor:'Cablecorp', date:'2026-03-20' },
   { id:'FIN-05', category:'Subcontractor', description:'Commissioning',             budgeted:20000, committed:0,     actual:0,       vendor:'TBD',     date:'2026-05-15' },
@@ -572,7 +572,7 @@ function openD(id){
   const st = computeStatus(l);
   document.getElementById('drb').innerHTML = `
     <div class="f"><label class="fl">Category</label><input class="fi" id="d-cat" list="cat-list" value="${esc(l.category)}" placeholder="e.g. Labor, Equipment"/></div>
-    <div class="f"><label class="fl">Description</label><textarea class="ft" id="d-desc" placeholder="e.g. KeySys Signo Readers (24)">${esc(l.description)}</textarea></div>
+    <div class="f"><label class="fl">Description</label><textarea class="ft" id="d-desc" placeholder="e.g. KeySys S-Series Readers (24)">${esc(l.description)}</textarea></div>
     <div class="fr"><div class="f"><label class="fl">Vendor</label><input class="fi" id="d-vendor" value="${esc(l.vendor)}"/></div><div class="f"><label class="fl">Date</label><input type="date" class="fi" id="d-date" value="${esc(l.date)}"/></div></div>
     <div class="fr3">
       <div class="f"><label class="fl">Budgeted ($)</label><input type="number" step="0.01" class="fi" id="d-budg" value="${Number(l.budgeted)||0}"/></div>
@@ -1082,7 +1082,7 @@ window.__FINANCE_SMOKE__ = function(){
   run('drawer_opens_existing_with_string_id', () => {
     restore(origItems);
     openD('FIN-01');
-    const ok = document.getElementById('dr').classList.contains('on') && document.getElementById('drt').textContent === 'Update Line Item' && document.getElementById('d-desc').value === 'HQ Site Survey';
+    const ok = document.getElementById('dr').classList.contains('on') && document.getElementById('drt').textContent === 'Update Line Item' && document.getElementById('d-desc').value === 'Initial Site Survey';
     closeD();
     return ok;
   });

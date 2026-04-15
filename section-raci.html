@@ -55,8 +55,8 @@ const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;
 // use their workstream name as identity directly).
 
 let items=[
-  {task:'Create initial bill of materials', R:['Cloudgate'],       A:['ABC Sample Company'], C:['Guardian Services'], I:['Guardian Services']},
-  {task:'Final commissioning sign-off',     R:['Northwind Security'], A:['ABC Sample Company'], C:['Cloudgate'],   I:['Guardian Services','John Doe']}
+  {task:'Create initial bill of materials', R:['Cloudgate'],       A:['Pinnacle Properties'], C:['Guardian Services'], I:['Guardian Services']},
+  {task:'Final commissioning sign-off',     R:['Northwind Security'], A:['Pinnacle Properties'], C:['Cloudgate'],   I:['Guardian Services','John Doe']}
 ];
 let editing=null;
 
@@ -388,7 +388,7 @@ window.__RACI_SMOKE__ = function(){
 
   // ── ROUND-TRIP: schema → internal → schema ────────────────────
   run('roundtrip_single_row_preserves_all_fields', () => {
-    const schemaIn = { workstream:'Commissioning', R:['Northwind Security','Cloudgate'], A:['ABC Sample Company'], C:['Guardian Services'], I:['Guardian Services','John Doe'] };
+    const schemaIn = { workstream:'Commissioning', R:['Northwind Security','Cloudgate'], A:['Pinnacle Properties'], C:['Guardian Services'], I:['Guardian Services','John Doe'] };
     const ingested = ingestOnce({ raci:[schemaIn] });
     const out = buildSavePayload(ingested[0]);
     return out.workstream === schemaIn.workstream

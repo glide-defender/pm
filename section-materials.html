@@ -210,9 +210,9 @@ Object.assign(window.__COMMENTS__, {
 // NOTE(schema-TODO): Materials have no owner_email in schema. If My Work integration
 //   needs a material owner, extend schema rather than inventing a field here.
 let items=[
-{id:'MT-1',part:'VISTA-P3245-LV',desc:'VISTA Fixed Dome Network Camera, 1080p',qty:1,del:1,ord:true,vendor:'Cablecorp',po:'PO-8810',eta:'2026-03-15',statusFromSchema:'Received',__statusDirty:false},
+{id:'MT-1',part:'VISTA-V3200-LV',desc:'VISTA Fixed Dome Network Camera, 1080p',qty:1,del:1,ord:true,vendor:'Cablecorp',po:'PO-8810',eta:'2026-03-15',statusFromSchema:'Received',__statusDirty:false},
 {id:'MT-2',part:'LUMEN-XNV8080R',desc:'Lumen IR Vandal Dome, 5MP, Outdoor',qty:20,del:10,ord:true,vendor:'Cablecorp',po:'PO-8821',eta:'2026-04-18',statusFromSchema:'Partial',__statusDirty:false},
-{id:'MT-3',part:'KeySys-920PTNNEK000',desc:'KeySys iCLASS SE Smart Card, Pack of 100',qty:100,del:8,ord:true,vendor:'ADI',po:'PO-8830',eta:'2026-04-22',statusFromSchema:'Partial',__statusDirty:false},
+{id:'MT-3',part:'KeySys-920PTNNEK000',desc:'KeySys ProCard SE Smart Card, Pack of 100',qty:100,del:8,ord:true,vendor:'ADI',po:'PO-8830',eta:'2026-04-22',statusFromSchema:'Partial',__statusDirty:false},
 {id:'MT-4',part:'CLOUDGATE-SVR2000',desc:'Cloudgate Streamvault Server',qty:2,del:0,ord:true,vendor:'Convergint',po:'PO-8834',eta:'2026-05-01',statusFromSchema:'Ordered',__statusDirty:false},
 {id:'MT-5',part:'ASSA-ABLOY-SARGENT',desc:'SARGENT Electric Strike, Heavy Duty',qty:6,del:0,ord:false,vendor:'',po:'',eta:null,statusFromSchema:'Ordered',__statusDirty:false},
 {id:'MT-6',part:'GENERIC-CONDUIT',desc:'EMT Conduit 3/4", 10ft Length',qty:15,del:0,ord:true,vendor:'Home Depot Pro',po:'PO-8840',eta:'2026-04-20',statusFromSchema:'Ordered',__statusDirty:false},
@@ -472,7 +472,7 @@ function openD(id){
   const statusOptions = SCHEMA_STATUSES.map(s => `<option ${s===(m.statusFromSchema||'Ordered')?'selected':''}>${esc(s)}</option>`).join('');
 
   document.getElementById('drb').innerHTML =
-    `<div class="f"><label class="fl">Part Number / Item</label><input class="fi" id="d-part" value="${esc(m.part)}" placeholder="e.g. VISTA-P3245-LV"/></div>` +
+    `<div class="f"><label class="fl">Part Number / Item</label><input class="fi" id="d-part" value="${esc(m.part)}" placeholder="e.g. VISTA-V3200-LV"/></div>` +
     `<div class="f"><label class="fl">Description <span style="color:#6a6a6a;font-weight:400;text-transform:none;letter-spacing:0">(UI-only — not saved to schema yet)</span></label><textarea class="ft" id="d-desc">${esc(m.desc)}</textarea></div>` +
     `<div class="fr"><div class="f"><label class="fl">Qty Ordered</label><input type="number" min="0" class="fi" id="d-qty" value="${m.qty}"/></div>` +
     `<div class="f"><label class="fl">Qty Received</label><input type="number" min="0" class="fi" id="d-del" value="${m.del}"/></div></div>` +

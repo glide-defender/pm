@@ -156,7 +156,7 @@ main{display:flex;flex-direction:column;overflow:hidden}
 
 <div class="app">
 <aside>
-<div class="sbh"><div class="sbn">Corporate HQ Security Upgrade</div><div class="sbm">Austin Branch · John Doe</div><div class="sbbl" id="sbbl" style="cursor:pointer"><span>Completion</span><span id="sbpct">—%</span></div><div class="sbbt"><div class="sbbf" id="sbbf" style="width:0%"></div></div></div>
+<div class="sbh"><div class="sbn">Riverdale Campus Security Refresh</div><div class="sbm">Metro West Branch · John Doe</div><div class="sbbl" id="sbbl" style="cursor:pointer"><span>Completion</span><span id="sbpct">—%</span></div><div class="sbbt"><div class="sbbf" id="sbbf" style="width:0%"></div></div></div>
 <div id="prog-pop" style="display:none;position:absolute;left:12px;top:150px;width:216px;background:#1a1a1a;border:1px solid #303030;border-radius:8px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,.6);z-index:50;font-size:11px"></div>
 <div style="padding:10px 12px;border-bottom:1px solid #2a2a2a;position:relative">
 <input id="cmd-in" placeholder="Search or jump (⌘K)…" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#E5E7EB;font-size:12px;outline:none;font-family:inherit"/>
@@ -251,11 +251,11 @@ window.computeProgress = function(P) {
 window.__PROJECT__ = {
   phases: [
     {id:'p1', name:'Phase 1', milestones:[
-      {id:1, name:'HQ Site Survey', durationDays:5, actionItems:[{id:1, name:'Speak to client about service contract', percent:82, durationDays:3}]}
+      {id:1, name:'Initial Site Survey', durationDays:5, actionItems:[{id:1, name:'Speak to client about service contract', percent:82, durationDays:3}]}
     ]},
     {id:'p2', name:'Phase 2', milestones:[
       {id:2, name:'Equipment Procurement', durationDays:14, actionItems:[{id:2, name:'Replace door contacts', percent:100, durationDays:4}]},
-      {id:3, name:'Installation', durationDays:30, actionItems:[{id:3, name:'Fujitec Destination Dispatch', percent:71, durationDays:10},{id:4, name:'Test Action Item', percent:100, durationDays:2}]}
+      {id:3, name:'Installation', durationDays:30, actionItems:[{id:3, name:'elevator control system', percent:71, durationDays:10},{id:4, name:'Test Action Item', percent:100, durationDays:2}]}
     ]},
     {id:'p3', name:'Phase 3', milestones:[
       {id:4, name:'Calibration & Testing', durationDays:14, actionItems:[{id:6, name:'VLAN segmentation', percent:55, durationDays:5}]},
@@ -281,7 +281,7 @@ const NAV=[{g:'Plan',i:[['mywork','My Work',''],['overview','Overview',''],['sch
 const SEC={overview:'',schedule:'Hierarchical tree (Project → Phase → Milestone → Action Item) with inline Gantt column',actions:'Flat Tabulator with avatars, progress bars, status pills',deployment:'Asset checklist with per-item commissioning templates',materials:'Line items with delivered/outstanding tracking',punch:'Simple list with location and status',observations:'Field observations with root cause + convert-to-risk',risks:'Scoring matrix + heatmap',rfi:'Numbered RFIs with due dates',raci:'Task × org responsibility matrix',finance:'Line items with waterfall, funnel, invoice donut',contacts:'Roster with title and role',files:'Folder browser',time:'Time entries with milestone rollups',activity:'Unified comments + audit feed'};
 let h='';NAV.forEach(g=>{h+='<div style="margin-bottom:6px"><div class="gl">'+g.g+'</div>';g.i.forEach(it=>{const[k,l,c,a]=it;h+='<button class="nb'+(a?' alert':'')+'" data-k="'+k+'"><span class="nl">'+l+'</span>'+(c?'<span class="nc">'+c+'</span>':'')+'</button>';});h+='</div>';});document.getElementById('nav').innerHTML=h;
 
-function overview(){return`<div class="card" style="margin-bottom:14px;padding:16px"><div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none" onclick="this.parentElement.querySelector('.det-body').classList.toggle('hidden');this.querySelector('.det-chev').classList.toggle('rot')"><div><div style="font-size:13px;font-weight:700">Project Details</div><div style="font-size:11.5px;color:#9CA3AF">Corporate HQ Security Upgrade · ABC Sample Company · Austin Branch</div></div><span class="det-chev" style="color:#9CA3AF;font-size:12px;transition:transform .15s">▼</span></div><div class="det-body hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid #2a2a2a;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px"><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Owner</div><div style="font-size:12.5px">John Doe</div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Status</div><div style="font-size:12.5px"><span style="display:inline-block;padding:2px 8px;border-radius:10px;background:rgba(245,158,11,.14);color:#F59E0B;font-weight:600;font-size:11px">In Progress</span></div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Type</div><div style="font-size:12.5px">Install</div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Target Completion</div><div style="font-size:12.5px">June 10, 2026</div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Start Date</div><div style="font-size:12.5px">December 1, 2025</div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Budget</div><div style="font-size:12.5px">$183,000</div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Description</div><div style="font-size:12.5px;color:#9CA3AF">Upgrade security at corporate HQ — cameras, access control, IDS across 4 floors</div></div></div></div><style>.hidden{display:none!important}.rot{transform:rotate(-90deg)}</style><div style="margin-bottom:14px"><div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:4px">Corporate HQ Security Upgrade</div><div style="font-size:12px;color:#9CA3AF">Upgrade security at corporate headquarters · <span style="color:#F59E0B;font-weight:600">In Progress</span></div></div>
+function overview(){return`<div class="card" style="margin-bottom:14px;padding:16px"><div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none" onclick="this.parentElement.querySelector('.det-body').classList.toggle('hidden');this.querySelector('.det-chev').classList.toggle('rot')"><div><div style="font-size:13px;font-weight:700">Project Details</div><div style="font-size:11.5px;color:#9CA3AF">Riverdale Campus Security Refresh · Pinnacle Properties · Metro West Branch</div></div><span class="det-chev" style="color:#9CA3AF;font-size:12px;transition:transform .15s">▼</span></div><div class="det-body hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid #2a2a2a;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px"><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Owner</div><div style="font-size:12.5px">John Doe</div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Status</div><div style="font-size:12.5px"><span style="display:inline-block;padding:2px 8px;border-radius:10px;background:rgba(245,158,11,.14);color:#F59E0B;font-weight:600;font-size:11px">In Progress</span></div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Type</div><div style="font-size:12.5px">Install</div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Target Completion</div><div style="font-size:12.5px">June 10, 2026</div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Start Date</div><div style="font-size:12.5px">December 1, 2025</div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Budget</div><div style="font-size:12.5px">$183,000</div></div><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Description</div><div style="font-size:12.5px;color:#9CA3AF">Upgrade security at Riverdale Campus — cameras, access control, IDS across 4 floors</div></div></div></div><style>.hidden{display:none!important}.rot{transform:rotate(-90deg)}</style><div style="margin-bottom:14px"><div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:4px">Riverdale Campus Security Refresh</div><div style="font-size:12px;color:#9CA3AF">Upgrade security at Riverdale campus · <span style="color:#F59E0B;font-weight:600">In Progress</span></div></div>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
 ${[['Completion',(window.__PROGRESS__?.overall||0)+'%','Schedule '+(window.__PROGRESS__?.scheduleWork||0)+'% · 6 trackers','#F59E0B'],['Budget','$183K','$48K invoiced','#22C55E'],['Risks','4 Open','5 total · 1 high','#EF4444'],['Materials','12 Outstanding','68% delivered','#06B6D4']].map(k=>`<div class="kpi" style="border-left:3px solid ${k[3]}"><div class="kpil">${k[0]}</div><div class="kpin" style="color:${k[3]}">${k[1]}</div><div class="kpic">${k[2]}</div></div>`).join('')}
 </div>
@@ -290,7 +290,7 @@ ${[['Completion',(window.__PROGRESS__?.overall||0)+'%','Schedule '+(window.__PRO
 ${(()=>{const pr=window.__PROGRESS__;if(!pr)return'';return pr.components.filter(c=>c.pct!=null).map(c=>{const w=Math.round(c.adjWeight);const p=Math.round(c.pct);const contrib=Math.round(c.pct*c.adjWeight/100);return`<div style="display:flex;align-items:center;gap:12px;padding:6px 0"><div style="width:120px;font-size:12.5px;font-weight:500">${c.label}</div><div style="width:60px;font-size:10px;color:#6a6a6a;text-align:right">weight ${w}%</div><div style="flex:1;height:6px;background:#2e2e2e;border-radius:3px;overflow:hidden"><div style="width:${p}%;height:100%;background:#F59E0B;border-radius:3px"></div></div><div style="width:46px;text-align:right;font-size:11px;color:#9CA3AF;font-weight:600">${p}%</div><div style="width:60px;text-align:right;font-size:11px;color:#E5E7EB;font-weight:700">+${contrib}pt</div></div>`;}).join('');})()}
 </div>
 <div class="card" style="margin-bottom:14px"><div style="font-size:13px;font-weight:700;margin-bottom:12px">Milestone Progress</div>
-${[['HQ Site Survey',100,'#22C55E'],['Equipment Procurement',90,'#F59E0B'],['Installation',100,'#22C55E'],['Calibration & Testing',60,'#F59E0B'],['Commissioning',75,'#F59E0B'],['Invoice for Material',100,'#22C55E'],['Final Inspection',0,'#6a6a6a']].map(m=>`<div class="mr"><div class="mn">${m[0]}</div><div class="mpb"><div class="mpf" style="width:${m[1]}%;background:${m[2]}"></div></div><div class="mpt">${m[1]}%</div></div>`).join('')}
+${[['Initial Site Survey',100,'#22C55E'],['Equipment Procurement',90,'#F59E0B'],['Installation',100,'#22C55E'],['Calibration & Testing',60,'#F59E0B'],['Commissioning',75,'#F59E0B'],['Invoice for Material',100,'#22C55E'],['Final Inspection',0,'#6a6a6a']].map(m=>`<div class="mr"><div class="mn">${m[0]}</div><div class="mpb"><div class="mpf" style="width:${m[1]}%;background:${m[2]}"></div></div><div class="mpt">${m[1]}%</div></div>`).join('')}
 </div>
 <div class="alt"><div class="altt">⚠ Needs Attention</div>${[['Network delayed going live — High risk','2d ago'],['GC delayed installing 3rd floor cameras','4d ago'],['2 materials undelivered (Cloudgate SVR, Conduit)','1d ago']].map(a=>`<div class="ari"><span>${a[0]}</span><span class="arm">${a[1]}</span></div>`).join('')}</div>`;}
 
@@ -407,7 +407,7 @@ window.renderDashboard = function() {
           { name: 'John Doe', itemStyle:{color:'#4286f4'} },
           { name: 'Sam Rivera', itemStyle:{color:'#22C55E'} },
           { name: 'Taylor Brooks', itemStyle:{color:'#8B5CF6'} },
-          { name: 'HQ Site Survey' },{ name: 'Equipment Procurement' },
+          { name: 'Initial Site Survey' },{ name: 'Equipment Procurement' },
           { name: 'Installation' },{ name: 'Calibration & Testing' },
           { name: 'Commissioning' },{ name: 'Final Inspection' },
           { name: '→ In Progress', itemStyle:{color:'#F59E0B'} },
@@ -415,13 +415,13 @@ window.renderDashboard = function() {
           { name: '→ Open', itemStyle:{color:'#EF4444'} }
         ],
         links: [
-          { source: 'John Doe', target: 'HQ Site Survey', value: 1 },
+          { source: 'John Doe', target: 'Initial Site Survey', value: 1 },
           { source: 'Alex Morgan', target: 'Equipment Procurement', value: 1 },
           { source: 'John Doe', target: 'Installation', value: 1 },
           { source: 'Alex Morgan', target: 'Calibration & Testing', value: 1 },
           { source: 'Alex Morgan', target: 'Commissioning', value: 3 },
           { source: 'Taylor Brooks', target: 'Final Inspection', value: 1 },
-          { source: 'HQ Site Survey', target: '→ In Progress', value: 1 },
+          { source: 'Initial Site Survey', target: '→ In Progress', value: 1 },
           { source: 'Equipment Procurement', target: '→ In Progress', value: 1 },
           { source: 'Installation', target: '→ In Progress', value: 1 },
           { source: 'Calibration & Testing', target: '→ In Progress', value: 1 },
@@ -688,7 +688,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeWiz();});
   function getCtx(){
     return window.__AGENT_CONTEXT__ || {
       project_id: 'PRJ-DEMO',
-      project_name: 'Corporate HQ Security Upgrade',
+      project_name: 'Riverdale Campus Security Refresh',
       project_status: 'In Progress',
       progress_overall: 63,
       open_counts: { tasks:12, punch:4, rfi:1, risks:3, observations:2 },
